@@ -7,7 +7,8 @@ package.json                            # Private package manifest for @zaydek/e
 package-lock.json                       # Locked local test dependencies
 AGENTS.md                               # Local boot doctrine for repo-owned ESLint work
 CLAUDE.md -> AGENTS.md                  # Symlink so Claude Code reads the same local doctrine
-README.md                               # Single rule reference with TOC and examples
+README.md -> RULES.md                   # Human-doc shortcut for editors and conventional entrypoints
+RULES.md                                # Single rule reference with TOC and examples
 test.mjs                                # Rule test runner
 
 lib/

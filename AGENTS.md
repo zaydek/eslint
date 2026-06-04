@@ -30,7 +30,8 @@ an inline policy comment.
 ├── CLAUDE.md -> AGENTS.md                 # Symlink so Claude Code reads this on first load
 ├── package.json                           # Private package manifest for @zaydek/eslint
 ├── package-lock.json                      # Locked local test dependencies
-├── README.md                              # Single rule reference with TOC and examples
+├── README.md -> RULES.md                  # Human-doc shortcut for editors and conventional entrypoints
+├── RULES.md                               # Single rule reference with TOC and examples
 ├── eslint.layout                          # Checkable shape for this repo
 ├── test.mjs                               # Rule fixture runner
 ├── lib/
@@ -58,10 +59,41 @@ an inline policy comment.
   StyleX ownership domain helpers exported for downstream tools.
 - `package.json` owns package exports and declares `eslint` /
   `typescript-eslint` as peer dependencies.
-- `README.md` is the human-readable contract. Keep it in sync with every rule.
+- `RULES.md` is the human-readable rule contract. Keep it in sync with every rule.
 
 Do not scatter rule documentation into per-rule Markdown files. This subtree
-uses one `README.md` so the Operator can scan one TOC and compare rules quickly.
+uses one `RULES.md` so the Operator can scan one TOC and compare rules quickly.
+`README.md` is a symlink to `RULES.md` for human-level documentation shortcuts.
+
+## Consuming the package
+
+Downstream repos wire this package through their own flat ESLint config. The
+`agentic/` prefix below comes from the consumer's `plugins` key; this package
+exports flat rule keys such as `boolean-names`.
+
+```js
+import { rules as agenticRules } from '@zaydek/eslint';
+
+const agenticPlugin = { rules: agenticRules };
+const agenticRuleConfig = Object.fromEntries(
+  Object.keys(agenticRules).map((ruleName) => [`agentic/${ruleName}`, 'warn']),
+);
+
+export default [
+  {
+    files: ['src/**/*.{ts,tsx}'],
+    plugins: { agentic: agenticPlugin },
+    rules: { ...agenticRuleConfig },
+  },
+];
+```
+
+Tooling that needs the StyleX ownership inference engine should import the
+public helper exports instead of deep relative paths:
+
+```js
+import { inferStylexOwnership } from '@zaydek/eslint/lib/stylex-ownership-infer';
+```
 
 ## Rule doctrine
 
@@ -96,8 +128,8 @@ export const typescriptRules = {
 3. Export it from `topics/{topic}/rules/index.mjs`.
 4. If it is a new public rule, downstream `eslint.config.js` files can enable it
    from the package export map.
-5. Update `README.md` with the TOC entry, purpose, and compact examples.
-6. Update `CONVENTIONS.md` only when the broader doctrine changed.
+5. Update `RULES.md` with the TOC entry, purpose, and compact examples.
+6. Update downstream `CONVENTIONS.md` only when the broader doctrine changed.
 7. Run `npm test`.
 8. In downstream consumers, run that repo's lint command after updating the
    dependency.
@@ -114,7 +146,7 @@ existing topic.
 
 ## Relationship to CONVENTIONS.md
 
-Downstream `CONVENTIONS.md` files own doctrine. `README.md` is the enforceable
+Downstream `CONVENTIONS.md` files own doctrine. `RULES.md` is the enforceable
 subset. When a convention stabilizes and can be expressed with AST tests, add or
 extend a rule here. When a rule exists, make sure downstream convention text
 points readers to this package for mechanical details.
@@ -142,10 +174,10 @@ node ~/GitHub/zaydek/skills/skills/eslint-check/scripts/eslint-check.mjs code
 
 ## What Not To Do
 
-- Do not create per-rule Markdown docs; maintain `README.md`.
+- Do not create per-rule Markdown docs; maintain `RULES.md`.
 - Do not move rules out of their topic folders to make imports shorter.
 - Do not silently narrow a rule after a false positive; add a valid fixture and
   document the exception.
 - Do not make layout changes here without updating `eslint.layout`.
-- Do not treat `CONVENTIONS.md` as obsolete; it still owns non-mechanical taste
-  and rationale.
+- Do not treat downstream `CONVENTIONS.md` files as obsolete; they still own
+  non-mechanical taste and rationale.
