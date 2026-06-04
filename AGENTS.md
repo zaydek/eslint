@@ -34,7 +34,7 @@ an inline policy comment.
 ├── eslint.layout                          # Checkable shape for this repo
 ├── test.mjs                               # Rule fixture runner
 ├── lib/
-│   └── {:helper}.mjs                      # Shared RuleTester utilities
+│   └── {:helper}.mjs                      # Shared test helpers and exported domain helpers
 └── topics/
     ├── index.mjs                          # Topic-grouped and flat public rule export map
     └── {:topic}/                          # Topic grouping: comments / react / stylex / typescript
@@ -52,7 +52,10 @@ an inline policy comment.
   that rule. Every bug fix should add a fixture that would have failed before.
 - `topics/{topic}/rules/index.mjs` exports the topic-local rule map.
 - `topics/index.mjs` exports both the topic-grouped map and the flat public rule
-  map consumed by `code/eslint.config.js`.
+  map consumed by downstream `eslint.config.js` files.
+- `lib/rule-tester.mjs` owns shared RuleTester setup for fixtures.
+- `lib/stylex-ownership.mjs` and `lib/stylex-ownership-infer.mjs` own the
+  StyleX ownership domain helpers exported for downstream tools.
 - `package.json` owns package exports and declares `eslint` /
   `typescript-eslint` as peer dependencies.
 - `README.md` is the human-readable contract. Keep it in sync with every rule.

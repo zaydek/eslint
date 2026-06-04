@@ -11,7 +11,7 @@ README.md                               # Single rule reference with TOC and exa
 test.mjs                                # Rule test runner
 
 lib/
-  {:helper}.mjs                         # Shared test/helper utilities
+  {:helper}.mjs                         # Shared test helpers and exported domain helpers
 
 topics/
   index.mjs                             # Topic-grouped and flat public rule export map

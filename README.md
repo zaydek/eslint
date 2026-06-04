@@ -1,12 +1,12 @@
 # ESLint Rules
 
-Repo-local ESLint rules for deterministic convention checks. `CONVENTIONS.md`
-remains the broader human doctrine while this file records the mechanical rule
-surface.
+Private shared ESLint rules for deterministic Operator convention checks.
+Downstream `CONVENTIONS.md` files remain the broader human doctrine while this
+file records the mechanical rule surface exported by `@zaydek/eslint`.
 
 Public rule IDs are currently flat, such as `agentic/component-props`, for
-`code/eslint.config.js` stability. Implementations are grouped by topic so the
-eventual package can move toward names like `agentic/react/*`,
+downstream `eslint.config.js` stability. Implementations are grouped by topic
+so the package can later move toward names like `agentic/react/*`,
 `agentic/typescript/*`, and `agentic/stylex/*`.
 
 ---
