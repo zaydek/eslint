@@ -1,0 +1,20 @@
+import './topics/typescript/rules/associated-exports/associated-exports.test.mjs';
+import './topics/typescript/rules/articulated-object-contracts/articulated-object-contracts.test.mjs';
+import './topics/comments/rules/comment-capitalization/comment-capitalization.test.mjs';
+import './topics/react/rules/component-props/component-props.test.mjs';
+import './topics/react/rules/exported-component-props/exported-component-props.test.mjs';
+import './topics/react/rules/reducer-dispatch-names/reducer-dispatch-names.test.mjs';
+import './topics/stylex/rules/no-sx-prop/no-sx-prop.test.mjs';
+import './topics/stylex/rules/stylex-key-names/stylex-key-names.test.mjs';
+import './topics/stylex/rules/stylex-object-spacing/stylex-object-spacing.test.mjs';
+import './topics/stylex/rules/stylex-ownership-comment/stylex-ownership-comment.test.mjs';
+import './topics/stylex/rules/stylex-placement/stylex-placement.test.mjs';
+import './topics/typescript/rules/boolean-names/boolean-names.test.mjs';
+import './topics/typescript/rules/discriminant-kind/discriminant-kind.test.mjs';
+import './topics/typescript/rules/function-declarations/function-declarations.test.mjs';
+import './topics/typescript/rules/function-names/function-names.test.mjs';
+import './topics/typescript/rules/named-complex-return-types/named-complex-return-types.test.mjs';
+import './topics/typescript/rules/named-nested-types/named-nested-types.test.mjs';
+import './topics/typescript/rules/no-concision-names/no-concision-names.test.mjs';
+
+console.log('eslint rule tests ok');

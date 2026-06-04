@@ -1,0 +1,23 @@
+# eslint/ — private shared ESLint convention plugin.
+# Grammar: {:name} typed placeholder · ?optional · {} open subtree outlet · # inline policy
+
+eslint.layout
+
+package.json                            # Private package manifest for @zaydek/eslint
+package-lock.json                       # Locked local test dependencies
+AGENTS.md                              # Local boot doctrine for repo-owned ESLint work
+CLAUDE.md -> AGENTS.md                 # Symlink so Claude Code reads the same local doctrine
+RULES.md                               # Single rule reference with TOC and examples
+test.mjs                               # Rule test runner
+
+lib/
+  {:helper}.mjs                        # Shared test/helper utilities
+
+topics/
+  index.mjs                            # Topic-grouped and flat public rule export map
+  {:topic}/                            # Topic grouping: comments / react / stylex / typescript
+    rules/
+      index.mjs                        # Topic rule export map
+      {:rule}/
+        {:rule}.mjs                    # Deterministic convention rule
+        {:rule}.test.mjs               # Rule-local executable examples

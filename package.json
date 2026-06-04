@@ -1,0 +1,23 @@
+{
+  "name": "@zaydek/eslint",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./topics/index.mjs",
+    "./topics": "./topics/index.mjs",
+    "./lib/stylex-ownership": "./lib/stylex-ownership.mjs",
+    "./lib/stylex-ownership-infer": "./lib/stylex-ownership-infer.mjs"
+  },
+  "scripts": {
+    "test": "node test.mjs"
+  },
+  "peerDependencies": {
+    "eslint": "^9.0.0",
+    "typescript-eslint": "^8.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^9.39.1",
+    "typescript-eslint": "8.48.0"
+  }
+}
