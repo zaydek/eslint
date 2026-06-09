@@ -7,10 +7,15 @@ ruleTester.run('todo-format', todoFormatRule, {
   valid: [
     '// TODO: Disable tabbing while the modal is open\nconst value = 1;',
     '// TODO(modal): Disable tabbing while the modal is open\nconst value = 1;',
-    '/* TODO: Extract this into its own component */\nconst value = 1;',
-    // Prose that merely contains the word is out of scope.
+    '// BUG: Cursor jumps a row when the lane is empty\nconst value = 1;',
+    '/* FIXME: Extract this into its own component */\nconst value = 1;',
+    // Bare markers are fine; only the colon form is held to canonical casing.
+    'const min = 8; // TODO\nconst value = 1;',
+    // Prose that merely starts with or contains a marker word is out of scope.
+    '// Bug fix for the modal layering issue\nconst value = 1;',
     '// Clearing the remaining todos happens in the activity feed\nconst value = 1;',
-    '// Plain note with no marker\nconst value = 1;',
+    // Markers outside the canonical set are untouched.
+    '// NOTE: Out-of-set markers are not enforced\nconst value = 1;',
   ],
   invalid: [
     {
@@ -22,16 +27,12 @@ ruleTester.run('todo-format', todoFormatRule, {
       errors: [{ messageId: 'casing' }],
     },
     {
-      code: '// ToDo: mixed-case marker\nconst value = 1;',
+      code: '// Fixme: mixed-case marker\nconst value = 1;',
       errors: [{ messageId: 'casing' }],
     },
     {
-      code: 'const min = 8; // TODO\nconst value = 1;',
-      errors: [{ messageId: 'needsColon' }],
-    },
-    {
-      code: '// TODO(modal) missing the colon\nconst value = 1;',
-      errors: [{ messageId: 'needsColon' }],
+      code: '// bug(modal): lowercase scoped marker\nconst value = 1;',
+      errors: [{ messageId: 'casing' }],
     },
   ],
 });
