@@ -9,6 +9,7 @@ AGENTS.md                               # Local boot doctrine for repo-owned ESL
 CLAUDE.md -> AGENTS.md                  # Symlink so Claude Code reads the same local doctrine
 README.md -> RULES.md                   # Human-doc shortcut for editors and conventional entrypoints
 RULES.md                                # Single rule reference with TOC and examples
+?RULES_PROPOSED.md                      # Proposed rule reference pending Operator review; folds into RULES.md
 test.mjs                                # Rule test runner
 
 lib/

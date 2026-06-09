@@ -17,4 +17,23 @@ import './topics/typescript/rules/named-complex-return-types/named-complex-retur
 import './topics/typescript/rules/named-nested-types/named-nested-types.test.mjs';
 import './topics/typescript/rules/no-concision-names/no-concision-names.test.mjs';
 
+// Proposed rules (RULES_PROPOSED.md)
+import './topics/comments/rules/todo-format/todo-format.test.mjs';
+import './topics/react/rules/context-via-factory/context-via-factory.test.mjs';
+import './topics/react/rules/namespace-imports/namespace-imports.test.mjs';
+import './topics/react/rules/state-setter-pairs/state-setter-pairs.test.mjs';
+import './topics/react/rules/use-new-naming/use-new-naming.test.mjs';
+import './topics/stylex/rules/enum-style-variants/enum-style-variants.test.mjs';
+import './topics/stylex/rules/max-variant-axes/max-variant-axes.test.mjs';
+import './topics/stylex/rules/stylex-tokens-only/stylex-tokens-only.test.mjs';
+import './topics/typescript/rules/enum-kind-suffix/enum-kind-suffix.test.mjs';
+import './topics/typescript/rules/enum-member-values/enum-member-values.test.mjs';
+import './topics/typescript/rules/enum-value-casing/enum-value-casing.test.mjs';
+import './topics/typescript/rules/error-message-context/error-message-context.test.mjs';
+import './topics/typescript/rules/exhaustive-switch/exhaustive-switch.test.mjs';
+import './topics/typescript/rules/handler-map-alignment/handler-map-alignment.test.mjs';
+import './topics/typescript/rules/map-record-names/map-record-names.test.mjs';
+import './topics/typescript/rules/no-namespaces/no-namespaces.test.mjs';
+import './topics/typescript/rules/result-shape/result-shape.test.mjs';
+
 console.log('eslint rule tests ok');
