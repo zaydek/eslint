@@ -43,7 +43,7 @@ an inline policy comment.
     ├── lib/
     │   └── {:helper}.mjs                  # Cross-topic shared helpers
     └── {:topic}/                          # Topic grouping: comments / react / stylex / typescript
-        ├── ?OWNERSHIP.md                 # Topic-owned formal spec, used by StyleX ownership
+        ├── ?OWNERSHIP.md                  # Topic-owned formal spec, used by StyleX ownership
         ├── ?lib/
         │   ├── {:helper}.mjs              # Topic-local shared/domain helpers
         │   └── {:helper}.test.mjs         # Topic-local helper/parser conformance tests
