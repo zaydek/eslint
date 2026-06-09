@@ -15,10 +15,12 @@ including both historical `TOOD` typos, three misaligned handler names in
 
 Open review notes:
 
-- `error-message-context`: the message shape is unresolved. Candidate
-  alternative: human prose plus structured payload via the standard `cause`
-  option — `new Error('An unexpected error occurred', { cause: result.error })`
-  — with the rule requiring static messages to carry a `cause`.
+- `error-message-context`: implemented and tested but **disabled** — excluded
+  from the public `rules` map and commented out below — while the message
+  shape is unresolved. Candidate alternative: human prose plus structured
+  payload via the standard `cause` option —
+  `new Error('An unexpected error occurred', { cause: result.error })` — with
+  the rule requiring static messages to carry a `cause`.
 - `use-new-naming`: whether consumers also need a marker (`useGivenBoard`) is
   open; today consumption is already explicit via `BoardContext.useContext()`.
 - `max-variant-axes`: the most opinionated rule of the slate; drop it if the
@@ -32,7 +34,7 @@ Open review notes:
   - [Enum Kind Suffix](#enum-kind-suffix)
   - [Enum Member Values](#enum-member-values)
   - [Enum Value Casing](#enum-value-casing)
-  - [Error Message Context](#error-message-context)
+  <!-- - [Error Message Context](#error-message-context) — disabled, see open review notes -->
   - [Exhaustive Switch](#exhaustive-switch)
   - [Handler Map Alignment](#handler-map-alignment)
   - [Map Record Names](#map-record-names)
@@ -159,38 +161,26 @@ enum ModalKind {
 }
 ```
 
-### Error Message Context
+<!--
+### Error Message Context — DISABLED
 
-Rule: `agentic/error-message-context`
+Rule: `agentic/error-message-context` (implemented, excluded from the public
+`rules` map; see the open review notes)
 
 Requires thrown error messages to interpolate structured context. Static prose
 like `An unexpected error occurred` carries no information; the payload is the
-message. See the open review note: this rule may move to requiring a `cause`
-argument alongside a human-readable message instead.
+message. This rule may move to requiring a `cause` argument alongside a
+human-readable message instead.
 
 Valid:
 
-```ts
 throw new Error(`error=${JSON.stringify(result.error)}`);
-```
-
-Valid, in practice:
-
-```ts
-function reducer(state: Board, action: BoardAction): Board {
-  const handler = MapActionKindToHandler[action.kind];
-  if (handler === undefined) {
-    throw new Error(`Unknown board action: action.kind=${JSON.stringify(action.kind)}`);
-  }
-  return handler(state, action);
-}
-```
 
 Invalid:
 
-```ts
 throw new Error('An unexpected error occurred');
-```
+-->
+
 
 ### Exhaustive Switch
 
@@ -750,26 +740,25 @@ Requires canonical uppercase markers, with the allowed set carried as data:
 start of a comment, so bare `// TODO` and prose that merely contains a marker
 word stay out of scope. Misspellings such as `TOOD` are flagged anywhere.
 
-Scopes that start with `@` are attributions — `TODO(@zaydek)` or
-`TODO(@claude-code/opus-4.8/xhigh)` — validated against
-`{ attributionPattern }`. The default pattern is permissive
-(`^@[\w.-]+(?:/[\w.-]+)*$`); tighten it in config when the
+Scopes are attributions, only: `TODO(@zaydek)` or
+`TODO(@claude-code/opus-4.8/xhigh)`. There is no `TODO(modal)`. Attributions
+are validated against `{ attributionPattern }`; the default is permissive
+(`^@[\w.-]+(?:/[\w.-]+)*$`) and can be tightened in config when the
 `{harness}/{model}-{version}/{effort}` grammar stabilizes, no rule change
 needed.
 
 Valid:
 
 ```ts
-// TODO: Disable tabbing while the modal is open
-// BUG: Cursor jumps a row when the lane is empty
+// TODO
+// TODO(@claude-code/opus-4.8/xhigh): Tighten the axis cap
 ```
 
 Valid, in practice:
 
 ```ts
-// TODO(modal): Disable tabbing while the modal is open
+// TODO: Disable tabbing while the modal is open
 // TODO(@zaydek): Ship the modal
-// TODO(@claude-code/opus-4.8/xhigh): Tighten the axis cap
 const min = 8; // TODO
 // Bug fix for the modal layering issue — prose, not a marker.
 ```
@@ -780,5 +769,6 @@ Invalid:
 // TOOD: This seems overcomplicated
 // todo: lowercase marker
 // Fixme: mixed-case marker
+// TODO(modal): Scopes are attributions only
 // TODO(@claude code): Spaces break attribution
 ```

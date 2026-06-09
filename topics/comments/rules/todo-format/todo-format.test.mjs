@@ -6,7 +6,6 @@ const ruleTester = createRuleTester();
 ruleTester.run('todo-format', todoFormatRule, {
   valid: [
     '// TODO: Disable tabbing while the modal is open\nconst value = 1;',
-    '// TODO(modal): Disable tabbing while the modal is open\nconst value = 1;',
     '// BUG: Cursor jumps a row when the lane is empty\nconst value = 1;',
     '/* FIXME: Extract this into its own component */\nconst value = 1;',
     // Attributed markers: humans and agents.
@@ -40,8 +39,12 @@ ruleTester.run('todo-format', todoFormatRule, {
       errors: [{ messageId: 'casing' }],
     },
     {
-      code: '// bug(modal): lowercase scoped marker\nconst value = 1;',
-      errors: [{ messageId: 'casing' }],
+      code: '// bug(modal): lowercase marker with a non-attribution scope\nconst value = 1;',
+      errors: [{ messageId: 'casing' }, { messageId: 'scopeMustAttribute' }],
+    },
+    {
+      code: '// TODO(modal): Scopes are attributions only\nconst value = 1;',
+      errors: [{ messageId: 'scopeMustAttribute' }],
     },
     {
       code: '// TODO(@claude code): Spaces break attribution\nconst value = 1;',

@@ -18,6 +18,8 @@ export const todoFormatRule = {
     messages: {
       misspelled: '`{{token}}` looks like a misspelled TODO; write `TODO`.',
       casing: 'Marker `{{token}}` should be uppercase `{{expected}}` so marker scans stay greppable.',
+      scopeMustAttribute:
+        'Marker scopes are attributions; write `{{token}}(@who)` or drop the scope.',
       attribution:
         'Attribution `{{scope}}` should match `{{pattern}}`, e.g. `@claude-code/opus-4.8/xhigh`.',
     },
@@ -72,11 +74,19 @@ function checkComment(context, sourceCode, comment, markers, attributionRegExp, 
   const tokenIndex = textOffset + lineOffset + leadingWhitespace.length;
 
   const expected = token.toUpperCase();
-  if (markers.has(expected) && token !== expected) {
+  if (!markers.has(expected)) return;
+  if (token !== expected) {
     report(context, sourceCode, tokenIndex, token.length, 'casing', { token, expected });
   }
 
-  if (scope !== undefined && scope.startsWith('@') && !attributionRegExp.test(scope)) {
+  if (scope === undefined) return;
+  if (!scope.startsWith('@')) {
+    report(context, sourceCode, tokenIndex + token.length + 1, Math.max(scope.length, 1), 'scopeMustAttribute', {
+      token: expected,
+    });
+    return;
+  }
+  if (!attributionRegExp.test(scope)) {
     report(context, sourceCode, tokenIndex + token.length + 1, scope.length, 'attribution', {
       scope,
       pattern: attributionPattern,
