@@ -9,13 +9,22 @@ ruleTester.run('todo-format', todoFormatRule, {
     '// TODO(modal): Disable tabbing while the modal is open\nconst value = 1;',
     '// BUG: Cursor jumps a row when the lane is empty\nconst value = 1;',
     '/* FIXME: Extract this into its own component */\nconst value = 1;',
-    // Bare markers are fine; only the colon form is held to canonical casing.
+    // Attributed markers: humans and agents.
+    '// TODO(@zaydek): Ship the modal\nconst value = 1;',
+    '// TODO(@claude-code/opus-4.8/xhigh): Tighten the axis cap\nconst value = 1;',
+    '// TODO(@codex/gpt-5.3-codex/high)\nconst value = 1;',
+    // Bare markers are fine; only declared markers are held to casing.
     'const min = 8; // TODO\nconst value = 1;',
     // Prose that merely starts with or contains a marker word is out of scope.
     '// Bug fix for the modal layering issue\nconst value = 1;',
     '// Clearing the remaining todos happens in the activity feed\nconst value = 1;',
-    // Markers outside the canonical set are untouched.
+    // Markers outside the configured set are untouched.
     '// NOTE: Out-of-set markers are not enforced\nconst value = 1;',
+    // The marker set is data.
+    {
+      code: '// NOTE: In-set when configured\nconst value = 1;',
+      options: [{ markers: ['NOTE'] }],
+    },
   ],
   invalid: [
     {
@@ -32,6 +41,19 @@ ruleTester.run('todo-format', todoFormatRule, {
     },
     {
       code: '// bug(modal): lowercase scoped marker\nconst value = 1;',
+      errors: [{ messageId: 'casing' }],
+    },
+    {
+      code: '// TODO(@claude code): Spaces break attribution\nconst value = 1;',
+      errors: [{ messageId: 'attribution' }],
+    },
+    {
+      code: '// TODO(@): Empty attribution\nconst value = 1;',
+      errors: [{ messageId: 'attribution' }],
+    },
+    {
+      code: '// note: lowercase configured marker\nconst value = 1;',
+      options: [{ markers: ['NOTE'] }],
       errors: [{ messageId: 'casing' }],
     },
   ],

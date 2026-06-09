@@ -1,5 +1,11 @@
-const CANONICAL_MARKERS = new Set(['TODO', 'BUG', 'FIXME', 'IMPROVEMENT', 'OPTIMIZATION']);
-const MARKER_PATTERN = /^(\s*)([A-Za-z]+)(\([^)]*\))?:/;
+const DEFAULT_MARKERS = ['TODO', 'BUG', 'FIXME', 'IMPROVEMENT', 'OPTIMIZATION'];
+
+// Permissive by default: `@zaydek` and `@claude-code/opus-4.8/xhigh` both
+// pass. Tighten via the attributionPattern option when the harness/model/
+// effort grammar stabilizes.
+const DEFAULT_ATTRIBUTION_PATTERN = '^@[\\w.-]+(?:/[\\w.-]+)*$';
+
+const MARKER_PATTERN = /^(\s*)([A-Za-z]+)(?:\(([^)]*)\))?(:)?/;
 const MISSPELLING_PATTERN = /\b(TOOD|TDOO|TODOO|OTOD)\b/gi;
 
 export const todoFormatRule = {
@@ -7,60 +13,79 @@ export const todoFormatRule = {
     type: 'suggestion',
     docs: {
       description:
-        'Require canonical uppercase comment markers such as `TODO:`, `BUG:`, and `FIXME:`.',
+        'Require canonical uppercase comment markers and well-formed `(@attribution)` scopes.',
     },
     messages: {
       misspelled: '`{{token}}` looks like a misspelled TODO; write `TODO`.',
-      casing: 'Marker `{{token}}:` should be uppercase `{{expected}}:` so marker scans stay greppable.',
+      casing: 'Marker `{{token}}` should be uppercase `{{expected}}` so marker scans stay greppable.',
+      attribution:
+        'Attribution `{{scope}}` should match `{{pattern}}`, e.g. `@claude-code/opus-4.8/xhigh`.',
     },
-    schema: [],
+    schema: [
+      {
+        type: 'object',
+        properties: {
+          markers: { type: 'array', items: { type: 'string' }, minItems: 1 },
+          attributionPattern: { type: 'string' },
+        },
+        additionalProperties: false,
+      },
+    ],
   },
 
   create(context) {
+    const markers = new Set(context.options[0]?.markers ?? DEFAULT_MARKERS);
+    const attributionPattern =
+      context.options[0]?.attributionPattern ?? DEFAULT_ATTRIBUTION_PATTERN;
+    const attributionRegExp = new RegExp(attributionPattern);
     const sourceCode = context.sourceCode ?? context.getSourceCode();
 
     return {
       Program() {
         for (const comment of sourceCode.getAllComments()) {
-          checkComment(context, sourceCode, comment);
+          checkComment(context, sourceCode, comment, markers, attributionRegExp, attributionPattern);
         }
       },
     };
   },
 };
 
-function checkComment(context, sourceCode, comment) {
+function checkComment(context, sourceCode, comment, markers, attributionRegExp, attributionPattern) {
   const textOffset = comment.range[0] + 2;
 
   for (const match of comment.value.matchAll(MISSPELLING_PATTERN)) {
-    report(context, sourceCode, textOffset + match.index, match[0], 'misspelled', {
+    report(context, sourceCode, textOffset + match.index, match[0].length, 'misspelled', {
       token: match[0],
     });
   }
 
-  // Only the colon form at the start of the comment declares a marker; bare
-  // mentions and prose stay out of scope.
+  // A marker is declared by a `(scope)` or a trailing colon at the start of
+  // the comment; bare mentions and prose stay out of scope.
   const firstLine = comment.value.split('\n').find((line) => line.trim() !== '') ?? '';
   const markerMatch = firstLine.match(MARKER_PATTERN);
   if (!markerMatch) return;
 
-  const [, leadingWhitespace, token] = markerMatch;
-  const expected = token.toUpperCase();
-  if (!CANONICAL_MARKERS.has(expected) || token === expected) return;
+  const [, leadingWhitespace, token, scope, colon] = markerMatch;
+  if (scope === undefined && colon === undefined) return;
 
   const lineOffset = comment.value.indexOf(firstLine);
-  report(
-    context,
-    sourceCode,
-    textOffset + lineOffset + leadingWhitespace.length,
-    token,
-    'casing',
-    { token, expected },
-  );
+  const tokenIndex = textOffset + lineOffset + leadingWhitespace.length;
+
+  const expected = token.toUpperCase();
+  if (markers.has(expected) && token !== expected) {
+    report(context, sourceCode, tokenIndex, token.length, 'casing', { token, expected });
+  }
+
+  if (scope !== undefined && scope.startsWith('@') && !attributionRegExp.test(scope)) {
+    report(context, sourceCode, tokenIndex + token.length + 1, scope.length, 'attribution', {
+      scope,
+      pattern: attributionPattern,
+    });
+  }
 }
 
-function report(context, sourceCode, index, token, messageId, data) {
+function report(context, sourceCode, index, length, messageId, data) {
   const start = sourceCode.getLocFromIndex(index);
-  const end = sourceCode.getLocFromIndex(index + token.length);
+  const end = sourceCode.getLocFromIndex(index + length);
   context.report({ loc: { start, end }, messageId, data });
 }

@@ -744,10 +744,18 @@ const styles = stylex.create({
 
 Rule: `agentic/todo-format`
 
-Requires canonical uppercase markers: `TODO`, `BUG`, `FIXME`, `IMPROVEMENT`,
-`OPTIMIZATION`. Only the colon form at the start of a comment declares a
-marker, so bare `// TODO` and prose that merely contains a marker word stay
-out of scope. Misspellings such as `TOOD` are flagged anywhere.
+Requires canonical uppercase markers, with the allowed set carried as data:
+`{ markers }` defaults to `TODO`, `BUG`, `FIXME`, `IMPROVEMENT`,
+`OPTIMIZATION`. A marker is declared by a `(scope)` or trailing colon at the
+start of a comment, so bare `// TODO` and prose that merely contains a marker
+word stay out of scope. Misspellings such as `TOOD` are flagged anywhere.
+
+Scopes that start with `@` are attributions — `TODO(@zaydek)` or
+`TODO(@claude-code/opus-4.8/xhigh)` — validated against
+`{ attributionPattern }`. The default pattern is permissive
+(`^@[\w.-]+(?:/[\w.-]+)*$`); tighten it in config when the
+`{harness}/{model}-{version}/{effort}` grammar stabilizes, no rule change
+needed.
 
 Valid:
 
@@ -760,9 +768,10 @@ Valid, in practice:
 
 ```ts
 // TODO(modal): Disable tabbing while the modal is open
+// TODO(@zaydek): Ship the modal
+// TODO(@claude-code/opus-4.8/xhigh): Tighten the axis cap
 const min = 8; // TODO
 // Bug fix for the modal layering issue — prose, not a marker.
-// NOTE: Markers outside the canonical set are not enforced.
 ```
 
 Invalid:
@@ -771,4 +780,5 @@ Invalid:
 // TOOD: This seems overcomplicated
 // todo: lowercase marker
 // Fixme: mixed-case marker
+// TODO(@claude code): Spaces break attribution
 ```
