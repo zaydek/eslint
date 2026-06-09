@@ -1,3 +1,4 @@
+import { createRuleMessage } from '../../../lib/rule-doc-message.mjs';
 export const errorMessageContextRule = {
   meta: {
     type: 'suggestion',
@@ -6,8 +7,11 @@ export const errorMessageContextRule = {
         'Require thrown error messages to interpolate structured context, not static prose.',
     },
     messages: {
-      needsContext:
-        'Thrown errors should interpolate structured context, e.g. `` `key=${JSON.stringify(value)}` ``.',
+      needsContext: createRuleMessage(
+        'Thrown error message does not include structured runtime context.',
+        'Interpolate useful context, for example `` `key=${JSON.stringify(value)}` ``.',
+        'error-message-context',
+      ),
     },
     schema: [],
   },

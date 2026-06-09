@@ -1,3 +1,4 @@
+import { createRuleMessage } from '../../../lib/rule-doc-message.mjs';
 import { getStylexCreateObject } from '../../lib/ownership.mjs';
 
 const COLOR_PATTERN =
@@ -11,7 +12,11 @@ export const stylexTokensOnlyRule = {
         'Disallow raw color literals inside component `stylex.create`; colors come from tokens.',
     },
     messages: {
-      rawColor: 'Raw color `{{value}}` belongs in a `.stylex.` tokens file, not a component.',
+      rawColor: createRuleMessage(
+        'Raw color `{{value}}` appears outside a `.stylex.` tokens file.',
+        'Move the color into a StyleX token and reference the token from component styles.',
+        'stylex-tokens-only',
+      ),
     },
     schema: [],
   },

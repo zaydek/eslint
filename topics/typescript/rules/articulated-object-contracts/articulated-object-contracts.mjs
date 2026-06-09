@@ -1,3 +1,4 @@
+import { createRuleMessage } from '../../../lib/rule-doc-message.mjs';
 const CONTRACT_TYPE_NAME = /(?:Props|Args|Return)(?:[A-Z0-9]|$)|(?:Options|Configuration)$/;
 
 function getTypeMemberName(node) {
@@ -21,7 +22,11 @@ export const articulatedObjectContractsRule = {
       description: 'Require object contract members to carry explanatory comments.',
     },
     messages: {
-      missingComment: 'Object contract member `{{name}}` should have a leading JSDoc comment.',
+      missingComment: createRuleMessage(
+        'Object contract member `{{name}}` has no leading JSDoc comment.',
+        'Add a concise JSDoc comment explaining the member contract.',
+        'articulated-object-contracts',
+      ),
     },
     schema: [],
   },

@@ -1,3 +1,4 @@
+import { createRuleMessage } from '../../../lib/rule-doc-message.mjs';
 export const reducerDispatchNamesRule = {
   meta: {
     type: 'suggestion',
@@ -5,7 +6,11 @@ export const reducerDispatchNamesRule = {
       description: 'Require useReducer dispatch variables to be named dispatchThing.',
     },
     messages: {
-      dispatchName: 'Reducer dispatch `{{actual}}` should be named `{{expected}}`.',
+      dispatchName: createRuleMessage(
+        'Reducer dispatch is named `{{actual}}` instead of `{{expected}}`.',
+        'Rename the dispatch binding to `{{expected}}`.',
+        'reducer-dispatch-names',
+      ),
     },
     schema: [],
   },

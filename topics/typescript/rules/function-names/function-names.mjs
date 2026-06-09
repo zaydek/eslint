@@ -1,3 +1,4 @@
+import { createRuleMessage } from '../../../lib/rule-doc-message.mjs';
 const COMPONENT_NAME = /^[A-Z][A-Za-z0-9]*$/;
 const HOOK_NAME = /^use[A-Z]/;
 const ALLOWED_RECURSIVE_NAME = 'recurse';
@@ -76,8 +77,11 @@ export const functionNamesRule = {
         'Require non-component helper functions to use a known action prefix and compound name.',
     },
     messages: {
-      actionPrefix:
-        'Function `{{name}}` should use a known action prefix followed by a PascalCase boundary.',
+      actionPrefix: createRuleMessage(
+        'Function `{{name}}` does not use a known action prefix followed by a PascalCase boundary.',
+        'Leave this disabled rule off unless the naming contract becomes deterministic enough to prove.',
+        'function-names',
+      ),
     },
     schema: [],
   },

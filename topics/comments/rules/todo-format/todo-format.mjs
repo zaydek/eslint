@@ -1,3 +1,4 @@
+import { createRuleMessage } from '../../../lib/rule-doc-message.mjs';
 const DEFAULT_MARKERS = ['TODO', 'BUG', 'FIXME', 'IMPROVEMENT', 'OPTIMIZATION'];
 
 // Permissive by default: `@zaydek` and `@claude-code/opus-4.8/xhigh` both
@@ -16,12 +17,26 @@ export const todoFormatRule = {
         'Require canonical uppercase comment markers and well-formed `(@attribution)` scopes.',
     },
     messages: {
-      misspelled: '`{{token}}` looks like a misspelled TODO; write `TODO`.',
-      casing: 'Marker `{{token}}` should be uppercase `{{expected}}` so marker scans stay greppable.',
-      scopeMustAttribute:
-        'Marker scopes are attributions; write `{{token}}(@who)` or drop the scope.',
-      attribution:
-        'Attribution `{{scope}}` should match `{{pattern}}`, e.g. `@claude-code/opus-4.8/xhigh`.',
+      misspelled: createRuleMessage(
+        '`{{token}}` looks like a misspelled TODO marker.',
+        'Write `TODO` or one of the configured uppercase markers.',
+        'todo-format',
+      ),
+      casing: createRuleMessage(
+        'Marker `{{token}}` is not the canonical uppercase marker `{{expected}}`.',
+        'Rename the marker to `{{expected}}` so marker scans stay greppable.',
+        'todo-format',
+      ),
+      scopeMustAttribute: createRuleMessage(
+        'Marker scope for `{{token}}` is not an attribution.',
+        'Write `{{token}}(@who)` or remove the scope.',
+        'todo-format',
+      ),
+      attribution: createRuleMessage(
+        'Attribution `{{scope}}` does not match `{{pattern}}`.',
+        'Use an agent/human attribution such as `@claude-code/opus-4.8/xhigh`.',
+        'todo-format',
+      ),
     },
     schema: [
       {

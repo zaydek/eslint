@@ -2,7 +2,7 @@
 
 Topic: TypeScript
 Rule: `agentic/error-message-context`
-Status: implemented but disabled in the public flat rule map.
+Status: dormant; excluded from public and topic rule maps.
 
 ## Agent Contract
 
@@ -13,8 +13,9 @@ Status: implemented but disabled in the public flat rule map.
 
 ## Details
 
-Rule: `agentic/error-message-context` (implemented, excluded from the public
-`rules` map; see the open review notes)
+Rule: `agentic/error-message-context` (implemented and tested as dormant draft
+material, but excluded from public and topic rule maps; see the open review
+notes)
 
 Requires thrown error messages to interpolate structured context. Static prose
 like `An unexpected error occurred` carries no information; the payload is the

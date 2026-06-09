@@ -1,3 +1,4 @@
+import { createRuleMessage } from '../../../lib/rule-doc-message.mjs';
 const COMPONENT_NAME = /^[A-Z][A-Za-z0-9]*$/;
 
 export const componentPropsRule = {
@@ -7,7 +8,11 @@ export const componentPropsRule = {
       description: 'Require component props to use a named ComponentNameProps type.',
     },
     messages: {
-      namedType: 'Component `{{name}}` should use a named ComponentNameProps type.',
+      namedType: createRuleMessage(
+        'Component `{{name}}` does not use a named `{{name}}Props` type for its props parameter.',
+        'Create a named props type and annotate the component parameter with it.',
+        'component-props',
+      ),
     },
     schema: [],
   },

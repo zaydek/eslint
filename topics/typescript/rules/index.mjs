@@ -5,7 +5,6 @@ import { discriminantKindRule } from './discriminant-kind/discriminant-kind.mjs'
 import { enumKindSuffixRule } from './enum-kind-suffix/enum-kind-suffix.mjs';
 import { enumMemberValuesRule } from './enum-member-values/enum-member-values.mjs';
 import { enumValueCasingRule } from './enum-value-casing/enum-value-casing.mjs';
-import { errorMessageContextRule } from './error-message-context/error-message-context.mjs';
 import { exhaustiveSwitchRule } from './exhaustive-switch/exhaustive-switch.mjs';
 import { functionDeclarationsRule } from './function-declarations/function-declarations.mjs';
 import { functionNamesRule } from './function-names/function-names.mjs';
@@ -25,7 +24,6 @@ export const typescriptRules = {
   'enum-kind-suffix': enumKindSuffixRule,
   'enum-member-values': enumMemberValuesRule,
   'enum-value-casing': enumValueCasingRule,
-  'error-message-context': errorMessageContextRule,
   'exhaustive-switch': exhaustiveSwitchRule,
   'function-declarations': functionDeclarationsRule,
   'function-names': functionNamesRule,

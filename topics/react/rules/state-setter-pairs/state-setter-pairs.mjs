@@ -1,3 +1,4 @@
+import { createRuleMessage } from '../../../lib/rule-doc-message.mjs';
 export const stateSetterPairsRule = {
   meta: {
     type: 'suggestion',
@@ -5,7 +6,11 @@ export const stateSetterPairsRule = {
       description: 'Require `useState` destructuring to use exact `[thing, setThing]` pairs.',
     },
     messages: {
-      setterName: '`useState` setter for `{{name}}` should be named `{{expected}}`, not `{{actual}}`.',
+      setterName: createRuleMessage(
+        '`useState` setter for `{{name}}` is named `{{actual}}` instead of `{{expected}}`.',
+        'Rename the setter binding to `{{expected}}`.',
+        'state-setter-pairs',
+      ),
     },
     schema: [],
   },

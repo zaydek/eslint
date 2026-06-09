@@ -1,3 +1,4 @@
+import { createRuleMessage } from '../../../lib/rule-doc-message.mjs';
 import {
   getOwnershipComment,
   getStylexCreateObject,
@@ -14,7 +15,11 @@ export const commentCapitalizationRule = {
       description: 'Require the first word of each comment block to start uppercase.',
     },
     messages: {
-      uppercase: 'Comments should start like sentences, with an uppercase first word.',
+      uppercase: createRuleMessage(
+        'Comment should start like a sentence, with an uppercase first word.',
+        'Capitalize the first meaningful word or use a recognized directive/comment form.',
+        'comment-capitalization',
+      ),
     },
     schema: [],
   },

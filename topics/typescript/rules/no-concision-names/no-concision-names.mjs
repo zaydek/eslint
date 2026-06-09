@@ -1,3 +1,4 @@
+import { createRuleMessage } from '../../../lib/rule-doc-message.mjs';
 const BAD_SEGMENTS = new Map([
   ['cfg', 'configuration'],
   ['config', 'configuration'],
@@ -36,7 +37,11 @@ export const noConcisionNamesRule = {
       description: 'Prefer full words over terse abbreviation segments in identifiers.',
     },
     messages: {
-      noConcision: 'Identifier `{{name}}` uses terse segment `{{segment}}`; prefer `{{replacement}}`.',
+      noConcision: createRuleMessage(
+        'Identifier `{{name}}` uses terse segment `{{segment}}`.',
+        'Replace `{{segment}}` with `{{replacement}}`.',
+        'no-concision-names',
+      ),
     },
     schema: [],
   },

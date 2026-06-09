@@ -1,3 +1,4 @@
+import { createRuleMessage } from '../../../lib/rule-doc-message.mjs';
 const HANDLER_MAP_NAME_PATTERN = /^Map\w+ToHandler$/;
 
 export const handlerMapAlignmentRule = {
@@ -8,9 +9,16 @@ export const handlerMapAlignmentRule = {
         'Require handler map entries to reference `handle{Variant}` functions with no `any` in the map type.',
     },
     messages: {
-      aligned: 'Handler for `{{variant}}` should be a function named `{{expected}}`, not `{{actual}}`.',
-      noAny:
-        'Handler maps should use the `{ [K in Kind]: (state, Extract<Action, { kind: K }>) => State }` mapped form; `any` defeats the narrowing.',
+      aligned: createRuleMessage(
+        'Handler for `{{variant}}` is `{{actual}}` instead of `{{expected}}`.',
+        'Rename or replace the handler value with `{{expected}}`.',
+        'handler-map-alignment',
+      ),
+      noAny: createRuleMessage(
+        'Handler map type annotation contains `any`.',
+        'Use the named action/handler types for the reducer instead of `any`.',
+        'handler-map-alignment',
+      ),
     },
     schema: [],
   },

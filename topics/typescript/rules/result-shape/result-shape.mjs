@@ -1,3 +1,4 @@
+import { createRuleMessage } from '../../../lib/rule-doc-message.mjs';
 export const resultShapeRule = {
   meta: {
     type: 'suggestion',
@@ -6,10 +7,16 @@ export const resultShapeRule = {
         'Require exported `*Result` types to be `kind`-discriminated unions with closed error sets.',
     },
     messages: {
-      memberNeedsKind:
-        'Each variant of `{{name}}` should carry a `kind` discriminant so callers can switch exhaustively.',
-      errorKindName:
-        'The `error` payload of `{{name}}` should be a closed `*ErrorKind` enum, not `{{actual}}`.',
+      memberNeedsKind: createRuleMessage(
+        'Result variant in `{{name}}` is missing a `kind` discriminant.',
+        'Add `kind: {{name}}Kind.X` to every inline result union member.',
+        'result-shape',
+      ),
+      errorKindName: createRuleMessage(
+        'The `error` payload of `{{name}}` uses `{{actual}}` instead of a closed `*ErrorKind` enum.',
+        'Replace the error payload type with a named `*ErrorKind` enum.',
+        'result-shape',
+      ),
     },
     schema: [],
   },

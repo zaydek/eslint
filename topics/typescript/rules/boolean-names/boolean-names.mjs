@@ -1,3 +1,4 @@
+import { createRuleMessage } from '../../../lib/rule-doc-message.mjs';
 const BOOLEAN_PREFIX = /^(is|has|can|should|are)[A-Z]/;
 const BOOLEANISH_NAMES = /^(open|editing|hovered|selected|checked|closing|active|disabled|visible|mounted)$/;
 
@@ -8,7 +9,11 @@ export const booleanNamesRule = {
       description: 'Require predicate-style names for local boolean state and variables.',
     },
     messages: {
-      prefix: 'Boolean-like name `{{name}}` should use an is/has/can/should/are prefix.',
+      prefix: createRuleMessage(
+        'Boolean name `{{name}}` must start with `is`, `has`, `can`, `should`, or `are`.',
+        'Rename it to use an allowed boolean prefix or document a valid exception.',
+        'boolean-names',
+      ),
     },
     schema: [],
   },

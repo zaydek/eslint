@@ -1,3 +1,4 @@
+import { createRuleMessage } from '../../../lib/rule-doc-message.mjs';
 import {
   getOwnershipComment,
   getStylexCreateObject,
@@ -14,8 +15,11 @@ export const maxVariantAxesRule = {
         'Limit how many orthogonal variant families one styled element may accrue.',
     },
     messages: {
-      tooManyAxes:
-        '`{{owner}}` carries {{count}} variant families (max {{max}}); collapse an axis or split the element before the matrix grows.',
+      tooManyAxes: createRuleMessage(
+        '`{{owner}}` carries {{count}} variant families, which exceeds the configured max of {{max}}.',
+        'Collapse an axis, split the element, or raise the rule option only when the larger matrix is intentional.',
+        'max-variant-axes',
+      ),
     },
     schema: [
       {

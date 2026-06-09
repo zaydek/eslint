@@ -1,3 +1,4 @@
+import { createRuleMessage } from '../../../lib/rule-doc-message.mjs';
 export const noSxPropRule = {
   meta: {
     type: 'problem',
@@ -5,7 +6,11 @@ export const noSxPropRule = {
       description: 'Disallow sx props; use stylex.props explicitly.',
     },
     messages: {
-      noSx: 'Use stylex.props instead of the sx prop.',
+      noSx: createRuleMessage(
+        'JSX uses the `sx` prop instead of StyleX props.',
+        'Replace `sx={...}` with `stylex.props(...)` spread props.',
+        'no-sx-prop',
+      ),
     },
     schema: [],
   },

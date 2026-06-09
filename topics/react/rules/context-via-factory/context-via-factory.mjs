@@ -1,3 +1,4 @@
+import { createRuleMessage } from '../../../lib/rule-doc-message.mjs';
 export const contextViaFactoryRule = {
   meta: {
     type: 'suggestion',
@@ -6,11 +7,21 @@ export const contextViaFactoryRule = {
         'Require contexts to be created through `newGenericContext` with an aligned debug name.',
     },
     messages: {
-      useFactory:
-        'Create contexts with `newGenericContext` so consumers get a throwing `useContext` for free.',
-      contextSuffix: 'Context binding `{{name}}` should be named `{Thing}Context`.',
-      debugName:
-        'The `newGenericContext` debug identifier should match the binding: expected `{{expected}}`, got `{{actual}}`.',
+      useFactory: createRuleMessage(
+        'Context is created without `newGenericContext`.',
+        'Create contexts with `newGenericContext` so consumers get the standard throwing hook behavior.',
+        'context-via-factory',
+      ),
+      contextSuffix: createRuleMessage(
+        'Context binding `{{name}}` does not end with `Context`.',
+        'Rename the binding to `{Thing}Context`.',
+        'context-via-factory',
+      ),
+      debugName: createRuleMessage(
+        '`newGenericContext` debug identifier `{{actual}}` does not match binding `{{expected}}`.',
+        'Change the debug string to `{{expected}}`.',
+        'context-via-factory',
+      ),
     },
     schema: [],
   },

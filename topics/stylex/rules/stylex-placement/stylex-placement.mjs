@@ -1,3 +1,4 @@
+import { createRuleMessage } from '../../../lib/rule-doc-message.mjs';
 export const stylexPlacementRule = {
   meta: {
     type: 'suggestion',
@@ -5,7 +6,11 @@ export const stylexPlacementRule = {
       description: 'Require stylex.create calls to live after component/helper implementations.',
     },
     messages: {
-      placement: '`const styles = stylex.create(...)` should be after component/helper implementations.',
+      placement: createRuleMessage(
+        '`const styles = stylex.create(...)` appears before component/helper implementations.',
+        'Move the StyleX declaration after the component and helper implementations.',
+        'stylex-placement',
+      ),
     },
     schema: [],
   },

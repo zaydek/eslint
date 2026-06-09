@@ -1,3 +1,6 @@
+import assert from 'node:assert/strict';
+
+import { OWNERSHIP_CONTRACT_MESSAGE_IDS } from '../../lib/ownership-contract.mjs';
 import { createRuleTester } from '../../../lib/rule-tester.mjs';
 import { stylexOwnershipCommentRule } from './stylex-ownership-comment.mjs';
 
@@ -227,3 +230,21 @@ ruleTester.run('stylex-ownership-comment', stylexOwnershipCommentRule, {
     },
   ],
 });
+
+for (const messageId of OWNERSHIP_CONTRACT_MESSAGE_IDS) {
+  assert.ok(
+    stylexOwnershipCommentRule.meta.messages[messageId],
+    `stylex-ownership-comment must define parser message ${messageId}`,
+  );
+}
+
+assert.match(
+  stylexOwnershipCommentRule.meta.messages.missingSeparator,
+  /empty `\/\/` separator line/,
+  'missingSeparator must describe the trailing blank ownership comment line',
+);
+assert.match(
+  stylexOwnershipCommentRule.meta.messages.missingOptionalSeparator,
+  /`, \?\{\.\.\.\}`/,
+  'missingOptionalSeparator must describe required-plus-optional modifier syntax',
+);

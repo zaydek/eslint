@@ -1,3 +1,4 @@
+import { createRuleMessage } from '../../../lib/rule-doc-message.mjs';
 export const enumMemberValuesRule = {
   meta: {
     type: 'suggestion',
@@ -5,8 +6,11 @@ export const enumMemberValuesRule = {
       description: 'Require every enum member to carry an explicit string initializer.',
     },
     messages: {
-      stringValue:
-        'Enum member `{{name}}` needs an explicit string initializer; auto-numbered members break serialization and reordering.',
+      stringValue: createRuleMessage(
+        'Enum member `{{name}}` has no explicit string initializer.',
+        'Add an explicit stable string value so serialization and reordering stay safe.',
+        'enum-member-values',
+      ),
     },
     schema: [],
   },

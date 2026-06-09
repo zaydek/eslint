@@ -1,3 +1,4 @@
+import { createRuleMessage } from '../../../lib/rule-doc-message.mjs';
 export const functionDeclarationsRule = {
   meta: {
     type: 'suggestion',
@@ -5,7 +6,11 @@ export const functionDeclarationsRule = {
       description: 'Prefer function declarations for non-trivial local helpers.',
     },
     messages: {
-      declaration: 'Non-trivial helper `{{name}}` should use function declaration style.',
+      declaration: createRuleMessage(
+        'Non-trivial helper `{{name}}` uses arrow/function-expression style.',
+        'Rewrite it as a function declaration.',
+        'function-declarations',
+      ),
     },
     schema: [],
   },

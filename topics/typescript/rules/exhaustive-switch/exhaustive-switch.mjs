@@ -1,3 +1,4 @@
+import { createRuleMessage } from '../../../lib/rule-doc-message.mjs';
 export const exhaustiveSwitchRule = {
   meta: {
     type: 'suggestion',
@@ -6,9 +7,16 @@ export const exhaustiveSwitchRule = {
         'Require switches over enum members to close with a `default` that calls `exhaustive()`.',
     },
     messages: {
-      missingDefault:
-        'Enum switches need a `default` case that calls `exhaustive()` so new variants fail loudly.',
-      defaultMustExhaust: 'The `default` case of an enum switch should call `exhaustive()`.',
+      missingDefault: createRuleMessage(
+        'Enum switch has no `default` case that calls `exhaustive()`.',
+        'Add a `default` case that returns or throws `exhaustive(value)`.',
+        'exhaustive-switch',
+      ),
+      defaultMustExhaust: createRuleMessage(
+        'Enum switch `default` case does not call `exhaustive()`.',
+        'Replace the default body with a call to `exhaustive()` for the switched value.',
+        'exhaustive-switch',
+      ),
     },
     schema: [],
   },

@@ -33,7 +33,7 @@ for (const topic of TOPIC_ORDER) {
   if (docs.length === 0) continue;
   lines.push(`- [${topic}](#${slugify(topic)})`);
   for (const doc of docs) {
-    const suffix = doc.status.includes('disabled') ? ' — disabled' : '';
+    const suffix = isOffStatus(doc.status) ? ' — disabled' : '';
     lines.push(`  - [${doc.title}](#${slugify(doc.title)})${suffix}`);
   }
 }
@@ -44,7 +44,7 @@ for (const topic of TOPIC_ORDER) {
   lines.push('', `## ${topic}`, '');
 
   for (const doc of docs) {
-    const status = doc.status.includes('disabled') ? ' Disabled.' : '';
+    const status = isOffStatus(doc.status) ? ' Disabled.' : '';
     lines.push(`### ${doc.title}`, '');
     lines.push(
       `Rule: \`agentic/${doc.ruleName}\`. Details: [RULES/${doc.ruleName}.md](RULES/${doc.ruleName}.md).${status}`,
@@ -92,6 +92,10 @@ function appendExample(lines, label, example) {
   lines.push(`\`\`\`${example.language}`);
   lines.push(example.code);
   lines.push('```', '');
+}
+
+function isOffStatus(status) {
+  return /\b(disabled|dormant)\b/i.test(status);
 }
 
 function slugify(value) {

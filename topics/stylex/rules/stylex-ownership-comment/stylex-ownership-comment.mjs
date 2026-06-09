@@ -1,3 +1,4 @@
+import { createRuleMessage } from '../../../lib/rule-doc-message.mjs';
 import {
   getOwnershipComment,
   getStylexCreateKeys,
@@ -13,40 +14,116 @@ export const stylexOwnershipCommentRule = {
       description: 'Require StyleX ownership comments to account for every stylex.create key.',
     },
     messages: {
-      missingComment: '`stylex.create` needs a directly preceding ownership contract comment.',
-      missingKey: '`{{key}}` is missing from the StyleX ownership comment.',
-      missingRootSeparator:
-        'StyleX ownership comments should separate major root-level regions with an empty `//` row.',
-      missingSeparator: 'Line-style StyleX ownership comments should end with an empty `//` separator.',
-      unknownKey: '`{{key}}` is listed in the StyleX ownership comment but is not a stylex.create key.',
-      oddIndent: 'StyleX ownership comment indentation should use two-space levels.',
-      wrongParent:
-        '`{{key}}` is nested under `{{commentParent}}` in the comment but under `{{actualParent}}` in JSX.',
-      falseSameElement:
-        '`{{key}}` shares an ownership line with `{{peer}}` in the comment, but JSX applies them to different elements.',
-      bareOptionalElement:
-        '`?` marks an optional modifier block such as `{{example}}`; bare optional elements are not part of the StyleX ownership contract.',
-      inlineProse: 'StyleX ownership contract entries cannot contain trailing prose.',
-      invalidAxis: 'StyleX ownership modifier axes must start with `Is`, `Has`, or `With`.',
-      invalidAxisValue: 'StyleX ownership modifier values must be PascalCase.',
-      invalidDynamicArgs:
-        'Dynamic StyleX ownership entries must use typed arguments such as `DotColor(color<string>)`.',
-      invalidKey: 'StyleX ownership keys must be PascalCase.',
-      invalidLine: 'StyleX ownership contract lines must be valid entries or blank separators.',
-      invalidModifierBlock:
-        'StyleX ownership modifiers must use `{...}` for required axes or `?{...}` for optional axes.',
-      markerOptional:
-        'Optional StyleX ownership axes use `Key?{Is{A|B}}`, not marker-level `Is?{A|B}` syntax.',
-      missingOptionalSeparator:
-        'When required and optional StyleX ownership modifiers are both present, separate them with `, ?{...}`.',
-      optionalFirstOrder:
-        'When required and optional modifiers are both present, write the required block before the optional block.',
-      requiredBoolean:
-        'Required StyleX ownership axes must be unions; boolean flags belong in an optional block like `Key?{IsSelected}`.',
-      singleValueUnion:
-        'StyleX ownership union axes need at least two values; use an optional boolean flag for a single value.',
-      trailingOptional:
-        'Optional StyleX ownership axes use `Key?{Is{A|B}}`, not trailing `Key{Is{A|B}?}` syntax.',
+      missingComment: createRuleMessage(
+        '`stylex.create` has no directly preceding ownership contract comment.',
+        'Add a StyleX ownership comment immediately above `stylex.create`.',
+        'stylex-ownership-comment',
+      ),
+      missingKey: createRuleMessage(
+        'StyleX key `{{key}}` exists in `stylex.create` but is missing from the ownership comment.',
+        'Add `{{key}}` to the ownership contract or remove the style key.',
+        'stylex-ownership-comment',
+      ),
+      unknownKey: createRuleMessage(
+        'Ownership comment declares `{{key}}` but `stylex.create` does not define it.',
+        'Add `{{key}}` to `stylex.create` or remove it from the ownership contract.',
+        'stylex-ownership-comment',
+      ),
+      invalidLine: createRuleMessage(
+        'Ownership comment contains a line that is not valid ownership syntax.',
+        'Rewrite the line using a structural key, a dynamic function key, or a valid modifier block.',
+        'stylex-ownership-comment',
+      ),
+      oddIndent: createRuleMessage(
+        'Ownership comment indentation is not a multiple of two spaces.',
+        'Use two spaces per ownership depth level.',
+        'stylex-ownership-comment',
+      ),
+      invalidKey: createRuleMessage(
+        'Ownership key is not a valid PascalCase StyleX key.',
+        'Use a PascalCase structural key or dynamic key.',
+        'stylex-ownership-comment',
+      ),
+      invalidDynamicArgs: createRuleMessage(
+        'Ownership dynamic style arguments are not valid typed parameters.',
+        'Write dynamic keys as `Key(name<type>)` with comma-separated typed parameters.',
+        'stylex-ownership-comment',
+      ),
+      invalidModifierBlock: createRuleMessage(
+        'Ownership modifier block is not valid.',
+        'Use `Key{Is{A|B}}`, `Key?{IsSelected}`, or `Key{With{A|B}}, ?{IsSelected}`.',
+        'stylex-ownership-comment',
+      ),
+      missingOptionalSeparator: createRuleMessage(
+        'Required and optional ownership modifier blocks are adjacent without the required comma separator.',
+        'Write required axes first, then `, ?{...}` for optional axes.',
+        'stylex-ownership-comment',
+      ),
+      bareOptionalElement: createRuleMessage(
+        'Ownership key uses `?` without an optional modifier block.',
+        'Write `Key?{IsSelected}` or remove the `?`.',
+        'stylex-ownership-comment',
+      ),
+      optionalFirstOrder: createRuleMessage(
+        'Ownership modifier blocks put optional modifiers before required modifiers.',
+        'Write required modifier blocks first, then optional modifiers as `, ?{...}`.',
+        'stylex-ownership-comment',
+      ),
+      inlineProse: createRuleMessage(
+        'Ownership comment line contains inline prose after a key.',
+        'Move prose outside the ownership contract or express the line as valid ownership syntax.',
+        'stylex-ownership-comment',
+      ),
+      invalidAxis: createRuleMessage(
+        'Ownership modifier axis is not valid.',
+        'Write grouped axes as `Is{A|B}`, `Has{A|B}`, or `With{A|B}` with PascalCase values.',
+        'stylex-ownership-comment',
+      ),
+      markerOptional: createRuleMessage(
+        'Ownership modifier axis marks the marker itself optional.',
+        'Use `Key?{Is{A|B}}` for optional grouped axes; do not write `Is?{A|B}`.',
+        'stylex-ownership-comment',
+      ),
+      singleValueUnion: createRuleMessage(
+        'Ownership required modifier axis has only one value.',
+        'Use at least two values for a required union axis or model one boolean flag as optional.',
+        'stylex-ownership-comment',
+      ),
+      requiredBoolean: createRuleMessage(
+        'Ownership required modifier axis is written as a single boolean flag.',
+        'Move boolean flags into an optional block such as `Key?{IsSelected}`.',
+        'stylex-ownership-comment',
+      ),
+      invalidAxisValue: createRuleMessage(
+        'Ownership modifier axis contains an invalid value.',
+        'Use PascalCase values and separate multiple values with `|`.',
+        'stylex-ownership-comment',
+      ),
+      trailingOptional: createRuleMessage(
+        'Ownership optional marker `?` is in the wrong position.',
+        'Use `Foo?{IsSelected}` for optional-only or `Foo{With{A|B}}, ?{IsSelected}` after required axes.',
+        'stylex-ownership-comment',
+      ),
+      missingRootSeparator: createRuleMessage(
+        'Ownership roots are not separated by a blank `//` line.',
+        'Insert a blank ownership comment line between root trees.',
+        'stylex-ownership-comment',
+      ),
+      missingSeparator: createRuleMessage(
+        'Line-style StyleX ownership comment does not end with an empty `//` separator line.',
+        'Add a blank `//` line immediately before `stylex.create`.',
+        'stylex-ownership-comment',
+      ),
+      wrongParent: createRuleMessage(
+        'Rendered StyleX key `{{key}}` appears under `{{actualParent}}` but ownership declares it under `{{commentParent}}`.',
+        'Move the rendered element, update the ownership indentation, or split the component at the structural boundary.',
+        'stylex-ownership-comment',
+      ),
+      falseSameElement: createRuleMessage(
+        'StyleX keys share one ownership line but JSX applies them to different elements.',
+        'Apply child styles to a child element or collapse the key into the owner contract.',
+        'stylex-ownership-comment',
+      ),
     },
     schema: [],
   },

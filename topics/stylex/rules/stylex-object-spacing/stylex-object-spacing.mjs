@@ -1,3 +1,4 @@
+import { createRuleMessage } from '../../../lib/rule-doc-message.mjs';
 import { getStylexCreateObject } from '../../lib/ownership.mjs';
 
 export const stylexObjectSpacingRule = {
@@ -7,7 +8,11 @@ export const stylexObjectSpacingRule = {
       description: 'Disallow double blank lines inside stylex.create objects.',
     },
     messages: {
-      doubleBlank: '`stylex.create` should not use blank-line grouping inside the object.',
+      doubleBlank: createRuleMessage(
+        '`stylex.create` contains blank-line grouping inside the style object.',
+        'Remove blank lines inside the object; express ownership grouping in the ownership comment.',
+        'stylex-object-spacing',
+      ),
     },
     schema: [],
   },

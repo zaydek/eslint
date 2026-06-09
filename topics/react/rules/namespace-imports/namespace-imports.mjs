@@ -1,3 +1,4 @@
+import { createRuleMessage } from '../../../lib/rule-doc-message.mjs';
 const MapModuleToCanonicalName = {
   react: 'React',
   '@stylexjs/stylex': 'stylex',
@@ -11,9 +12,16 @@ export const namespaceImportsRule = {
         'Require `react` and `@stylexjs/stylex` to be imported as canonical namespaces.',
     },
     messages: {
-      namespaceOnly:
-        'Import `{{source}}` as a namespace: `import * as {{expected}} from "{{source}}"`.',
-      canonicalName: 'The `{{source}}` namespace should be named `{{expected}}`, not `{{actual}}`.',
+      namespaceOnly: createRuleMessage(
+        'Module `{{source}}` is not imported as its canonical namespace.',
+        'Use `import * as {{expected}} from "{{source}}"`.',
+        'namespace-imports',
+      ),
+      canonicalName: createRuleMessage(
+        'Module `{{source}}` namespace is named `{{actual}}` instead of `{{expected}}`.',
+        'Rename the namespace import to `{{expected}}`.',
+        'namespace-imports',
+      ),
     },
     schema: [],
   },

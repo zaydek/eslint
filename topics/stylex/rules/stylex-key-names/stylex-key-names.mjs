@@ -1,3 +1,4 @@
+import { createRuleMessage } from '../../../lib/rule-doc-message.mjs';
 import {
   getOwnershipComment,
   getStylexCreateObject,
@@ -11,7 +12,11 @@ export const stylexKeyNamesRule = {
       description: 'Require nested StyleX ownership keys to inherit parent prefixes.',
     },
     messages: {
-      prefix: '`{{key}}` should inherit the `{{prefix}}` ownership prefix.',
+      prefix: createRuleMessage(
+        'StyleX key `{{key}}` does not inherit ownership prefix `{{prefix}}`.',
+        'Rename the key so child styles are prefixed by their owning structural key.',
+        'stylex-key-names',
+      ),
     },
     schema: [],
   },

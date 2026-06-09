@@ -1,3 +1,4 @@
+import { createRuleMessage } from '../../../lib/rule-doc-message.mjs';
 function isExportedDeclaration(node) {
   return node.parent?.type === 'ExportNamedDeclaration';
 }
@@ -33,7 +34,11 @@ export const associatedExportsRule = {
       description: 'Require exported members to export associated local types used in their public surface.',
     },
     messages: {
-      exportAssociated: 'Exported member `{{member}}` exposes local type `{{typeName}}`; export that associated type.',
+      exportAssociated: createRuleMessage(
+        'Exported member `{{member}}` exposes local type `{{typeName}}`.',
+        'Export the associated type or stop exposing it through the exported member signature.',
+        'associated-exports',
+      ),
     },
     schema: [],
   },

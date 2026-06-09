@@ -1,3 +1,4 @@
+import { createRuleMessage } from '../../../lib/rule-doc-message.mjs';
 export const noNamespacesRule = {
   meta: {
     type: 'suggestion',
@@ -5,8 +6,11 @@ export const noNamespacesRule = {
       description: 'Disallow TypeScript namespaces; modules are the container.',
     },
     messages: {
-      noNamespace:
-        'Namespace `{{name}}` should be a module; export its members from a dedicated file instead.',
+      noNamespace: createRuleMessage(
+        'Namespace `{{name}}` is a TypeScript namespace declaration.',
+        'Use an ES module file and export its members directly.',
+        'no-namespaces',
+      ),
     },
     schema: [],
   },

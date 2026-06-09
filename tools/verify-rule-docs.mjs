@@ -5,14 +5,17 @@ import process from 'node:process';
 import { Linter } from 'eslint';
 import tseslint from 'typescript-eslint';
 
-import { rules as publicRules, topicRules } from '../topics/index.mjs';
+import { dormantRules, rules as publicRules, topicRules } from '../topics/index.mjs';
 
 const ROOT = process.cwd();
 const RULES_INDEX_PATH = path.join(ROOT, 'RULES.md');
 const RULES_DIR = path.join(ROOT, 'RULES');
 const MODE = process.argv[2] ?? 'all';
 const TARGET_RULES = Object.fromEntries(
-  Object.values(topicRules).flatMap((topicRulesMap) => Object.entries(topicRulesMap)),
+  [
+    ...Object.values(topicRules).flatMap((topicRulesMap) => Object.entries(topicRulesMap)),
+    ...Object.entries(dormantRules),
+  ],
 );
 
 if (!['target', 'all'].includes(MODE)) {

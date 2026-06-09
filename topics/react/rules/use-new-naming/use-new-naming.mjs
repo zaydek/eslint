@@ -1,3 +1,4 @@
+import { createRuleMessage } from '../../../lib/rule-doc-message.mjs';
 export const useNewNamingRule = {
   meta: {
     type: 'suggestion',
@@ -6,8 +7,11 @@ export const useNewNamingRule = {
         'Require hooks that construct and return fresh state bundles to use the `useNew` prefix.',
     },
     messages: {
-      useNewPrefix:
-        '`{{name}}` constructs and returns fresh state; name it `{{expected}}` to mark it as a constructor hook.',
+      useNewPrefix: createRuleMessage(
+        'Hook `{{name}}` constructs and returns fresh state but is not named `{{expected}}`.',
+        'Rename the hook to `{{expected}}` to mark it as a constructor hook.',
+        'use-new-naming',
+      ),
     },
     schema: [],
   },

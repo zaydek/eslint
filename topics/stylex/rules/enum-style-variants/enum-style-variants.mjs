@@ -1,3 +1,4 @@
+import { createRuleMessage } from '../../../lib/rule-doc-message.mjs';
 import { getStylexCreateKeys, getStylexCreateObject } from '../../lib/ownership.mjs';
 
 const STYLE_MAP_NAME_PATTERN = /^Map\w+ToStyles?$/;
@@ -10,15 +11,31 @@ export const enumStyleVariantsRule = {
         'Require `Map{Enum}ToStyle` records to cover a single style-key family that matches the enum variant set.',
     },
     messages: {
-      styleValue:
-        'Entries of `{{mapName}}` should reference style keys directly, e.g. `styles.RootWithLavender`.',
-      variantSuffix:
-        'Style key `{{styleKey}}` should end with the enum variant `{{variant}}` so the family reads as one closed set.',
-      mixedFamily:
-        'Style key `{{styleKey}}` breaks the `{{expectedStem}}{Variant}` family started by the other entries of `{{mapName}}`.',
-      unknownStyleKey: '`{{styleKey}}` is not a key of any `stylex.create` call in this file.',
-      missingVariant:
-        '`{{mapName}}` is missing enum variant `{{enumName}}.{{variant}}`; the map should be total.',
+      styleValue: createRuleMessage(
+        'Entry in `{{mapName}}` does not reference a StyleX key directly.',
+        'Use a direct member expression such as `styles.RootWithLavender`.',
+        'enum-style-variants',
+      ),
+      variantSuffix: createRuleMessage(
+        'Style key `{{styleKey}}` does not end with enum member `{{variant}}`.',
+        'Rename the style key so the suffix matches the enum member name.',
+        'enum-style-variants',
+      ),
+      mixedFamily: createRuleMessage(
+        'Style key `{{styleKey}}` does not share the map family stem `{{expectedStem}}`.',
+        'Use one consistent stem for every style key in this enum style map.',
+        'enum-style-variants',
+      ),
+      unknownStyleKey: createRuleMessage(
+        'Style key `{{styleKey}}` is referenced by the enum style map but is not in this file\'s `stylex.create`.',
+        'Add the key to `stylex.create`, move the map beside the styles, or remove the stale reference.',
+        'enum-style-variants',
+      ),
+      missingVariant: createRuleMessage(
+        'Enum style map is missing enum member `{{variant}}`.',
+        'Add a `{{variant}}` entry or use an explicit `Exclude<>` map type when omission is intentional.',
+        'enum-style-variants',
+      ),
     },
     schema: [],
   },

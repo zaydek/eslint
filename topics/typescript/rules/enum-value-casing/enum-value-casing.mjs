@@ -1,3 +1,4 @@
+import { createRuleMessage } from '../../../lib/rule-doc-message.mjs';
 const SCREAMING_SNAKE_PATTERN = /^[A-Z0-9]+(?:_[A-Z0-9]+)*$/;
 
 export const enumValueCasingRule = {
@@ -7,8 +8,11 @@ export const enumValueCasingRule = {
       description: 'Require enum string values to use SCREAMING_SNAKE_CASE.',
     },
     messages: {
-      casing:
-        'Enum value `{{value}}` should be SCREAMING_SNAKE_CASE; these values leak into logs and wire formats.',
+      casing: createRuleMessage(
+        'Enum value `{{value}}` is not SCREAMING_SNAKE_CASE.',
+        'Change the string value to SCREAMING_SNAKE_CASE.',
+        'enum-value-casing',
+      ),
     },
     schema: [],
   },

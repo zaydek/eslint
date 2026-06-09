@@ -1,3 +1,4 @@
+import { createRuleMessage } from '../../../lib/rule-doc-message.mjs';
 function getReturnTypeNode(node) {
   return node.returnType?.typeAnnotation ?? null;
 }
@@ -13,7 +14,11 @@ export const namedComplexReturnTypesRule = {
       description: 'Require named return types for functions that return object shapes.',
     },
     messages: {
-      namedReturn: 'Function `{{name}}` should use a named return type instead of an inline object type.',
+      namedReturn: createRuleMessage(
+        'Function `{{name}}` returns an inline object type.',
+        'Create a named return type and use it as the function return annotation.',
+        'named-complex-return-types',
+      ),
     },
     schema: [],
   },

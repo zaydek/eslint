@@ -1,3 +1,7 @@
+import assert from 'node:assert/strict';
+
+import { dormantRules, topicRules } from './topics/index.mjs';
+
 import './topics/typescript/rules/associated-exports/associated-exports.test.mjs';
 import './topics/typescript/rules/articulated-object-contracts/articulated-object-contracts.test.mjs';
 import './topics/comments/rules/comment-capitalization/comment-capitalization.test.mjs';
@@ -37,5 +41,30 @@ import './topics/typescript/rules/handler-map-alignment/handler-map-alignment.te
 import './topics/typescript/rules/map-record-names/map-record-names.test.mjs';
 import './topics/typescript/rules/no-namespaces/no-namespaces.test.mjs';
 import './topics/typescript/rules/result-shape/result-shape.test.mjs';
+
+const implementedRuleGroups = {
+  ...topicRules,
+  dormant: dormantRules,
+};
+
+for (const [topicName, topicRuleMap] of Object.entries(implementedRuleGroups)) {
+  for (const [ruleName, rule] of Object.entries(topicRuleMap)) {
+    for (const [messageId, message] of Object.entries(rule.meta.messages)) {
+      assert.equal(
+        typeof message,
+        'string',
+        `${topicName}/${ruleName}/${messageId} message must be a string`,
+      );
+      assert.ok(
+        message.includes('\nFix: '),
+        `${topicName}/${ruleName}/${messageId} message must include a Fix line`,
+      );
+      assert.ok(
+        message.includes(`\nSee: ~/GitHub/zaydek/eslint/RULES/${ruleName}.md`),
+        `${topicName}/${ruleName}/${messageId} message must link its rule doc`,
+      );
+    }
+  }
+}
 
 console.log('eslint rule tests ok');

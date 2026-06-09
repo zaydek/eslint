@@ -1,3 +1,4 @@
+import { createRuleMessage } from '../../../lib/rule-doc-message.mjs';
 export const enumKindSuffixRule = {
   meta: {
     type: 'suggestion',
@@ -5,8 +6,11 @@ export const enumKindSuffixRule = {
       description: 'Prefer `Kind`-suffixed enum names over the legacy `Type` suffix.',
     },
     messages: {
-      kindSuffix:
-        'Enum `{{name}}` should end in `Kind`, not `Type`; `kind` is the canonical discriminant vocabulary.',
+      kindSuffix: createRuleMessage(
+        'Enum `{{name}}` uses `Type` where discriminant enums must use `Kind`.',
+        'Rename the enum to end in `Kind`.',
+        'enum-kind-suffix',
+      ),
     },
     schema: [],
   },

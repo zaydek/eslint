@@ -1,3 +1,4 @@
+import { createRuleMessage } from '../../../lib/rule-doc-message.mjs';
 function getPropertyName(node) {
   if (node.key?.type === 'Identifier') return node.key.name;
   if (node.key?.type === 'Literal') return String(node.key.value);
@@ -22,7 +23,11 @@ export const namedNestedTypesRule = {
       description: 'Require nested object member shapes to use named composed types.',
     },
     messages: {
-      namedNested: 'Property `{{name}}` should use a named nested type instead of an inline object type.',
+      namedNested: createRuleMessage(
+        'Property `{{name}}` uses an inline nested object type.',
+        'Extract the nested shape into a named type and reference that type.',
+        'named-nested-types',
+      ),
     },
     schema: [],
   },

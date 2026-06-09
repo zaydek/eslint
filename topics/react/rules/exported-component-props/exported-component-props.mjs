@@ -1,3 +1,4 @@
+import { createRuleMessage } from '../../../lib/rule-doc-message.mjs';
 const COMPONENT_NAME = /^[A-Z][A-Za-z0-9]*$/;
 
 export const exportedComponentPropsRule = {
@@ -7,7 +8,11 @@ export const exportedComponentPropsRule = {
       description: 'Prefer exported ComponentNameProps types for exported components.',
     },
     messages: {
-      exportedProps: 'Exported component `{{name}}` should use an exported `{{propsName}}` type.',
+      exportedProps: createRuleMessage(
+        'Exported component `{{name}}` does not use an exported `{{propsName}}` type.',
+        'Export `{{propsName}}` and use it as the component props annotation.',
+        'exported-component-props',
+      ),
     },
     schema: [],
   },

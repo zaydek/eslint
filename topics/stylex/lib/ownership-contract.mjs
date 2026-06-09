@@ -3,6 +3,25 @@ const PASCAL_IDENT_PATTERN = /^[A-Z][A-Za-z0-9]*$/;
 const LOWER_IDENT_PATTERN = /^[a-z][A-Za-z0-9]*$/;
 const MARKER_PATTERN = /^(Is|Has|With)/;
 
+export const OWNERSHIP_CONTRACT_MESSAGE_IDS = new Set([
+  'bareOptionalElement',
+  'inlineProse',
+  'invalidAxis',
+  'invalidAxisValue',
+  'invalidDynamicArgs',
+  'invalidKey',
+  'invalidLine',
+  'invalidModifierBlock',
+  'markerOptional',
+  'missingOptionalSeparator',
+  'missingRootSeparator',
+  'oddIndent',
+  'optionalFirstOrder',
+  'requiredBoolean',
+  'singleValueUnion',
+  'trailingOptional',
+]);
+
 export function parseOwnershipContract(textOrLines) {
   const lines = Array.isArray(textOrLines)
     ? textOrLines
@@ -440,5 +459,8 @@ function trimEmptyEdgeLines(lines) {
 }
 
 function createError(messageId, lineIndex, content) {
+  if (!OWNERSHIP_CONTRACT_MESSAGE_IDS.has(messageId)) {
+    throw new Error(`Unknown StyleX ownership parser messageId: ${messageId}`);
+  }
   return { messageId, lineIndex, content };
 }

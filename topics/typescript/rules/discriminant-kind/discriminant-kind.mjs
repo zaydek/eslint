@@ -1,3 +1,4 @@
+import { createRuleMessage } from '../../../lib/rule-doc-message.mjs';
 function getPropertyName(node) {
   if (node.key?.type === 'Identifier') return node.key.name;
   if (node.key?.type === 'Literal') return String(node.key.value);
@@ -19,7 +20,11 @@ export const discriminantKindRule = {
       description: 'Prefer kind as the canonical discriminant key for string variant types.',
     },
     messages: {
-      useKind: 'Use `kind` instead of `type` for string discriminants.',
+      useKind: createRuleMessage(
+        'String discriminant uses `type` instead of `kind`.',
+        'Rename the discriminant property to `kind`.',
+        'discriminant-kind',
+      ),
     },
     schema: [],
   },
