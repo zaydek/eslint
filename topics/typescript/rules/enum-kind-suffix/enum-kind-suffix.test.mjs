@@ -1,4 +1,4 @@
-import { createRuleTester } from '../../../../lib/rule-tester.mjs';
+import { createRuleTester } from '../../../lib/rule-tester.mjs';
 import { enumKindSuffixRule } from './enum-kind-suffix.mjs';
 
 const ruleTester = createRuleTester();

@@ -1,4 +1,4 @@
-import { createRuleTester } from '../../../../lib/rule-tester.mjs';
+import { createRuleTester } from '../../../lib/rule-tester.mjs';
 import { todoFormatRule } from './todo-format.mjs';
 
 const ruleTester = createRuleTester();

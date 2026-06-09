@@ -1,4 +1,4 @@
-import { getStylexCreateObject, getStylexCreateKeys } from './stylex-ownership.mjs';
+import { getStylexCreateObject, getStylexCreateKeys } from './ownership.mjs';
 
 export function inferStylexOwnership(sourceCode, createCallNode) {
   const objectNode = getStylexCreateObject(createCallNode);

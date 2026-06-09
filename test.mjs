@@ -8,6 +8,7 @@ import './topics/stylex/rules/no-sx-prop/no-sx-prop.test.mjs';
 import './topics/stylex/rules/stylex-key-names/stylex-key-names.test.mjs';
 import './topics/stylex/rules/stylex-object-spacing/stylex-object-spacing.test.mjs';
 import './topics/stylex/rules/stylex-ownership-comment/stylex-ownership-comment.test.mjs';
+import './topics/stylex/rules/stylex-ownership-comment/stylex-ownership-fixtures.test.mjs';
 import './topics/stylex/rules/stylex-placement/stylex-placement.test.mjs';
 import './topics/typescript/rules/boolean-names/boolean-names.test.mjs';
 import './topics/typescript/rules/discriminant-kind/discriminant-kind.test.mjs';
@@ -16,8 +17,9 @@ import './topics/typescript/rules/function-names/function-names.test.mjs';
 import './topics/typescript/rules/named-complex-return-types/named-complex-return-types.test.mjs';
 import './topics/typescript/rules/named-nested-types/named-nested-types.test.mjs';
 import './topics/typescript/rules/no-concision-names/no-concision-names.test.mjs';
+import './topics/stylex/lib/ownership-contract.test.mjs';
 
-// Proposed rules (RULES_PROPOSED.md)
+// Additional implemented rules documented under RULES/.
 import './topics/comments/rules/todo-format/todo-format.test.mjs';
 import './topics/react/rules/context-via-factory/context-via-factory.test.mjs';
 import './topics/react/rules/namespace-imports/namespace-imports.test.mjs';

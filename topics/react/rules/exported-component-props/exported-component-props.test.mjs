@@ -1,4 +1,4 @@
-import { createRuleTester } from '../../../../lib/rule-tester.mjs';
+import { createRuleTester } from '../../../lib/rule-tester.mjs';
 import { exportedComponentPropsRule } from './exported-component-props.mjs';
 
 const ruleTester = createRuleTester();

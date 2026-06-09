@@ -1,4 +1,4 @@
-import { createRuleTester } from '../../../../lib/rule-tester.mjs';
+import { createRuleTester } from '../../../lib/rule-tester.mjs';
 import { noConcisionNamesRule } from './no-concision-names.mjs';
 
 const ruleTester = createRuleTester();

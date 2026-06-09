@@ -3,8 +3,8 @@ import {
   getStylexCreateKeys,
   getStylexCreateObject,
   parseOwnershipComment,
-} from '../../../../lib/stylex-ownership.mjs';
-import { inferStylexOwnership } from '../../../../lib/stylex-ownership-infer.mjs';
+} from '../../lib/ownership.mjs';
+import { inferStylexOwnership } from '../../lib/ownership-infer.mjs';
 
 export const stylexOwnershipCommentRule = {
   meta: {
@@ -23,7 +23,30 @@ export const stylexOwnershipCommentRule = {
       wrongParent:
         '`{{key}}` is nested under `{{commentParent}}` in the comment but under `{{actualParent}}` in JSX.',
       falseSameElement:
-        '`{{key}}` is comma-composed with `{{peer}}` in the comment, but JSX applies them to different elements.',
+        '`{{key}}` shares an ownership line with `{{peer}}` in the comment, but JSX applies them to different elements.',
+      bareOptionalElement:
+        '`?` marks an optional modifier block such as `{{example}}`; bare optional elements are not part of the StyleX ownership contract.',
+      inlineProse: 'StyleX ownership contract entries cannot contain trailing prose.',
+      invalidAxis: 'StyleX ownership modifier axes must start with `Is`, `Has`, or `With`.',
+      invalidAxisValue: 'StyleX ownership modifier values must be PascalCase.',
+      invalidDynamicArgs:
+        'Dynamic StyleX ownership entries must use typed arguments such as `DotColor(color<string>)`.',
+      invalidKey: 'StyleX ownership keys must be PascalCase.',
+      invalidLine: 'StyleX ownership contract lines must be valid entries or blank separators.',
+      invalidModifierBlock:
+        'StyleX ownership modifiers must use `{...}` for required axes or `?{...}` for optional axes.',
+      markerOptional:
+        'Optional StyleX ownership axes use `Key?{Is{A|B}}`, not marker-level `Is?{A|B}` syntax.',
+      missingOptionalSeparator:
+        'When required and optional StyleX ownership modifiers are both present, separate them with `, ?{...}`.',
+      optionalFirstOrder:
+        'When required and optional modifiers are both present, write the required block before the optional block.',
+      requiredBoolean:
+        'Required StyleX ownership axes must be unions; boolean flags belong in an optional block like `Key?{IsSelected}`.',
+      singleValueUnion:
+        'StyleX ownership union axes need at least two values; use an optional boolean flag for a single value.',
+      trailingOptional:
+        'Optional StyleX ownership axes use `Key?{Is{A|B}}`, not trailing `Key{Is{A|B}?}` syntax.',
     },
     schema: [],
   },
@@ -50,7 +73,11 @@ export const stylexOwnershipCommentRule = {
       const ownership = parseOwnershipComment(comment);
 
       for (const error of ownership.errors) {
-        context.report({ loc: comment.loc, messageId: error.messageId });
+        context.report({
+          loc: comment.loc,
+          messageId: error.messageId,
+          data: { example: 'Key?{IsSelected}' },
+        });
       }
 
       for (const key of styleKeys) {
@@ -97,7 +124,7 @@ function checkOwnershipFidelity(context, sourceCode, createCallNode, comment, ow
     });
   }
 
-  const commentGroups = getEntriesByGroup(ownership.entries);
+  const commentGroups = getEntriesByGroup(ownership.entries.filter((entry) => !entry.isExpansion));
 
   for (const entries of commentGroups.values()) {
     const resolvedEntries = entries.flatMap((entry) => {

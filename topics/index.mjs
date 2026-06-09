@@ -13,8 +13,10 @@ export const topicRules = {
 // Implemented and tested, but excluded from the flat public map. Downstream
 // configs enable every key in `rules`, so exclusion here is the off switch.
 const DISABLED_RULE_KEYS = new Set([
-  // Operator is undecided on the message shape; see RULES_PROPOSED.md.
+  // Operator is undecided on the message shape; see RULES/error-message-context.md.
   'error-message-context',
+  // Semantic function naming needs a dictionary/model to prove correctly; see RULES/function-names.md.
+  'function-names',
 ]);
 
 export const rules = Object.fromEntries(

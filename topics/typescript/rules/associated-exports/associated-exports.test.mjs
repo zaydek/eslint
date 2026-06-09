@@ -1,4 +1,4 @@
-import { createRuleTester } from '../../../../lib/rule-tester.mjs';
+import { createRuleTester } from '../../../lib/rule-tester.mjs';
 import { associatedExportsRule } from './associated-exports.mjs';
 
 const ruleTester = createRuleTester();
@@ -22,6 +22,12 @@ function getFoo(args: LocalArgs): LocalArgs {
 export type FooInner = { id: string };
 export type FooReturn = { foo: FooInner };
 export const getFoo = (): FooReturn => ({ foo: { id: 'x' } });
+`,
+    `
+type ButtonProps = { label: string };
+export function Button(props: ButtonProps): JSX.Element {
+  return <button>{props.label}</button>;
+}
 `,
   ],
   invalid: [

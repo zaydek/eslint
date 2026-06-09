@@ -8,18 +8,27 @@ package-lock.json                       # Locked local test dependencies
 AGENTS.md                               # Local boot doctrine for repo-owned ESLint work
 CLAUDE.md -> AGENTS.md                  # Symlink so Claude Code reads the same local doctrine
 README.md -> RULES.md                   # Human-doc shortcut for editors and conventional entrypoints
-RULES.md                                # Single rule reference with TOC and examples
-?RULES_PROPOSED.md                      # Proposed rule reference pending Operator review; folds into RULES.md
+RULES.md                                # Compact rule TOC with concise valid/invalid examples
+RULES/
+  {:rule}.md                            # Detailed agent-facing rule docs
 test.mjs                                # Rule test runner
-
-lib/
-  {:helper}.mjs                         # Shared test helpers and exported domain helpers
+tools/
+  {:tool}.mjs                           # Repo-local verification and maintenance tools
 
 topics/
   index.mjs                             # Topic-grouped and flat public rule export map
+  lib/
+    {:helper}.mjs                       # Cross-topic shared helpers, such as RuleTester setup
   {:topic}/                             # Topic grouping: comments / react / stylex / typescript
+    ?OWNERSHIP.md                       # Topic-owned formal spec, used by stylex ownership
+    ?lib/
+      {:helper}.mjs                     # Topic-local shared helpers and exported domain helpers
+      ?{:helper}.test.mjs               # Direct helper/parser conformance tests
     rules/
       index.mjs                         # Topic rule export map
       {:rule}/
         {:rule}.mjs                     # Deterministic convention rule
         {:rule}.test.mjs                # Rule-local executable examples
+        ?{:fixture}.test.mjs            # Rule-local fixture/golden harnesses
+        ?fixtures/
+          {:slug}.{:ext}                # Rule-local fixture corpus files

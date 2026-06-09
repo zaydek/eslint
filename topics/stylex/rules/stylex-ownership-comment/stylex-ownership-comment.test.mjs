@@ -1,4 +1,4 @@
-import { createRuleTester } from '../../../../lib/rule-tester.mjs';
+import { createRuleTester } from '../../../lib/rule-tester.mjs';
 import { stylexOwnershipCommentRule } from './stylex-ownership-comment.mjs';
 
 const ruleTester = createRuleTester();
@@ -6,165 +6,82 @@ const ruleTester = createRuleTester();
 ruleTester.run('stylex-ownership-comment', stylexOwnershipCommentRule, {
   valid: [
     `
-      // root(:focus-within), rootDensity{Compact,Comfortable}
-      //   toolbar
-      //     toolbarSearch
-      //     toolbarFilterButton(:hover,:focus-visible)
+      // Root{Is{Compact|Comfortable}}, ?{IsSelected}
+      //   Header
+      //     HeaderTitle
       //
-      //   columns
-      //     columnsColumn
-      //       columnsColumnHeader
-      //         columnsColumnHeaderTitle
-      //         columnsColumnHeaderMenuButton(:hover,:focus-visible)
-      //       columnsColumnDropZone(:is([data-over]))
-      //       columnsColumnSticky(:hover)
-      //         columnsColumnStickyTitle
-      //         columnsColumnStickyFooter
-      //           columnsColumnStickyFooterAvatarStack
-      //           columnsColumnStickyFooterMeta
-      //
-      //   overlay(:is([data-open]))
-      //     overlayPanel
-      //       overlayPanelTitle
-      //       overlayPanelActions
-      //         overlayPanelActionsButton(:focus-visible,:disabled)
-      //         overlayPanelActionsButtonVariant{Secondary,Danger}
+      //   Footer
+      //     FooterAvatarStack
       //
       const styles = stylex.create({
-        root: {},
-        rootDensityCompact: {},
-        rootDensityComfortable: {},
-        toolbar: {},
-        toolbarSearch: {},
-        toolbarFilterButton: {},
-        columns: {},
-        columnsColumn: {},
-        columnsColumnHeader: {},
-        columnsColumnHeaderTitle: {},
-        columnsColumnHeaderMenuButton: {},
-        columnsColumnDropZone: {},
-        columnsColumnSticky: {},
-        columnsColumnStickyTitle: {},
-        columnsColumnStickyFooter: {},
-        columnsColumnStickyFooterAvatarStack: {},
-        columnsColumnStickyFooterMeta: {},
-        overlay: {},
-        overlayPanel: {},
-        overlayPanelTitle: {},
-        overlayPanelActions: {},
-        overlayPanelActionsButton: {},
-        overlayPanelActionsButtonVariantSecondary: {},
-        overlayPanelActionsButtonVariantDanger: {},
-      });
-    `,
-    `
-      // card(:hover), cardVariant{Pink,Blue}
-      //   cardTitle
-      //   cardFooter
-      //     cardFooterAvatarStack
-      //
-      const styles = stylex.create({
-        card: {},
-        cardVariantPink: {},
-        cardVariantBlue: {},
-        cardTitle: {},
-        cardFooter: {},
-        cardFooterAvatarStack: {},
+        Root: {},
+        RootIsCompact: {},
+        RootIsComfortable: {},
+        RootIsSelected: {},
+        Header: {},
+        HeaderTitle: {},
+        Footer: {},
+        FooterAvatarStack: {},
       });
     `,
     `
       /*
-      card
-        cardTitle
+      Card
+        CardTitle
       */
       const styles = stylex.create({
-        card: {},
-        cardTitle: {},
+        Card: {},
+        CardTitle: {},
       });
     `,
     `
       // Plain stylex.create stays here in the component file. A sibling \`.stylex.ts\`
       // is only warranted when a component needs its own stylex.defineVars.
       //
-      // card
-      //   cardTitle
+      // Card
+      //   CardTitle
       //
       const styles = stylex.create({
-        card: {},
-        cardTitle: {},
+        Card: {},
+        CardTitle: {},
       });
     `,
     `
-      // root
-      //   toolbar
-      //     toolbarSearch
+      // Backdrop
       //
-      //   columns
-      //     columnsColumn
-      //
-      const styles = stylex.create({
-        root: {},
-        toolbar: {},
-        toolbarSearch: {},
-        columns: {},
-        columnsColumn: {},
-      });
-    `,
-    `
-      // group
-      //   label
-      //   input
+      // Host
+      //   Layer
+      //   LayerVars(fromTop<number>, z<number>)
       //
       const styles = stylex.create({
-        group: {},
-        label: {},
-        input: {},
-      });
-
-      function Demo() {
-        return (
-          <Field.Root {...stylex.props(styles.group)}>
-            <Field.Label {...stylex.props(styles.label)} />
-            <BaseInput {...stylex.props(styles.input)} />
-          </Field.Root>
-        );
-      }
-    `,
-    `
-      // backdrop(:is([data-phase="exit"]))
-      //
-      // host
-      //   layer, layerVars(fromTop, z)
-      //
-      const styles = stylex.create({
-        backdrop: {
+        Backdrop: {
           opacity: { default: 1, ':is([data-phase="exit"])': 0 },
         },
-        host: {},
-        layer: {},
-        layerVars: (fromTop, z) => ({ '--from-top': fromTop, zIndex: z }),
+        Host: {},
+        Layer: {},
+        LayerVars: (fromTop, z) => ({ '--from-top': fromTop, zIndex: z }),
       });
 
       function Demo() {
         return (
           <Dialog.Portal>
-            <Dialog.Backdrop {...stylex.props(styles.backdrop)} />
-            <Dialog.Popup {...stylex.props(styles.host)}>
-              <div {...stylex.props([styles.layer, styles.layerVars(1, 2)])} />
+            <Dialog.Backdrop {...stylex.props(styles.Backdrop)} />
+            <Dialog.Popup {...stylex.props(styles.Host)}>
+              <div {...stylex.props([styles.Layer, styles.LayerVars(1, 2)])} />
             </Dialog.Popup>
           </Dialog.Portal>
         );
       }
     `,
     `
-      // root
+      // Root
       //
       const styles = stylex.create({
-        root: {},
+        Root: {},
       });
 
       function Demo() {
-        const key = 'root';
+        const key = 'Root';
         return <div {...stylex.props(styles[key])} />;
       }
     `,
@@ -173,75 +90,77 @@ ruleTester.run('stylex-ownership-comment', stylexOwnershipCommentRule, {
     {
       code: `
         const styles = stylex.create({
-          card: {},
+          Card: {},
         });
       `,
       errors: [{ messageId: 'missingComment' }],
     },
     {
       code: `
-        // card
+        // Card
         //
         const styles = stylex.create({
-          card: {},
-          cardTitle: {},
+          Card: {},
+          CardTitle: {},
         });
       `,
       errors: [{ messageId: 'missingKey' }],
     },
     {
       code: `
-        // card
-        //   cardTitle
+        // Card
+        //   CardTitle
         //
         const styles = stylex.create({
-          card: {},
+          Card: {},
         });
       `,
       errors: [{ messageId: 'unknownKey' }],
     },
     {
       code: `
-        // card
+        // Card
         const styles = stylex.create({
-          card: {},
+          Card: {},
         });
       `,
       errors: [{ messageId: 'missingSeparator' }],
     },
     {
       code: `
-        // root
-        //   toolbar
-        //     toolbarSearch
-        //   columns
-        //     columnsColumn
+        // Root
+        //   Header
+        //     HeaderTitle
+        //   Footer
+        //     FooterTitle
         //
         const styles = stylex.create({
-          root: {},
-          toolbar: {},
-          toolbarSearch: {},
-          columns: {},
-          columnsColumn: {},
+          Root: {},
+          Header: {},
+          HeaderTitle: {},
+          Footer: {},
+          FooterTitle: {},
         });
       `,
       errors: [{ messageId: 'missingRootSeparator' }],
     },
     {
       code: `
-        // group, label, input
+        // Group
+        // Label
+        // Input
         //
         const styles = stylex.create({
-          group: {},
-          label: {},
-          input: {},
+          Group: {},
+          Label: {},
+          Input: {},
         });
 
         function Demo() {
           return (
-            <Field.Root {...stylex.props(styles.group)}>
-              <Field.Label {...stylex.props(styles.label)} />
-              <BaseInput {...stylex.props(styles.input)} />
+            <Field.Root {...stylex.props(styles.Group)}>
+              <Field.Label {...stylex.props(styles.Label)} />
+              <BaseInput {...stylex.props(styles.Input)} />
             </Field.Root>
           );
         }
@@ -249,28 +168,30 @@ ruleTester.run('stylex-ownership-comment', stylexOwnershipCommentRule, {
       errors: [
         { messageId: 'wrongParent' },
         { messageId: 'wrongParent' },
-        { messageId: 'falseSameElement' },
       ],
     },
     {
       code: `
-        // host, backdrop, layer, layerVars
+        // Host
+        // Backdrop
+        // Layer
+        // LayerVars(fromTop<number>, z<number>)
         //
         const styles = stylex.create({
-          host: {},
-          backdrop: {
+          Host: {},
+          Backdrop: {
             opacity: { default: 1, ':is([data-phase="exit"])': 0 },
           },
-          layer: {},
-          layerVars: (fromTop, z) => ({ '--from-top': fromTop, zIndex: z }),
+          Layer: {},
+          LayerVars: (fromTop, z) => ({ '--from-top': fromTop, zIndex: z }),
         });
 
         function Demo() {
           return (
             <Dialog.Portal>
-              <Dialog.Backdrop {...stylex.props(styles.backdrop)} />
-              <Dialog.Popup {...stylex.props(styles.host)}>
-                <div {...stylex.props([styles.layer, styles.layerVars(1, 2)])} />
+              <Dialog.Backdrop {...stylex.props(styles.Backdrop)} />
+              <Dialog.Popup {...stylex.props(styles.Host)}>
+                <div {...stylex.props([styles.Layer, styles.LayerVars(1, 2)])} />
               </Dialog.Popup>
             </Dialog.Portal>
           );
@@ -279,8 +200,30 @@ ruleTester.run('stylex-ownership-comment', stylexOwnershipCommentRule, {
       errors: [
         { messageId: 'wrongParent' },
         { messageId: 'wrongParent' },
-        { messageId: 'falseSameElement' },
       ],
+    },
+    {
+      code: `
+        // Root{Is{Selected}?}
+        //
+        const styles = stylex.create({
+          Root: {},
+          RootIsSelected: {},
+        });
+      `,
+      errors: [{ messageId: 'trailingOptional' }, { messageId: 'missingKey' }],
+    },
+    {
+      code: `
+        // Root
+        //   BodyCard          (layout override merged into child <Card>)
+        //
+        const styles = stylex.create({
+          Root: {},
+          BodyCard: {},
+        });
+      `,
+      errors: [{ messageId: 'invalidLine' }, { messageId: 'missingKey' }],
     },
   ],
 });

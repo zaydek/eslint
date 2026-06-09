@@ -1,4 +1,4 @@
-import { createRuleTester } from '../../../../lib/rule-tester.mjs';
+import { createRuleTester } from '../../../lib/rule-tester.mjs';
 import { stylexTokensOnlyRule } from './stylex-tokens-only.mjs';
 
 const ruleTester = createRuleTester();

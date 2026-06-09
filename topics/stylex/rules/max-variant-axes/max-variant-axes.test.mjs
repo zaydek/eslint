@@ -1,4 +1,4 @@
-import { createRuleTester } from '../../../../lib/rule-tester.mjs';
+import { createRuleTester } from '../../../lib/rule-tester.mjs';
 import { maxVariantAxesRule } from './max-variant-axes.mjs';
 
 const ruleTester = createRuleTester();
@@ -6,32 +6,32 @@ const ruleTester = createRuleTester();
 ruleTester.run('max-variant-axes', maxVariantAxesRule, {
   valid: [
     `
-      // root(:hover), rootColor{Pink,Blue}, rootDensity{Compact,Comfortable}
-      //   title
+      // Root{Is{Compact|Comfortable}, With{Pink|Blue}}
+      //   Title
       //
       const styles = stylex.create({
-        root: {},
-        rootColorPink: {},
-        rootColorBlue: {},
-        rootDensityCompact: {},
-        rootDensityComfortable: {},
-        title: {},
+        Root: {},
+        RootIsCompact: {},
+        RootIsComfortable: {},
+        RootWithPink: {},
+        RootWithBlue: {},
+        Title: {},
       });
     `,
     // No ownership comment: stylex-ownership-comment owns that failure.
-    'const styles = stylex.create({ root: {} });',
+    'const styles = stylex.create({ Root: {} });',
     {
       code: `
-        // root, rootColor{Pink,Blue}, rootDensity{Compact,Comfortable}, rootState{Idle,Busy}
+        // Root{Is{Compact|Comfortable}, With{Pink|Blue}, Has{Icon|Avatar}}
         //
         const styles = stylex.create({
-          root: {},
-          rootColorPink: {},
-          rootColorBlue: {},
-          rootDensityCompact: {},
-          rootDensityComfortable: {},
-          rootStateIdle: {},
-          rootStateBusy: {},
+          Root: {},
+          RootIsCompact: {},
+          RootIsComfortable: {},
+          RootWithPink: {},
+          RootWithBlue: {},
+          RootHasIcon: {},
+          RootHasAvatar: {},
         });
       `,
       options: [{ maxAxes: 3 }],
@@ -40,16 +40,16 @@ ruleTester.run('max-variant-axes', maxVariantAxesRule, {
   invalid: [
     {
       code: `
-        // root, rootColor{Pink,Blue}, rootDensity{Compact,Comfortable}, rootState{Idle,Busy}
+        // Root{Is{Compact|Comfortable}, With{Pink|Blue}, Has{Icon|Avatar}}
         //
         const styles = stylex.create({
-          root: {},
-          rootColorPink: {},
-          rootColorBlue: {},
-          rootDensityCompact: {},
-          rootDensityComfortable: {},
-          rootStateIdle: {},
-          rootStateBusy: {},
+          Root: {},
+          RootIsCompact: {},
+          RootIsComfortable: {},
+          RootWithPink: {},
+          RootWithBlue: {},
+          RootHasIcon: {},
+          RootHasAvatar: {},
         });
       `,
       errors: [{ messageId: 'tooManyAxes' }],

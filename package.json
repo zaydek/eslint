@@ -6,11 +6,15 @@
   "exports": {
     ".": "./topics/index.mjs",
     "./topics": "./topics/index.mjs",
-    "./lib/stylex-ownership": "./lib/stylex-ownership.mjs",
-    "./lib/stylex-ownership-infer": "./lib/stylex-ownership-infer.mjs"
+    "./lib/stylex-ownership-contract": "./topics/stylex/lib/ownership-contract.mjs",
+    "./lib/stylex-ownership": "./topics/stylex/lib/ownership.mjs",
+    "./lib/stylex-ownership-infer": "./topics/stylex/lib/ownership-infer.mjs"
   },
   "scripts": {
-    "test": "node test.mjs"
+    "test": "node test.mjs && npm run verify-docs-rule && npm run verify-docs-rule-all",
+    "update-rules-index": "node tools/update-rules-index.mjs",
+    "verify-docs-rule": "node tools/verify-rule-docs.mjs target",
+    "verify-docs-rule-all": "node tools/verify-rule-docs.mjs all"
   },
   "peerDependencies": {
     "eslint": "^9.0.0",

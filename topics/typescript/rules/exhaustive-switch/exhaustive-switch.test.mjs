@@ -1,4 +1,4 @@
-import { createRuleTester } from '../../../../lib/rule-tester.mjs';
+import { createRuleTester } from '../../../lib/rule-tester.mjs';
 import { exhaustiveSwitchRule } from './exhaustive-switch.mjs';
 
 const ruleTester = createRuleTester();

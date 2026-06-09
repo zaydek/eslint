@@ -2,7 +2,7 @@ import {
   getOwnershipComment,
   getStylexCreateObject,
   parseOwnershipComment,
-} from '../../../../lib/stylex-ownership.mjs';
+} from '../../lib/ownership.mjs';
 
 const DEFAULT_MAX_AXES = 2;
 

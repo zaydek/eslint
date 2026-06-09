@@ -1,4 +1,4 @@
-import { getStylexCreateKeys, getStylexCreateObject } from '../../../../lib/stylex-ownership.mjs';
+import { getStylexCreateKeys, getStylexCreateObject } from '../../lib/ownership.mjs';
 
 const STYLE_MAP_NAME_PATTERN = /^Map\w+ToStyles?$/;
 
@@ -11,7 +11,7 @@ export const enumStyleVariantsRule = {
     },
     messages: {
       styleValue:
-        'Entries of `{{mapName}}` should reference style keys directly, e.g. `styles.rootColorLavender`.',
+        'Entries of `{{mapName}}` should reference style keys directly, e.g. `styles.RootWithLavender`.',
       variantSuffix:
         'Style key `{{styleKey}}` should end with the enum variant `{{variant}}` so the family reads as one closed set.',
       mixedFamily:

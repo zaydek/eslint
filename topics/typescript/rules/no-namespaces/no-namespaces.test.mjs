@@ -1,4 +1,4 @@
-import { createRuleTester } from '../../../../lib/rule-tester.mjs';
+import { createRuleTester } from '../../../lib/rule-tester.mjs';
 import { noNamespacesRule } from './no-namespaces.mjs';
 
 const ruleTester = createRuleTester();

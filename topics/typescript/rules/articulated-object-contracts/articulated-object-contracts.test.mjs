@@ -1,4 +1,4 @@
-import { createRuleTester } from '../../../../lib/rule-tester.mjs';
+import { createRuleTester } from '../../../lib/rule-tester.mjs';
 import { articulatedObjectContractsRule } from './articulated-object-contracts.mjs';
 
 const ruleTester = createRuleTester();

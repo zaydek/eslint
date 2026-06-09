@@ -1,90 +1,56 @@
 # ESLint Rules
 
-Private shared ESLint rules for deterministic Operator convention checks.
-Downstream `CONVENTIONS.md` files remain the broader human doctrine while this
-file records the mechanical rule surface exported by `@zaydek/eslint`.
+`RULES.md` is the compact index. Detailed agent-facing rule docs live in `RULES/{slug}.md`.
 
-Public rule IDs are currently flat, such as `agentic/component-props`, for
-downstream `eslint.config.js` stability. Implementations are grouped by topic
-so the package can later move toward names like `agentic/react/*`,
-`agentic/typescript/*`, and `agentic/stylex/*`.
-
----
+The `agentic/` prefix comes from the consumer plugin name; this package exports flat rule keys.
 
 ## Table Of Contents
 
 - [TypeScript](#typescript)
-  - [Associated Exports](#associated-exports)
   - [Articulated Object Contracts](#articulated-object-contracts)
+  - [Associated Exports](#associated-exports)
   - [Boolean Names](#boolean-names)
   - [Discriminant Kind](#discriminant-kind)
+  - [Enum Kind Suffix](#enum-kind-suffix)
+  - [Enum Member Values](#enum-member-values)
+  - [Enum Value Casing](#enum-value-casing)
+  - [Error Message Context](#error-message-context) — disabled
+  - [Exhaustive Switch](#exhaustive-switch)
   - [Function Declarations](#function-declarations)
-  - [Function Names](#function-names)
+  - [Function Names](#function-names) — disabled
+  - [Handler Map Alignment](#handler-map-alignment)
+  - [Map Record Names](#map-record-names)
   - [Named Complex Return Types](#named-complex-return-types)
   - [Named Nested Types](#named-nested-types)
   - [No Concision Names](#no-concision-names)
+  - [No Namespaces](#no-namespaces)
+  - [Result Shape](#result-shape)
 - [React](#react)
   - [Component Props](#component-props)
+  - [Context Via Factory](#context-via-factory)
   - [Exported Component Props](#exported-component-props)
+  - [Namespace Imports](#namespace-imports)
   - [Reducer Dispatch Names](#reducer-dispatch-names)
+  - [State Setter Pairs](#state-setter-pairs)
+  - [Use New Naming](#use-new-naming)
 - [StyleX](#stylex)
+  - [Enum Style Variants](#enum-style-variants)
+  - [Max Variant Axes](#max-variant-axes)
+  - [No SX Prop](#no-sx-prop)
   - [StyleX Key Names](#stylex-key-names)
   - [StyleX Object Spacing](#stylex-object-spacing)
   - [StyleX Ownership Comment](#stylex-ownership-comment)
-  - [No SX Prop](#no-sx-prop)
   - [StyleX Placement](#stylex-placement)
+  - [StyleX Tokens Only](#stylex-tokens-only)
 - [Comments](#comments)
   - [Comment Capitalization](#comment-capitalization)
-
----
+  - [TODO Format](#todo-format)
 
 ## TypeScript
 
-### Associated Exports
-
-Rule: `agentic/associated-exports`
-
-Requires exported members to export associated local types used in their public
-surface. If callers can see the member, callers should also be able to import
-the named argument and return types it exposes.
-
-Valid:
-
-```ts
-export type FooArgs = {
-  id: string;
-};
-
-export type FooReturn = {
-  id: string;
-};
-
-export function getFoo(args: FooArgs): FooReturn {
-  return args;
-}
-```
-
-Invalid:
-
-```ts
-type FooArgs = {
-  id: string;
-};
-
-export function getFoo(args: FooArgs): FooArgs {
-  return args;
-}
-```
-
 ### Articulated Object Contracts
 
-Rule: `agentic/articulated-object-contracts`
-
-Requires members of named object contracts to carry leading JSDoc comments.
-The rule applies to `Props`, `Args`, and `Return` contract families, including
-composed types such as `FooArgsBar` and `FooReturnItem`, plus `Options` and
-`Configuration` suffixes. The goal is to keep dense object contracts legible
-without requiring comments on runtime object literals.
+Rule: `agentic/articulated-object-contracts`. Details: [RULES/articulated-object-contracts.md](RULES/articulated-object-contracts.md).
 
 Valid:
 
@@ -106,11 +72,44 @@ export type EditableTitleProps = {
 };
 ```
 
+### Associated Exports
+
+Rule: `agentic/associated-exports`. Details: [RULES/associated-exports.md](RULES/associated-exports.md).
+
+Valid:
+
+```ts
+export type FooArgs = {
+  /** Stable external identifier used to load the foo record. */
+  id: string;
+};
+
+export type FooReturn = {
+  /** Stable external identifier returned for the foo record. */
+  id: string;
+};
+
+export function getFoo(args: FooArgs): FooReturn {
+  return args;
+}
+```
+
+Invalid:
+
+```ts
+type FooArgs = {
+  /** Stable external identifier used to load the foo record. */
+  id: string;
+};
+
+export function getFoo(args: FooArgs): FooArgs {
+  return args;
+}
+```
+
 ### Boolean Names
 
-Rule: `agentic/boolean-names`
-
-Enforces predicate-style names for boolean-like values.
+Rule: `agentic/boolean-names`. Details: [RULES/boolean-names.md](RULES/boolean-names.md).
 
 Valid:
 
@@ -128,11 +127,7 @@ const [mounted, setMounted] = useState(false);
 
 ### Discriminant Kind
 
-Rule: `agentic/discriminant-kind`
-
-Prefers `kind` as the canonical string discriminant key for variant object
-types. This keeps data variants visually distinct from React and DOM `type`
-props.
+Rule: `agentic/discriminant-kind`. Details: [RULES/discriminant-kind.md](RULES/discriminant-kind.md).
 
 Valid:
 
@@ -152,12 +147,111 @@ export type IconAssetSvg = {
 };
 ```
 
+### Enum Kind Suffix
+
+Rule: `agentic/enum-kind-suffix`. Details: [RULES/enum-kind-suffix.md](RULES/enum-kind-suffix.md).
+
+Valid:
+
+```ts
+enum BoardActionKind {
+  StickyCreate = 'STICKY_CREATE',
+}
+```
+
+Invalid:
+
+```ts
+enum EditorActionType {
+  Reinitialize = 'REINITIALIZE',
+}
+```
+
+### Enum Member Values
+
+Rule: `agentic/enum-member-values`. Details: [RULES/enum-member-values.md](RULES/enum-member-values.md).
+
+Valid:
+
+```ts
+enum StickyColor {
+  Lavender = 'LAVENDER',
+}
+```
+
+Invalid:
+
+```ts
+enum StickyColor {
+  Lavender,
+}
+```
+
+### Enum Value Casing
+
+Rule: `agentic/enum-value-casing`. Details: [RULES/enum-value-casing.md](RULES/enum-value-casing.md).
+
+Valid:
+
+```ts
+enum ModalKind {
+  ChatSidebar = 'CHAT_SIDEBAR',
+}
+```
+
+Invalid:
+
+```ts
+enum ModalKind {
+  ChatSidebar = 'ChatSidebar',
+}
+```
+
+### Error Message Context
+
+Rule: `agentic/error-message-context`. Details: [RULES/error-message-context.md](RULES/error-message-context.md). Disabled.
+
+Valid:
+
+```ts
+throw new Error(`error=${JSON.stringify(result.error)}`);
+```
+
+Invalid:
+
+```ts
+throw new Error('An unexpected error occurred');
+```
+
+### Exhaustive Switch
+
+Rule: `agentic/exhaustive-switch`. Details: [RULES/exhaustive-switch.md](RULES/exhaustive-switch.md).
+
+Valid:
+
+```ts
+switch (result.kind) {
+  case MoveResultKind.Success:
+    return result.id;
+  default:
+    exhaustive(result);
+}
+```
+
+Invalid:
+
+```ts
+switch (result.kind) {
+  case MoveResultKind.Success:
+    return result.id;
+  case MoveResultKind.Error:
+    return null;
+}
+```
+
 ### Function Declarations
 
-Rule: `agentic/function-declarations`
-
-Requires non-trivial named functions to use `function` declarations. One-line
-arrow expressions remain acceptable.
+Rule: `agentic/function-declarations`. Details: [RULES/function-declarations.md](RULES/function-declarations.md).
 
 Valid:
 
@@ -166,7 +260,7 @@ function getThing(): string {
   return 'x';
 }
 
-const getThing = (): string => 'x';
+const getLabel = (): string => 'x';
 ```
 
 Invalid:
@@ -179,12 +273,7 @@ const getThing = (): string => {
 
 ### Function Names
 
-Rule: `agentic/function-names`
-
-Encourages helper functions to use at least a verb-noun name. The verb set is
-intentionally broad enough for common helpers like `applyVariant`,
-`formatLabel`, and `computeLayout`. Components, hooks, and `recurse` are
-allowed exceptions.
+Rule: `agentic/function-names`. Details: [RULES/function-names.md](RULES/function-names.md). Disabled.
 
 Valid:
 
@@ -206,17 +295,55 @@ function thing(): string {
 }
 ```
 
+### Handler Map Alignment
+
+Rule: `agentic/handler-map-alignment`. Details: [RULES/handler-map-alignment.md](RULES/handler-map-alignment.md).
+
+Valid:
+
+```ts
+const MapActionKindToHandler: BoardActionHandlerMap = {
+  [BoardActionKind.StickyCreate]: handleStickyCreate,
+  [BoardActionKind.StickyRename]: handleStickyRename,
+};
+```
+
+Invalid:
+
+```ts
+const MapActionKindToHandler: Record<BoardActionKind, (state: Board, action: any) => Board> = {
+  [BoardActionKind.StickyCreate]: handleCreateSticky,
+};
+```
+
+### Map Record Names
+
+Rule: `agentic/map-record-names`. Details: [RULES/map-record-names.md](RULES/map-record-names.md).
+
+Valid:
+
+```ts
+const MapStatusToLabel: Record<'idle' | 'busy', string> = {
+  idle: 'Idle',
+  busy: 'Working…',
+};
+```
+
+Invalid:
+
+```ts
+const handlers: Record<ItemKind, () => void> = {};
+```
+
 ### Named Complex Return Types
 
-Rule: `agentic/named-complex-return-types`
-
-Disallows inline object literal return types. Complex return shapes should be
-named so the signature is predictable and reusable.
+Rule: `agentic/named-complex-return-types`. Details: [RULES/named-complex-return-types.md](RULES/named-complex-return-types.md).
 
 Valid:
 
 ```ts
 export type FooReturn = {
+  /** Display text returned by the foo loader. */
   foo: string;
 };
 
@@ -235,19 +362,18 @@ export function getFoo(): { foo: string } {
 
 ### Named Nested Types
 
-Rule: `agentic/named-nested-types`
-
-Disallows inline nested object member types. Compose named types with stable
-suffixes such as `Props`, `PropsItem`, `Return`, and `ReturnFoo`.
+Rule: `agentic/named-nested-types`. Details: [RULES/named-nested-types.md](RULES/named-nested-types.md).
 
 Valid:
 
 ```ts
 export type FooReturnItem = {
+  /** Stable external identifier for the item. */
   id: string;
 };
 
 export type FooReturn = {
+  /** Item returned by the loader. */
   item: FooReturnItem;
 };
 ```
@@ -256,6 +382,7 @@ Invalid:
 
 ```ts
 export type FooReturn = {
+  /** Item returned by the loader. */
   item: {
     id: string;
   };
@@ -264,11 +391,7 @@ export type FooReturn = {
 
 ### No Concision Names
 
-Rule: `agentic/no-concision-names`
-
-Flags terse identifier segments where the full word is clearer. Prefer
-`document`, `configuration`, `event`, and `ticket` over `doc`, `config`, `evt`,
-and `tkt`.
+Rule: `agentic/no-concision-names`. Details: [RULES/no-concision-names.md](RULES/no-concision-names.md).
 
 Valid:
 
@@ -284,22 +407,58 @@ const configPath = './settings.json';
 const docBody = '';
 ```
 
----
+### No Namespaces
+
+Rule: `agentic/no-namespaces`. Details: [RULES/no-namespaces.md](RULES/no-namespaces.md).
+
+Valid:
+
+```ts
+export function copyTextSync(text: string): CopyTextSyncResult {
+  return { kind: ResultKind.Success };
+}
+```
+
+Invalid:
+
+```ts
+namespace HTML5Hacks {
+  export function copyTextSync(): void {}
+}
+```
+
+### Result Shape
+
+Rule: `agentic/result-shape`. Details: [RULES/result-shape.md](RULES/result-shape.md).
+
+Valid:
+
+```ts
+export type MoveResult =
+  | { kind: MoveResultKind.Success; id: string }
+  | { kind: MoveResultKind.Error; error: MoveErrorKind };
+```
+
+Invalid:
+
+```ts
+export type MoveResult =
+  | { kind: MoveResultKind.Success; id: string }
+  | { kind: MoveResultKind.Error; error: string };
+```
+
 
 ## React
 
 ### Component Props
 
-Rule: `agentic/component-props`
-
-Requires component props to use a named props type instead of inline object
-types. Destructuring is allowed when the parameter is annotated with the named
-props type, which supports defaulted parameters.
+Rule: `agentic/component-props`. Details: [RULES/component-props.md](RULES/component-props.md).
 
 Valid:
 
 ```tsx
 type RenameDialogProps = {
+  /** Optional title shown at the top of the dialog. */
   title?: string;
 };
 
@@ -322,18 +481,31 @@ function RenameDialog(props: { title: string }): JSX.Element {
 }
 ```
 
+### Context Via Factory
+
+Rule: `agentic/context-via-factory`. Details: [RULES/context-via-factory.md](RULES/context-via-factory.md).
+
+Valid:
+
+```ts
+export const BoardContext = newGenericContext<BoardContextValue>('BoardContext');
+```
+
+Invalid:
+
+```ts
+const BoardContext = React.createContext(null);
+```
+
 ### Exported Component Props
 
-Rule: `agentic/exported-component-props`
-
-Warns when an exported component has a same-name props type that is not exported.
-This is related to `agentic/associated-exports`: exported component APIs should
-not expose invisible local props contracts.
+Rule: `agentic/exported-component-props`. Details: [RULES/exported-component-props.md](RULES/exported-component-props.md).
 
 Valid:
 
 ```tsx
 export type ButtonProps = {
+  /** Text rendered inside the button. */
   label: string;
 };
 
@@ -346,6 +518,7 @@ Invalid:
 
 ```tsx
 type ButtonProps = {
+  /** Text rendered inside the button. */
   label: string;
 };
 
@@ -354,11 +527,26 @@ export function Button(props: ButtonProps): JSX.Element {
 }
 ```
 
+### Namespace Imports
+
+Rule: `agentic/namespace-imports`. Details: [RULES/namespace-imports.md](RULES/namespace-imports.md).
+
+Valid:
+
+```ts
+import * as React from 'react';
+import * as stylex from '@stylexjs/stylex';
+```
+
+Invalid:
+
+```ts
+import { useState } from 'react';
+```
+
 ### Reducer Dispatch Names
 
-Rule: `agentic/reducer-dispatch-names`
-
-Requires `useReducer` dispatch variables to use `dispatchThing`.
+Rule: `agentic/reducer-dispatch-names`. Details: [RULES/reducer-dispatch-names.md](RULES/reducer-dispatch-names.md).
 
 Valid:
 
@@ -372,248 +560,289 @@ Invalid:
 const [board, setBoard] = useReducer(reducer, initialValue);
 ```
 
----
+### State Setter Pairs
+
+Rule: `agentic/state-setter-pairs`. Details: [RULES/state-setter-pairs.md](RULES/state-setter-pairs.md).
+
+Valid:
+
+```ts
+const [isOpen, setIsOpen] = React.useState(false);
+```
+
+Invalid:
+
+```ts
+const [isOpen, setOpen] = React.useState(false);
+```
+
+### Use New Naming
+
+Rule: `agentic/use-new-naming`. Details: [RULES/use-new-naming.md](RULES/use-new-naming.md).
+
+Valid:
+
+```ts
+function useNewBoard(initialBoard: Board): BoardContextValue {
+  const [board, dispatchBoard] = React.useReducer(reducer, initialBoard);
+  return { board, dispatchBoard };
+}
+```
+
+Invalid:
+
+```ts
+function useBoard(initialBoard: Board): BoardContextValue {
+  const [board, dispatchBoard] = React.useReducer(reducer, initialBoard);
+  return { board, dispatchBoard };
+}
+```
+
 
 ## StyleX
 
-### StyleX Key Names
+### Enum Style Variants
 
-Rule: `agentic/stylex-key-names`
-
-Requires nested StyleX ownership keys to inherit the prefix of the local element
-that owns them. The root element is named `root`, like CSS `:scope`; direct
-children of `root` may start local regions such as `toolbar`, `columns`, or
-`overlay`. Deeper descendants inherit that local region prefix.
+Rule: `agentic/enum-style-variants`. Details: [RULES/enum-style-variants.md](RULES/enum-style-variants.md).
 
 Valid:
 
 ```ts
-// root(:hover), rootColor{Pink,Blue,Green}
-//   title
-//   footer
-//     footerAvatarStack
-//
-const styles = stylex.create({
-  root: {},
-  rootColorPink: {},
-  rootColorBlue: {},
-  rootColorGreen: {},
-  title: {},
-  footer: {},
-  footerAvatarStack: {},
-});
+enum StickyColor { Lavender = 'LAVENDER', Sky = 'SKY' }
+
+const MapStickyColorToStyle: Record<StickyColor, stylex.StyleXStyles> = {
+  [StickyColor.Lavender]: styles.RootWithLavender,
+  [StickyColor.Sky]: styles.RootWithSky,
+};
 ```
 
 Invalid:
 
 ```ts
-// card
-//   cardFooter
-//     avatarStack
-//
-const styles = stylex.create({
-  card: {},
-  cardFooter: {},
-  avatarStack: {},
-});
+const MapStickyColorToStyle: Record<StickyColor, stylex.StyleXStyles> = {
+  [StickyColor.Lavender]: styles.RootWithLavender,
+  [StickyColor.Sky]: styles.SurfaceWithSky,
+};
 ```
 
-### StyleX Object Spacing
+### Max Variant Axes
 
-Rule: `agentic/stylex-object-spacing`
-
-Disallows blank-line grouping inside `stylex.create`. The hierarchy belongs in
-the ownership comment, and the object remains a compact flat map.
+Rule: `agentic/max-variant-axes`. Details: [RULES/max-variant-axes.md](RULES/max-variant-axes.md).
 
 Valid:
 
 ```ts
-// card
-//   cardTitle
+// Root{With{Pink|Blue}, Is{Compact|Comfortable}}
+//   Title
 //
 const styles = stylex.create({
-  card: {},
-  cardTitle: {},
+  Root: {},
+  RootWithPink: {},
+  RootWithBlue: {},
+  RootIsCompact: {},
+  RootIsComfortable: {},
+  Title: {},
 });
 ```
 
 Invalid:
 
 ```ts
-// card
-//   cardTitle
+// Root{With{Pink|Blue}, Is{Compact|Comfortable}, Has{Idle|Busy}}
 //
 const styles = stylex.create({
-  card: {},
-
-  cardTitle: {},
-});
-```
-
-### StyleX Ownership Comment
-
-Rule: `agentic/stylex-ownership-comment`
-
-Requires each `stylex.create` call to have a directly preceding ownership
-comment that accounts for every concrete style key. Prefer contiguous `//`
-comments ending with an empty `//` separator line; block comments are accepted
-for compatibility. Prose notes may sit above the ownership DSL inside the same
-line-comment block when separated by an empty `//` line. Line-style ownership
-comments should separate major root-level regions with an empty `//` row.
-
-Valid:
-
-```ts
-// root(:focus-within), rootDensity{Compact,Comfortable}
-//   toolbar
-//     toolbarSearch
-//     toolbarFilterButton(:hover,:focus-visible)
-//
-//   columns
-//     columnsColumn
-//       columnsColumnHeader
-//         columnsColumnHeaderTitle
-//         columnsColumnHeaderMenuButton(:hover,:focus-visible)
-//       columnsColumnDropZone(:is([data-over]))
-//       columnsColumnSticky(:hover)
-//         columnsColumnStickyTitle
-//         columnsColumnStickyFooter
-//           columnsColumnStickyFooterAvatarStack
-//           columnsColumnStickyFooterMeta
-//
-//   overlay(:is([data-open]))
-//     overlayPanel
-//       overlayPanelTitle
-//       overlayPanelActions
-//         overlayPanelActionsButton(:focus-visible,:disabled)
-//         overlayPanelActionsButtonVariant{Secondary,Danger}
-//
-const styles = stylex.create({
-  root: {},
-  rootDensityCompact: {},
-  rootDensityComfortable: {},
-  toolbar: {},
-  toolbarSearch: {},
-  toolbarFilterButton: {},
-  columns: {},
-  columnsColumn: {},
-  columnsColumnHeader: {},
-  columnsColumnHeaderTitle: {},
-  columnsColumnHeaderMenuButton: {},
-  columnsColumnDropZone: {},
-  columnsColumnSticky: {},
-  columnsColumnStickyTitle: {},
-  columnsColumnStickyFooter: {},
-  columnsColumnStickyFooterAvatarStack: {},
-  columnsColumnStickyFooterMeta: {},
-  overlay: {},
-  overlayPanel: {},
-  overlayPanelTitle: {},
-  overlayPanelActions: {},
-  overlayPanelActionsButton: {},
-  overlayPanelActionsButtonVariantSecondary: {},
-  overlayPanelActionsButtonVariantDanger: {},
-});
-```
-
-Valid with a prose note:
-
-```ts
-// Plain stylex.create stays here in the component file. A sibling `.stylex.ts`
-// is only warranted when a component needs its own stylex.defineVars.
-//
-// card
-//   cardTitle
-//
-const styles = stylex.create({
-  card: {},
-  cardTitle: {},
-});
-```
-
-Invalid:
-
-```ts
-// card
-//
-const styles = stylex.create({
-  card: {},
-  cardTitle: {},
-});
-```
-
-Invalid:
-
-```ts
-// root
-//   toolbar
-//     toolbarSearch
-//   columns
-//
-const styles = stylex.create({
-  root: {},
-  toolbar: {},
-  toolbarSearch: {},
-  columns: {},
+  Root: {},
+  RootWithPink: {},
+  RootWithBlue: {},
+  RootIsCompact: {},
+  RootIsComfortable: {},
+  RootHasIdle: {},
+  RootHasBusy: {},
 });
 ```
 
 ### No SX Prop
 
-Rule: `agentic/no-sx-prop`
-
-Prevents mixing the old `sx` convenience prop with direct StyleX props.
+Rule: `agentic/no-sx-prop`. Details: [RULES/no-sx-prop.md](RULES/no-sx-prop.md).
 
 Valid:
 
 ```tsx
-const node = <div {...stylex.props(styles.root)} />;
+const node = <div {...stylex.props(styles.Root)} />;
 ```
 
 Invalid:
 
 ```tsx
-const node = <div sx={styles.root} />;
+const node = <div sx={styles.Root} />;
+```
+
+### StyleX Key Names
+
+Rule: `agentic/stylex-key-names`. Details: [RULES/stylex-key-names.md](RULES/stylex-key-names.md).
+
+Valid:
+
+```ts
+// Root{With{Pink|Blue|Green}}
+//   Title
+//
+//   Footer
+//     FooterAvatarStack
+//
+const styles = stylex.create({
+  Root: {},
+  RootWithPink: {},
+  RootWithBlue: {},
+  RootWithGreen: {},
+  Title: {},
+  Footer: {},
+  FooterAvatarStack: {},
+});
+```
+
+Invalid:
+
+```ts
+// Card
+//   CardFooter
+//     AvatarStack
+//
+const styles = stylex.create({
+  Card: {},
+  CardFooter: {},
+  AvatarStack: {},
+});
+```
+
+### StyleX Object Spacing
+
+Rule: `agentic/stylex-object-spacing`. Details: [RULES/stylex-object-spacing.md](RULES/stylex-object-spacing.md).
+
+Valid:
+
+```ts
+// Card
+//   CardTitle
+//
+const styles = stylex.create({
+  Card: {},
+  CardTitle: {},
+});
+```
+
+Invalid:
+
+```ts
+// Card
+//   CardTitle
+//
+const styles = stylex.create({
+  Card: {},
+
+  CardTitle: {},
+});
+```
+
+### StyleX Ownership Comment
+
+Rule: `agentic/stylex-ownership-comment`. Details: [RULES/stylex-ownership-comment.md](RULES/stylex-ownership-comment.md).
+
+Valid:
+
+```ts
+// Root{Is{Compact|Comfortable}}, ?{IsSelected}
+//   Header
+//     HeaderTitle
+//
+//   Footer
+//     FooterAvatarStack
+//
+const styles = stylex.create({
+  Root: {},
+  RootIsCompact: {},
+  RootIsComfortable: {},
+  RootIsSelected: {},
+  Header: {},
+  HeaderTitle: {},
+  Footer: {},
+  FooterAvatarStack: {},
+});
+```
+
+Invalid:
+
+```ts
+// Card
+//
+const styles = stylex.create({
+  Card: {},
+  CardTitle: {},
+});
 ```
 
 ### StyleX Placement
 
-Rule: `agentic/stylex-placement`
-
-Requires `stylex.create` and colocated style constants to stay at the bottom of
-the file after function declarations.
+Rule: `agentic/stylex-placement`. Details: [RULES/stylex-placement.md](RULES/stylex-placement.md).
 
 Valid:
 
 ```tsx
 function Component(): JSX.Element {
-  return <div />;
+  return <div {...stylex.props(styles.Root)} />;
 }
 
-const styles = stylex.create({});
+// Root
+//
+const styles = stylex.create({
+  Root: {},
+});
 ```
 
 Invalid:
 
 ```tsx
-const styles = stylex.create({});
+// Root
+//
+const styles = stylex.create({
+  Root: {},
+});
 
 function Component(): JSX.Element {
-  return <div />;
+  return <div {...stylex.props(styles.Root)} />;
 }
 ```
 
----
+### StyleX Tokens Only
+
+Rule: `agentic/stylex-tokens-only`. Details: [RULES/stylex-tokens-only.md](RULES/stylex-tokens-only.md).
+
+Valid:
+
+```ts
+// Root
+//
+const styles = stylex.create({
+  Root: { backgroundColor: tokens.colorLavender },
+});
+```
+
+Invalid:
+
+```ts
+// Root
+//
+const styles = stylex.create({
+  Root: { backgroundColor: '#c5b4ee' },
+});
+```
+
 
 ## Comments
 
 ### Comment Capitalization
 
-Rule: `agentic/comment-capitalization`
-
-Checks the first meaningful line of each comment block. Continued physical
-lines in the same comment block may read naturally. Tooling directives and
-TypeScript triple-slash reference comments are skipped.
+Rule: `agentic/comment-capitalization`. Details: [RULES/comment-capitalization.md](RULES/comment-capitalization.md).
 
 Valid:
 
@@ -630,4 +859,25 @@ Invalid:
 ```ts
 // bad first line
 const value = 1;
+```
+
+### TODO Format
+
+Rule: `agentic/todo-format`. Details: [RULES/todo-format.md](RULES/todo-format.md).
+
+Valid:
+
+```ts
+// TODO
+// TODO(@claude-code/opus-4.8/xhigh): Tighten the axis cap
+```
+
+Invalid:
+
+```ts
+// TOOD: This seems overcomplicated
+// todo: lowercase marker
+// Fixme: mixed-case marker
+// TODO(modal): Scopes are attributions only
+// TODO(@claude code): Spaces break attribution
 ```

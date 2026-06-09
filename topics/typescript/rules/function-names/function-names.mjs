@@ -1,7 +1,7 @@
 const COMPONENT_NAME = /^[A-Z][A-Za-z0-9]*$/;
 const HOOK_NAME = /^use[A-Z]/;
 const ALLOWED_RECURSIVE_NAME = 'recurse';
-const ALLOWED_CONTRACT_NAMES = new Set(['preview']);
+const ALLOWED_CONTRACT_NAMES = new Set(['preview', 'reducer']);
 const VERB_PREFIXES = new Set([
   'add',
   'apply',
@@ -18,6 +18,7 @@ const VERB_PREFIXES = new Set([
   'commit',
   'compare',
   'compute',
+  'copy',
   'count',
   'create',
   'delete',
@@ -37,6 +38,7 @@ const VERB_PREFIXES = new Set([
   'map',
   'merge',
   'mount',
+  'move',
   'normalize',
   'open',
   'parse',
@@ -61,7 +63,7 @@ const VERB_PREFIXES = new Set([
   'write',
 ]);
 
-function hasVerbNounName(name) {
+function hasActionPrefixCompoundName(name) {
   const match = name.match(/^([a-z]+)[A-Z][A-Za-z0-9]*$/);
   return Boolean(match && VERB_PREFIXES.has(match[1]));
 }
@@ -70,10 +72,12 @@ export const functionNamesRule = {
   meta: {
     type: 'suggestion',
     docs: {
-      description: 'Require non-component helper functions to use verb+noun names.',
+      description:
+        'Require non-component helper functions to use a known action prefix and compound name.',
     },
     messages: {
-      verbNoun: 'Function `{{name}}` should use a verb+noun name.',
+      actionPrefix:
+        'Function `{{name}}` should use a known action prefix followed by a PascalCase boundary.',
     },
     schema: [],
   },
@@ -85,8 +89,8 @@ export const functionNamesRule = {
         if (!name) return;
         if (ALLOWED_CONTRACT_NAMES.has(name)) return;
         if (COMPONENT_NAME.test(name) || HOOK_NAME.test(name) || name === ALLOWED_RECURSIVE_NAME) return;
-        if (!hasVerbNounName(name)) {
-          context.report({ node: node.id, messageId: 'verbNoun', data: { name } });
+        if (!hasActionPrefixCompoundName(name)) {
+          context.report({ node: node.id, messageId: 'actionPrefix', data: { name } });
         }
       },
     };

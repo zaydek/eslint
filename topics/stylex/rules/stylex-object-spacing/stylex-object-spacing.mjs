@@ -1,4 +1,4 @@
-import { getStylexCreateObject } from '../../../../lib/stylex-ownership.mjs';
+import { getStylexCreateObject } from '../../lib/ownership.mjs';
 
 export const stylexObjectSpacingRule = {
   meta: {

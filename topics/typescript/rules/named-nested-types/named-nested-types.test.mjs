@@ -1,4 +1,4 @@
-import { createRuleTester } from '../../../../lib/rule-tester.mjs';
+import { createRuleTester } from '../../../lib/rule-tester.mjs';
 import { namedNestedTypesRule } from './named-nested-types.mjs';
 
 const ruleTester = createRuleTester();

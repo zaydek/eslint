@@ -23,13 +23,9 @@ export const booleanNamesRule = {
     function isBooleanInitializer(node) {
       if (!node) return false;
       if (node.type === 'Literal' && typeof node.value === 'boolean') return true;
-      if (
-        node.type === 'CallExpression' &&
-        node.callee.type === 'Identifier' &&
-        node.callee.name === 'useState' &&
+      if (node.type === 'CallExpression' && isUseStateCall(node) &&
         node.arguments[0]?.type === 'Literal' &&
-        typeof node.arguments[0].value === 'boolean'
-      ) {
+        typeof node.arguments[0].value === 'boolean') {
         return true;
       }
       return false;
@@ -53,3 +49,16 @@ export const booleanNamesRule = {
     };
   },
 };
+
+function isUseStateCall(node) {
+  const callee = node.callee;
+  if (callee.type === 'Identifier') return callee.name === 'useState';
+  return (
+    callee.type === 'MemberExpression' &&
+    !callee.computed &&
+    callee.object.type === 'Identifier' &&
+    callee.object.name === 'React' &&
+    callee.property.type === 'Identifier' &&
+    callee.property.name === 'useState'
+  );
+}

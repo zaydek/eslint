@@ -1,4 +1,4 @@
-import { createRuleTester } from '../../../../lib/rule-tester.mjs';
+import { createRuleTester } from '../../../lib/rule-tester.mjs';
 import { stylexObjectSpacingRule } from './stylex-object-spacing.mjs';
 
 const ruleTester = createRuleTester();
@@ -6,25 +6,25 @@ const ruleTester = createRuleTester();
 ruleTester.run('stylex-object-spacing', stylexObjectSpacingRule, {
   valid: [
     `
-      // card
-      //   cardTitle
+      // Card
+      //   CardTitle
       //
       const styles = stylex.create({
-        card: {},
-        cardTitle: {},
+        Card: {},
+        CardTitle: {},
       });
     `,
   ],
   invalid: [
     {
       code: `
-        // card
-        //   cardTitle
+        // Card
+        //   CardTitle
         //
         const styles = stylex.create({
-          card: {},
+          Card: {},
 
-          cardTitle: {},
+          CardTitle: {},
         });
       `,
       errors: [{ messageId: 'doubleBlank' }],

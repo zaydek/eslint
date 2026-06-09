@@ -2,7 +2,7 @@ import {
   getOwnershipComment,
   getStylexCreateObject,
   parseOwnershipComment,
-} from '../../../../lib/stylex-ownership.mjs';
+} from '../../lib/ownership.mjs';
 
 export const stylexKeyNamesRule = {
   meta: {

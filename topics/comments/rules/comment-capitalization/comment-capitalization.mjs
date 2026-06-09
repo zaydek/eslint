@@ -1,7 +1,7 @@
 import {
   getOwnershipComment,
   getStylexCreateObject,
-} from '../../../../lib/stylex-ownership.mjs';
+} from '../../../stylex/lib/ownership.mjs';
 
 const DIRECTIVE_COMMENT = /^(eslint|@ts-|prettier|biome|stylelint)-/;
 const TRIPLE_SLASH_DIRECTIVE = /^\//;

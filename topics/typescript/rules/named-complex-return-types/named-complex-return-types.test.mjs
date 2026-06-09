@@ -1,4 +1,4 @@
-import { createRuleTester } from '../../../../lib/rule-tester.mjs';
+import { createRuleTester } from '../../../lib/rule-tester.mjs';
 import { namedComplexReturnTypesRule } from './named-complex-return-types.mjs';
 
 const ruleTester = createRuleTester();

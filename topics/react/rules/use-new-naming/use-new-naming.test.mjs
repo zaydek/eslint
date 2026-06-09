@@ -1,4 +1,4 @@
-import { createRuleTester } from '../../../../lib/rule-tester.mjs';
+import { createRuleTester } from '../../../lib/rule-tester.mjs';
 import { useNewNamingRule } from './use-new-naming.mjs';
 
 const ruleTester = createRuleTester();

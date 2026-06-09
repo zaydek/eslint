@@ -17,8 +17,7 @@ export const reducerDispatchNamesRule = {
 
     return {
       VariableDeclarator(node) {
-        if (node.init?.type !== 'CallExpression') return;
-        if (node.init.callee.type !== 'Identifier' || node.init.callee.name !== 'useReducer') return;
+        if (!isUseReducerCall(node.init)) return;
         if (node.id.type !== 'ArrayPattern') return;
 
         const stateNode = node.id.elements[0];
@@ -37,3 +36,17 @@ export const reducerDispatchNamesRule = {
     };
   },
 };
+
+function isUseReducerCall(node) {
+  if (node?.type !== 'CallExpression') return false;
+  const callee = node.callee;
+  if (callee.type === 'Identifier') return callee.name === 'useReducer';
+  return (
+    callee.type === 'MemberExpression' &&
+    !callee.computed &&
+    callee.object.type === 'Identifier' &&
+    callee.object.name === 'React' &&
+    callee.property.type === 'Identifier' &&
+    callee.property.name === 'useReducer'
+  );
+}

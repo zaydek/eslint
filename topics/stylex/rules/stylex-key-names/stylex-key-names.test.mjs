@@ -1,4 +1,4 @@
-import { createRuleTester } from '../../../../lib/rule-tester.mjs';
+import { createRuleTester } from '../../../lib/rule-tester.mjs';
 import { stylexKeyNamesRule } from './stylex-key-names.mjs';
 
 const ruleTester = createRuleTester();
@@ -6,98 +6,50 @@ const ruleTester = createRuleTester();
 ruleTester.run('stylex-key-names', stylexKeyNamesRule, {
   valid: [
     `
-      // root(:focus-within), rootDensity{Compact,Comfortable}
-      //   toolbar
-      //     toolbarSearch
-      //     toolbarFilterButton(:hover,:focus-visible)
+      // Root{Is{Compact|Comfortable}}, ?{IsSelected}
+      //   Header
+      //     HeaderTitle
       //
-      //   columns
-      //     columnsColumn
-      //       columnsColumnHeader
-      //         columnsColumnHeaderTitle
-      //         columnsColumnHeaderMenuButton(:hover,:focus-visible)
-      //       columnsColumnDropZone(:is([data-over]))
-      //       columnsColumnSticky(:hover)
-      //         columnsColumnStickyTitle
-      //         columnsColumnStickyFooter
-      //           columnsColumnStickyFooterAvatarStack
-      //           columnsColumnStickyFooterMeta
-      //
-      //   overlay(:is([data-open]))
-      //     overlayPanel
-      //       overlayPanelTitle
-      //       overlayPanelActions
-      //         overlayPanelActionsButton(:focus-visible,:disabled)
-      //         overlayPanelActionsButtonVariant{Secondary,Danger}
+      //   Footer
+      //     FooterAvatarStack
       //
       const styles = stylex.create({
-        root: {},
-        rootDensityCompact: {},
-        rootDensityComfortable: {},
-        toolbar: {},
-        toolbarSearch: {},
-        toolbarFilterButton: {},
-        columns: {},
-        columnsColumn: {},
-        columnsColumnHeader: {},
-        columnsColumnHeaderTitle: {},
-        columnsColumnHeaderMenuButton: {},
-        columnsColumnDropZone: {},
-        columnsColumnSticky: {},
-        columnsColumnStickyTitle: {},
-        columnsColumnStickyFooter: {},
-        columnsColumnStickyFooterAvatarStack: {},
-        columnsColumnStickyFooterMeta: {},
-        overlay: {},
-        overlayPanel: {},
-        overlayPanelTitle: {},
-        overlayPanelActions: {},
-        overlayPanelActionsButton: {},
-        overlayPanelActionsButtonVariantSecondary: {},
-        overlayPanelActionsButtonVariantDanger: {},
+        Root: {},
+        RootIsCompact: {},
+        RootIsComfortable: {},
+        RootIsSelected: {},
+        Header: {},
+        HeaderTitle: {},
+        Footer: {},
+        FooterAvatarStack: {},
       });
     `,
     `
-      // card(:hover), cardVariant{Pink,Blue}
-      //   cardTitle
-      //   cardFooter
-      //     cardFooterAvatarStack
+      // Card?{IsPromoted}
+      //   CardTitle
+      //   CardPromotedRibbon
+      //     CardPromotedRibbonIcon
       //
       const styles = stylex.create({
-        card: {},
-        cardVariantPink: {},
-        cardVariantBlue: {},
-        cardTitle: {},
-        cardFooter: {},
-        cardFooterAvatarStack: {},
-      });
-    `,
-    `
-      // card, cardVariantPromoted
-      //   cardTitle
-      //   cardVariantPromotedRibbon
-      //     cardVariantPromotedRibbonIcon
-      //
-      const styles = stylex.create({
-        card: {},
-        cardVariantPromoted: {},
-        cardTitle: {},
-        cardVariantPromotedRibbon: {},
-        cardVariantPromotedRibbonIcon: {},
+        Card: {},
+        CardIsPromoted: {},
+        CardTitle: {},
+        CardPromotedRibbon: {},
+        CardPromotedRibbonIcon: {},
       });
     `,
   ],
   invalid: [
     {
       code: `
-        // card
-        //   cardFooter
-        //     avatarStack
+        // Card
+        //   CardFooter
+        //     AvatarStack
         //
         const styles = stylex.create({
-          card: {},
-          cardFooter: {},
-          avatarStack: {},
+          Card: {},
+          CardFooter: {},
+          AvatarStack: {},
         });
       `,
       errors: [{ messageId: 'prefix' }],

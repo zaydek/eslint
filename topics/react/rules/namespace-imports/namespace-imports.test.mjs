@@ -1,4 +1,4 @@
-import { createRuleTester } from '../../../../lib/rule-tester.mjs';
+import { createRuleTester } from '../../../lib/rule-tester.mjs';
 import { namespaceImportsRule } from './namespace-imports.mjs';
 
 const ruleTester = createRuleTester();

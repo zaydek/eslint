@@ -1,4 +1,4 @@
-import { createRuleTester } from '../../../../lib/rule-tester.mjs';
+import { createRuleTester } from '../../../lib/rule-tester.mjs';
 import { handlerMapAlignmentRule } from './handler-map-alignment.mjs';
 
 const ruleTester = createRuleTester();

@@ -57,14 +57,33 @@ function checkMember(context, name, memberType) {
       continue;
     }
     const errorType = member.typeAnnotation?.typeAnnotation;
-    if (errorType?.type !== 'TSTypeReference' || errorType.typeName.type !== 'Identifier') {
+    if (!errorType) {
       continue;
     }
-    if (/ErrorKind$/.test(errorType.typeName.name)) continue;
+    if (
+      errorType.type === 'TSTypeReference' &&
+      errorType.typeName.type === 'Identifier' &&
+      /ErrorKind$/.test(errorType.typeName.name)
+    ) {
+      continue;
+    }
     context.report({
       node: errorType,
       messageId: 'errorKindName',
-      data: { name, actual: errorType.typeName.name },
+      data: { name, actual: getTypeName(errorType) },
     });
   }
+}
+
+function getTypeName(typeNode) {
+  if (
+    typeNode.type === 'TSTypeReference' &&
+    typeNode.typeName.type === 'Identifier'
+  ) {
+    return typeNode.typeName.name;
+  }
+  if (typeNode.type === 'TSStringKeyword') return 'string';
+  if (typeNode.type === 'TSNumberKeyword') return 'number';
+  if (typeNode.type === 'TSBooleanKeyword') return 'boolean';
+  return typeNode.type;
 }

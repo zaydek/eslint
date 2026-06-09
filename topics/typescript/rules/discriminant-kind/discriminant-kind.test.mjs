@@ -1,4 +1,4 @@
-import { createRuleTester } from '../../../../lib/rule-tester.mjs';
+import { createRuleTester } from '../../../lib/rule-tester.mjs';
 import { discriminantKindRule } from './discriminant-kind.mjs';
 
 const ruleTester = createRuleTester();

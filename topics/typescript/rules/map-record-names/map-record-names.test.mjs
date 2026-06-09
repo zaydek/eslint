@@ -1,4 +1,4 @@
-import { createRuleTester } from '../../../../lib/rule-tester.mjs';
+import { createRuleTester } from '../../../lib/rule-tester.mjs';
 import { mapRecordNamesRule } from './map-record-names.mjs';
 
 const ruleTester = createRuleTester();

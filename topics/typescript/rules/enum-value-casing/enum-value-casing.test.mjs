@@ -1,4 +1,4 @@
-import { createRuleTester } from '../../../../lib/rule-tester.mjs';
+import { createRuleTester } from '../../../lib/rule-tester.mjs';
 import { enumValueCasingRule } from './enum-value-casing.mjs';
 
 const ruleTester = createRuleTester();

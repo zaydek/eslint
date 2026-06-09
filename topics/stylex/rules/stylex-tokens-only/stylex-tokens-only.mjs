@@ -1,4 +1,4 @@
-import { getStylexCreateObject } from '../../../../lib/stylex-ownership.mjs';
+import { getStylexCreateObject } from '../../lib/ownership.mjs';
 
 const COLOR_PATTERN =
   /#[0-9a-fA-F]{3,8}\b|\b(?:rgba?|hsla?|oklch|oklab|lch|lab|hwb|color-mix|light-dark)\(/;

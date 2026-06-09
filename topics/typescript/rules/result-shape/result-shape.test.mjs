@@ -1,4 +1,4 @@
-import { createRuleTester } from '../../../../lib/rule-tester.mjs';
+import { createRuleTester } from '../../../lib/rule-tester.mjs';
 import { resultShapeRule } from './result-shape.mjs';
 
 const ruleTester = createRuleTester();
@@ -23,13 +23,21 @@ ruleTester.run('result-shape', resultShapeRule, {
           | { kind: MoveResultKind.Success; id: string }
           | { error: string };
       `,
-      errors: [{ messageId: 'memberNeedsKind' }],
+      errors: [{ messageId: 'memberNeedsKind' }, { messageId: 'errorKindName' }],
     },
     {
       code: `
         export type MoveResult =
           | { kind: MoveResultKind.Success; id: string }
           | { kind: MoveResultKind.Error; error: MoveError };
+      `,
+      errors: [{ messageId: 'errorKindName' }],
+    },
+    {
+      code: `
+        export type MoveResult =
+          | { kind: MoveResultKind.Success; id: string }
+          | { kind: MoveResultKind.Error; error: string };
       `,
       errors: [{ messageId: 'errorKindName' }],
     },

@@ -1,4 +1,4 @@
-import { createRuleTester } from '../../../../lib/rule-tester.mjs';
+import { createRuleTester } from '../../../lib/rule-tester.mjs';
 import { contextViaFactoryRule } from './context-via-factory.mjs';
 
 const ruleTester = createRuleTester();

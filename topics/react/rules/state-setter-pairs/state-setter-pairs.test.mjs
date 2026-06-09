@@ -1,4 +1,4 @@
-import { createRuleTester } from '../../../../lib/rule-tester.mjs';
+import { createRuleTester } from '../../../lib/rule-tester.mjs';
 import { stateSetterPairsRule } from './state-setter-pairs.mjs';
 
 const ruleTester = createRuleTester();

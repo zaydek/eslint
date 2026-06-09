@@ -31,19 +31,29 @@ an inline policy comment.
 ├── package.json                           # Private package manifest for @zaydek/eslint
 ├── package-lock.json                      # Locked local test dependencies
 ├── README.md -> RULES.md                  # Human-doc shortcut for editors and conventional entrypoints
-├── RULES.md                               # Single rule reference with TOC and examples
+├── RULES.md                               # Compact rule TOC with concise valid/invalid examples
+├── RULES/
+│   └── {:rule}.md                         # Detailed agent-facing rule docs
 ├── eslint.layout                          # Checkable shape for this repo
 ├── test.mjs                               # Rule fixture runner
-├── lib/
-│   └── {:helper}.mjs                      # Shared test helpers and exported domain helpers
+├── tools/
+│   └── {:tool}.mjs                        # Repo-local verification/maintenance tools
 └── topics/
     ├── index.mjs                          # Topic-grouped and flat public rule export map
+    ├── lib/
+    │   └── {:helper}.mjs                  # Cross-topic shared helpers
     └── {:topic}/                          # Topic grouping: comments / react / stylex / typescript
+        ├── ?OWNERSHIP.md                 # Topic-owned formal spec, used by StyleX ownership
+        ├── ?lib/
+        │   ├── {:helper}.mjs              # Topic-local shared/domain helpers
+        │   └── {:helper}.test.mjs         # Topic-local helper/parser conformance tests
         └── rules/
             ├── index.mjs                  # Topic rule export map
             └── {:rule}/
                 ├── {:rule}.mjs            # Deterministic convention rule
-                └── {:rule}.test.mjs       # Rule-local executable examples
+                ├── {:rule}.test.mjs       # Rule-local executable examples
+                └── ?fixtures/             # Rule-local fixture corpora
+                    └── {:slug}.{:ext}     # Rule fixture source file
 ```
 
 ## Layers
@@ -51,18 +61,31 @@ an inline policy comment.
 - `topics/{topic}/rules/{rule}/{rule}.mjs` owns one rule implementation.
 - `topics/{topic}/rules/{rule}/{rule}.test.mjs` owns executable examples for
   that rule. Every bug fix should add a fixture that would have failed before.
+- `RULES.md` is the compact human/agent index. It links every rule and shows a
+  concise valid/invalid use case.
+- `RULES/{rule}.md` owns detailed rule intent, examples, exceptions, and
+  agent-facing guidance. Keep these files in sync with rule tests.
 - `topics/{topic}/rules/index.mjs` exports the topic-local rule map.
 - `topics/index.mjs` exports both the topic-grouped map and the flat public rule
   map consumed by downstream `eslint.config.js` files.
-- `lib/rule-tester.mjs` owns shared RuleTester setup for fixtures.
-- `lib/stylex-ownership.mjs` and `lib/stylex-ownership-infer.mjs` own the
-  StyleX ownership domain helpers exported for downstream tools.
+- `topics/lib/rule-tester.mjs` owns shared RuleTester setup for fixtures.
+- `tools/verify-rule-docs.mjs` extracts `RULES.md` and `RULES/{rule}.md` code
+  blocks. `npm run verify-docs-rule` proves each example against its target
+  rule; `npm run verify-docs-rule-all` also checks cross-rule consistency
+  against the public rule set.
+- `tools/update-rules-index.mjs` regenerates compact `RULES.md` examples from
+  the first valid/invalid examples in `RULES/{rule}.md`.
+- `topics/stylex/OWNERSHIP.md` is the formal StyleX ownership contract spec.
+- `topics/stylex/lib/ownership-contract.mjs` owns the pure StyleX ownership
+  parser/expander described by `topics/stylex/OWNERSHIP.md`.
+- `topics/stylex/lib/ownership.mjs` and `topics/stylex/lib/ownership-infer.mjs`
+  own StyleX ownership AST/comment and JSX inference helpers. They are exported
+  for downstream tools through the package `./lib/stylex-*` export aliases.
 - `package.json` owns package exports and declares `eslint` /
   `typescript-eslint` as peer dependencies.
-- `RULES.md` is the human-readable rule contract. Keep it in sync with every rule.
+- `RULES.md` and `RULES/{rule}.md` are the human-readable rule contract. Keep
+  them in sync with every rule.
 
-Do not scatter rule documentation into per-rule Markdown files. This subtree
-uses one `RULES.md` so the Operator can scan one TOC and compare rules quickly.
 `README.md` is a symlink to `RULES.md` for human-level documentation shortcuts.
 
 ## Consuming the package
@@ -128,10 +151,11 @@ export const typescriptRules = {
 3. Export it from `topics/{topic}/rules/index.mjs`.
 4. If it is a new public rule, downstream `eslint.config.js` files can enable it
    from the package export map.
-5. Update `RULES.md` with the TOC entry, purpose, and compact examples.
-6. Update downstream `CONVENTIONS.md` only when the broader doctrine changed.
-7. Run `npm test`.
-8. In downstream consumers, run that repo's lint command after updating the
+5. Update `RULES/{rule}.md` with intent, boundaries, and examples.
+6. Run `npm run update-rules-index` to regenerate compact `RULES.md`.
+7. Update downstream `CONVENTIONS.md` only when the broader doctrine changed.
+8. Run `npm test`.
+9. In downstream consumers, run that repo's lint command after updating the
    dependency.
 
 ## Current topics
@@ -159,6 +183,10 @@ Run fixture tests from this repo root:
 npm test
 ```
 
+`npm test` also runs `npm run verify-docs-rule` and
+`npm run verify-docs-rule-all`, so documented valid/invalid examples must match
+their rule and avoid accidental contradictions with other public rules.
+
 Run a downstream app lint surface after dependency updates:
 
 ```sh
@@ -174,7 +202,8 @@ node ~/GitHub/zaydek/skills/skills/eslint-check/scripts/eslint-check.mjs code
 
 ## What Not To Do
 
-- Do not create per-rule Markdown docs; maintain `RULES.md`.
+- Do not leave rule behavior undocumented; maintain both the compact `RULES.md`
+  index and the detailed `RULES/{rule}.md` page.
 - Do not move rules out of their topic folders to make imports shorter.
 - Do not silently narrow a rule after a false positive; add a valid fixture and
   document the exception.

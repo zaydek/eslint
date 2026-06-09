@@ -2,6 +2,10 @@ function isExportedDeclaration(node) {
   return node.parent?.type === 'ExportNamedDeclaration';
 }
 
+function isComponentName(name) {
+  return /^[A-Z][A-Za-z0-9]*$/.test(name);
+}
+
 function isTypePositionIdentifier(node) {
   const parent = node.parent;
   if (!parent) return false;
@@ -102,6 +106,7 @@ export const associatedExportsRule = {
 
       FunctionDeclaration(node) {
         if (!isExportedDeclaration(node)) return;
+        if (node.id?.name && isComponentName(node.id.name)) return;
         addExportedMember(node, node.id?.name ?? '<anonymous>', collectFunctionSurfaceTypes(node));
       },
 

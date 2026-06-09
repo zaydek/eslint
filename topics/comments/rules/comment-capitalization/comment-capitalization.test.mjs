@@ -1,4 +1,4 @@
-import { createRuleTester } from '../../../../lib/rule-tester.mjs';
+import { createRuleTester } from '../../../lib/rule-tester.mjs';
 import { commentCapitalizationRule } from './comment-capitalization.mjs';
 
 const ruleTester = createRuleTester();
@@ -10,7 +10,7 @@ ruleTester.run('comment-capitalization', commentCapitalizationRule, {
     '/// <reference types="vite/client" />\nconst value = 1;',
     '// <reference types="vite/client" />\nconst value = 1;',
     '/*\n\n# Heading\n\nScope: code/\n\n*/\nconst value = 1;',
-    'import * as stylex from "@stylexjs/stylex";\n// root, rootChild\n//\nconst styles = stylex.create({ root: {}, rootChild: {} });',
+    'import * as stylex from "@stylexjs/stylex";\n// Root\n//   RootChild\n//\nconst styles = stylex.create({ Root: {}, RootChild: {} });',
   ],
   invalid: [
     {

@@ -1,4 +1,4 @@
-import { createRuleTester } from '../../../../lib/rule-tester.mjs';
+import { createRuleTester } from '../../../lib/rule-tester.mjs';
 import { errorMessageContextRule } from './error-message-context.mjs';
 
 const ruleTester = createRuleTester();

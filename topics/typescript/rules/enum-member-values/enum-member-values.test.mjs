@@ -1,4 +1,4 @@
-import { createRuleTester } from '../../../../lib/rule-tester.mjs';
+import { createRuleTester } from '../../../lib/rule-tester.mjs';
 import { enumMemberValuesRule } from './enum-member-values.mjs';
 
 const ruleTester = createRuleTester();

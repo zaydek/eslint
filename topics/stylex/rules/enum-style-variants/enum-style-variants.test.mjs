@@ -1,4 +1,4 @@
-import { createRuleTester } from '../../../../lib/rule-tester.mjs';
+import { createRuleTester } from '../../../lib/rule-tester.mjs';
 import { enumStyleVariantsRule } from './enum-style-variants.mjs';
 
 const ruleTester = createRuleTester();
@@ -8,28 +8,28 @@ ruleTester.run('enum-style-variants', enumStyleVariantsRule, {
     `
       enum StickyColor { Lavender = "LAVENDER", Sky = "SKY" }
       const styles = stylex.create({
-        root: {},
-        rootColorLavender: {},
-        rootColorSky: {},
+        Root: {},
+        RootWithLavender: {},
+        RootWithSky: {},
       });
       const MapStickyColorToStyle: Record<StickyColor, stylex.StyleXStyles> = {
-        [StickyColor.Lavender]: styles.rootColorLavender,
-        [StickyColor.Sky]: styles.rootColorSky,
+        [StickyColor.Lavender]: styles.RootWithLavender,
+        [StickyColor.Sky]: styles.RootWithSky,
       };
     `,
     // Without a same-file enum or stylex.create, only the family shape is checked.
     `
       const MapStickyColorToStyle = {
-        [StickyColor.Lavender]: styles.rootColorLavender,
-        [StickyColor.Sky]: styles.rootColorSky,
+        [StickyColor.Lavender]: styles.RootWithLavender,
+        [StickyColor.Sky]: styles.RootWithSky,
       };
     `,
     // Exclude<> narrows the key set on purpose; completeness is the type's job.
     `
       enum StickyColor { None = "NONE", Lavender = "LAVENDER", Sky = "SKY" }
       const MapStickyColorToStyle: Record<Exclude<StickyColor, StickyColor.None>, stylex.StyleXStyles> = {
-        [StickyColor.Lavender]: styles.rootColorLavender,
-        [StickyColor.Sky]: styles.rootColorSky,
+        [StickyColor.Lavender]: styles.RootWithLavender,
+        [StickyColor.Sky]: styles.RootWithSky,
       };
     `,
   ],
@@ -37,7 +37,7 @@ ruleTester.run('enum-style-variants', enumStyleVariantsRule, {
     {
       code: `
         const MapStickyColorToStyle = {
-          [StickyColor.Lavender]: styles.rootLavenderColor,
+          [StickyColor.Lavender]: styles.RootLavenderWith,
         };
       `,
       errors: [{ messageId: 'variantSuffix' }],
@@ -45,8 +45,8 @@ ruleTester.run('enum-style-variants', enumStyleVariantsRule, {
     {
       code: `
         const MapStickyColorToStyle = {
-          [StickyColor.Lavender]: styles.rootColorLavender,
-          [StickyColor.Sky]: styles.surfaceColorSky,
+          [StickyColor.Lavender]: styles.RootWithLavender,
+          [StickyColor.Sky]: styles.SurfaceWithSky,
         };
       `,
       errors: [{ messageId: 'mixedFamily' }],
@@ -54,11 +54,11 @@ ruleTester.run('enum-style-variants', enumStyleVariantsRule, {
     {
       code: `
         const styles = stylex.create({
-          rootColorLavender: {},
+          RootWithLavender: {},
         });
         const MapStickyColorToStyle = {
-          [StickyColor.Lavender]: styles.rootColorLavender,
-          [StickyColor.Sky]: styles.rootColorSky,
+          [StickyColor.Lavender]: styles.RootWithLavender,
+          [StickyColor.Sky]: styles.RootWithSky,
         };
       `,
       errors: [{ messageId: 'unknownStyleKey' }],
@@ -67,7 +67,7 @@ ruleTester.run('enum-style-variants', enumStyleVariantsRule, {
       code: `
         enum StickyColor { Lavender = "LAVENDER", Sky = "SKY" }
         const MapStickyColorToStyle = {
-          [StickyColor.Lavender]: styles.rootColorLavender,
+          [StickyColor.Lavender]: styles.RootWithLavender,
         };
       `,
       errors: [{ messageId: 'missingVariant' }],
