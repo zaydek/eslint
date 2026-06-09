@@ -94,6 +94,29 @@ Downstream repos wire this package through their own flat ESLint config. The
 `agentic/` prefix below comes from the consumer's `plugins` key; this package
 exports flat rule keys such as `boolean-names`.
 
+Fast path for a local Zaydek repo:
+
+1. Add the private package as a local dependency from the downstream repo:
+
+```json
+{
+  "devDependencies": {
+    "@zaydek/eslint": "file:../../eslint",
+    "eslint": "^9.0.0",
+    "typescript-eslint": "^8.0.0"
+  }
+}
+```
+
+2. Install from the downstream repo so the file dependency and peer
+   dependencies resolve:
+
+```sh
+npm install
+```
+
+3. Add or update `eslint.config.js`:
+
 ```js
 import { rules as agenticRules } from '@zaydek/eslint';
 
@@ -110,6 +133,37 @@ export default [
   },
 ];
 ```
+
+4. Add a lint script if the downstream repo does not already have one:
+
+```json
+{
+  "scripts": {
+    "lint": "eslint ."
+  }
+}
+```
+
+5. Verify from the downstream repo:
+
+```sh
+npm run lint
+```
+
+Every diagnostic emitted by this package is intentionally agent-oriented:
+
+```text
+<Problem>
+Fix: <required action>
+See: ~/GitHub/zaydek/eslint/RULES/{rule}.md
+```
+
+Agents should follow the `See:` path first. The linked rule doc is the contract;
+the implementation and tests are secondary debugging surfaces.
+
+Do not enable `dormantRules` in downstream repos. `dormantRules` exists so this
+repo can keep draft rule docs and examples testable without exposing undecided
+rules through the public flat `rules` map.
 
 Tooling that needs the StyleX ownership inference engine should import the
 public helper exports instead of deep relative paths:
