@@ -15,11 +15,10 @@ export const dormantRules = {
   'error-message-context': errorMessageContextRule,
 };
 
-// Implemented and tested, but excluded from the flat public map. Downstream
-// configs enable every key in `rules`, so exclusion here is the off switch.
+// Implemented and tested in the topic map, but excluded from the flat public
+// map. Downstream configs enable every key in `rules`, so exclusion here is the
+// off switch for topic-visible draft rules.
 const DISABLED_RULE_KEYS = new Set([
-  // Operator is undecided on the message shape; see RULES/error-message-context.md.
-  'error-message-context',
   // Semantic function naming needs a dictionary/model to prove correctly; see RULES/function-names.md.
   'function-names',
 ]);

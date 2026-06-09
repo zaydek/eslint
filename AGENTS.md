@@ -66,8 +66,10 @@ an inline policy comment.
 - `RULES/{rule}.md` owns detailed rule intent, examples, exceptions, and
   agent-facing guidance. Keep these files in sync with rule tests.
 - `topics/{topic}/rules/index.mjs` exports the topic-local rule map.
-- `topics/index.mjs` exports both the topic-grouped map and the flat public rule
-  map consumed by downstream `eslint.config.js` files.
+- `topics/index.mjs` exports the topic-grouped map, the flat public rule map
+  consumed by downstream `eslint.config.js` files, and `dormantRules` for
+  implemented draft rules whose docs/examples remain testable while the rules
+  stay off for consumers.
 - `topics/lib/rule-tester.mjs` owns shared RuleTester setup for fixtures.
 - `tools/verify-rule-docs.mjs` extracts `RULES.md` and `RULES/{rule}.md` code
   blocks. `npm run verify-docs-rule` proves each example against its target
@@ -179,7 +181,8 @@ Good local rules are deterministic and narrow:
 - Prefer AST structure over source-string heuristics.
 - Prefer warning-level rollout until the repo has been migrated.
 - Encode real false positives as valid fixtures.
-- Keep messages direct and actionable.
+- Keep messages agent-oriented: one problem line, one `Fix:` line, and one
+  `See: ~/GitHub/zaydek/eslint/RULES/{rule}.md` line.
 - Do not enforce taste that cannot be stated as a stable syntax contract.
 - Do not add autofix unless the transform is obviously safe.
 
@@ -203,8 +206,10 @@ export const typescriptRules = {
 1. Put the rule under the right topic.
 2. Add `{rule}.test.mjs` with valid and invalid examples.
 3. Export it from `topics/{topic}/rules/index.mjs`.
-4. If it is a new public rule, downstream `eslint.config.js` files can enable it
-   from the package export map.
+4. If it is a new public rule, export it through the topic map so downstream
+   `eslint.config.js` files can enable it from the package export map. If it is
+   a dormant draft rule, keep it out of the topic map and expose it through
+   `dormantRules` instead.
 5. Update `RULES/{rule}.md` with intent, boundaries, and examples.
 6. Run `npm run update-rules-index` to regenerate compact `RULES.md`.
 7. Update downstream `CONVENTIONS.md` only when the broader doctrine changed.
@@ -215,9 +220,12 @@ export const typescriptRules = {
 ## Current topics
 
 - `comments/` — comment-block capitalization and source-comment conventions.
-- `react/` — component props, exported props, reducer dispatch naming.
-- `stylex/` — StyleX-only prop usage and style placement.
-- `typescript/` — naming, exported type surfaces, return type shape, discriminants.
+- `react/` — component props, exported props, context, imports, hooks, and
+  reducer/state naming.
+- `stylex/` — StyleX ownership, key naming, prop usage, placement, tokens, and
+  enum/axis variant limits.
+- `typescript/` — naming, exported type surfaces, return/result shape,
+  discriminants, enums, maps, namespaces, and switches.
 
 Add a new topic only when the rule family would become awkward inside an
 existing topic.
