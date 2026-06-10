@@ -8,6 +8,7 @@ const MapRuleNameToDocSlug = {
   "context-via-factory": "react_context-via-factory",
   "exported-component-props": "react_exported-component-props",
   "namespace-imports": "react_namespace-imports",
+  "no-manual-memoization": "react_no-manual-memoization",
   "reducer-dispatch-names": "react_reducer-dispatch-names",
   "ref-names": "react_ref-names",
   "state-setter-pairs": "react_state-setter-pairs",

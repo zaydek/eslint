@@ -14,6 +14,8 @@ Add the private package and peer dependencies from a downstream Zaydek repo:
     "@zaydek/eslint": "file:../../eslint",
     "@stylexjs/eslint-plugin": "^0.18.0",
     "eslint": "^9.0.0",
+    "eslint-config-prettier": "^10.0.0",
+    "eslint-plugin-prettier": "^5.0.0",
     "eslint-plugin-react-hooks": "^7.0.0",
     "globals": "^17.0.0",
     "typescript-eslint": "^8.0.0"
@@ -68,6 +70,7 @@ exist only so draft/disabled rules can remain documented and testable here.
   - [Context Via Factory](#context-via-factory)
   - [Exported Component Props](#exported-component-props)
   - [Namespace Imports](#namespace-imports)
+  - [No Manual Memoization](#no-manual-memoization)
   - [Reducer Dispatch Names](#reducer-dispatch-names)
   - [Ref Names](#ref-names)
   - [State Setter Pairs](#state-setter-pairs)
@@ -171,6 +174,7 @@ Valid:
 ```ts
 const isOpen = true;
 const [isMounted, setIsMounted] = useState(false);
+const [isDragging, setIsDragging] = useState(false);
 ```
 
 Invalid:
@@ -178,6 +182,7 @@ Invalid:
 ```ts
 const open = true;
 const [mounted, setMounted] = useState(false);
+const [dragging, setDragging] = useState(false);
 ```
 
 ### Discriminant Kind
@@ -707,6 +712,29 @@ Invalid:
 
 ```ts
 import stylex from "@stylexjs/stylex";
+```
+
+### No Manual Memoization
+
+Rule: `agentic/no-manual-memoization`. Details: [RULES/react_no-manual-memoization.md](RULES/react_no-manual-memoization.md).
+
+Valid:
+
+```tsx
+function Button(): JSX.Element {
+  return <button />;
+}
+
+function notify(message: string): void {
+  console.log(message);
+}
+```
+
+Invalid:
+
+```tsx
+const notify = useCallback(() => {}, []);
+export default React.memo(Button);
 ```
 
 ### Reducer Dispatch Names

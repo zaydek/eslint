@@ -23,11 +23,11 @@ Enforces predicate-style names for boolean-like values.
 - Matches the first element of array destructuring when initialized by
   `useState(true)`, `useState(false)`, `React.useState(true)`, or
   `React.useState(false)`.
-- Only reports the complete known boolean-ish bare-name set: `open`, `editing`,
-  `hovered`, `selected`, `checked`, `closing`, `active`, `disabled`,
-  `visible`, and `mounted`.
+- Reports any matched boolean variable or state value whose name does not start
+  with `is`, `has`, `can`, `should`, or `are`.
 - Rename flagged bare names to predicate-prefixed forms, for example `open` to
-  `isOpen`, `selected` to `isSelected`, or `checked` to `isChecked`.
+  `isOpen`, `selected` to `isSelected`, `checked` to `isChecked`, or `dragging`
+  to `isDragging`.
 - Does not inspect object properties, parameters, enum members, type members, or
   boolean names outside the initializer shapes above.
 - Setter alignment is owned by `agentic/state-setter-pairs`.
@@ -37,6 +37,7 @@ Valid:
 ```ts
 const isOpen = true;
 const [isMounted, setIsMounted] = useState(false);
+const [isDragging, setIsDragging] = useState(false);
 ```
 
 Invalid:
@@ -44,4 +45,5 @@ Invalid:
 ```ts
 const open = true;
 const [mounted, setMounted] = useState(false);
+const [dragging, setDragging] = useState(false);
 ```

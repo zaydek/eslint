@@ -1,4 +1,6 @@
 import stylexPlugin from "@stylexjs/eslint-plugin";
+import eslintConfigPrettier from "eslint-config-prettier";
+import prettierPlugin from "eslint-plugin-prettier";
 import { defineConfig, globalIgnores } from "eslint/config";
 import reactHooksPlugin from "eslint-plugin-react-hooks";
 import globals from "globals";
@@ -12,6 +14,8 @@ export const agenticRuleConfig = Object.fromEntries(
   Object.keys(agenticRules).map((ruleName) => [`agentic/${ruleName}`, "warn"]),
 );
 
+export const prettierRuleOptions = { objectWrap: "collapse", printWidth: 100 };
+
 export function createZaydekEslintConfig(options = {}) {
   const files = options.files ?? ["src/**/*.{ts,tsx}"];
   const ignores = options.ignores ?? [
@@ -21,6 +25,7 @@ export function createZaydekEslintConfig(options = {}) {
     "src/generated/**",
   ];
   const filenameSourceRoots = options.filenameSourceRoots ?? ["src"];
+  const prettierOptions = options.prettierOptions ?? prettierRuleOptions;
 
   return defineConfig([
     globalIgnores(ignores),
@@ -36,6 +41,7 @@ export function createZaydekEslintConfig(options = {}) {
       plugins: {
         "@stylexjs": stylexPlugin,
         agentic: agenticPlugin,
+        prettier: prettierPlugin,
         "react-hooks": reactHooksPlugin,
       },
       rules: {
@@ -47,8 +53,10 @@ export function createZaydekEslintConfig(options = {}) {
         "react-hooks/exhaustive-deps": "warn",
         ...agenticRuleConfig,
         "agentic/kebab-case-source-filenames": ["error", { sourceRoots: filenameSourceRoots }],
+        "prettier/prettier": ["warn", prettierOptions],
       },
     },
+    eslintConfigPrettier,
   ]);
 }
 

@@ -1,8 +1,6 @@
 import { createRuleMessage } from "../../../lib/rule-doc-message.mjs";
 
 const BOOLEAN_PREFIX = /^(is|has|can|should|are)[A-Z]/;
-const BOOLEANISH_NAMES =
-  /^(open|editing|hovered|selected|checked|closing|active|disabled|visible|mounted)$/;
 
 export const booleanNamesRule = {
   meta: {
@@ -20,7 +18,6 @@ export const booleanNamesRule = {
 
   create(context) {
     function reportName(node, name) {
-      if (!BOOLEANISH_NAMES.test(name)) return;
       if (BOOLEAN_PREFIX.test(name)) return;
       context.report({ node, messageId: "prefix", data: { name } });
     }

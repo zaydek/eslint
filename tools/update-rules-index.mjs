@@ -34,6 +34,8 @@ const lines = [
   '    "@zaydek/eslint": "file:../../eslint",',
   '    "@stylexjs/eslint-plugin": "^0.18.0",',
   '    "eslint": "^9.0.0",',
+  '    "eslint-config-prettier": "^10.0.0",',
+  '    "eslint-plugin-prettier": "^5.0.0",',
   '    "eslint-plugin-react-hooks": "^7.0.0",',
   '    "globals": "^17.0.0",',
   '    "typescript-eslint": "^8.0.0"',

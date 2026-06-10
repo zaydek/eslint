@@ -89,6 +89,7 @@ an inline policy comment.
   own StyleX ownership AST/comment and JSX inference helpers. They are exported
   for downstream tools through the package `./lib/stylex-*` export aliases.
 - `package.json` owns package exports and declares `eslint` /
+  `eslint-plugin-prettier`, `eslint-config-prettier`, and
   `typescript-eslint` as peer dependencies.
 - `RULES.md` and `RULES/{topic}_{rule}.md` are the human-readable rule contract. Keep
   them in sync with every rule.
@@ -111,6 +112,8 @@ Fast path for a local Zaydek repo:
     "@zaydek/eslint": "file:../../eslint",
     "@stylexjs/eslint-plugin": "^0.18.0",
     "eslint": "^9.0.0",
+    "eslint-config-prettier": "^10.0.0",
+    "eslint-plugin-prettier": "^5.0.0",
     "eslint-plugin-react-hooks": "^7.0.0",
     "globals": "^17.0.0",
     "typescript-eslint": "^8.0.0"
@@ -142,6 +145,11 @@ export default createZaydekEslintConfig({
   filenameSourceRoots: ["app/src"],
 });
 ```
+
+The shared config runs Prettier through ESLint as `prettier/prettier` warnings
+using the repo default `{ objectWrap: "collapse", printWidth: 100 }`. Downstream
+repos should run `eslint .` when they want to see warnings; `eslint . --quiet`
+intentionally suppresses warning-level diagnostics, including Prettier.
 
 4. Add a lint script if the downstream repo does not already have one:
 

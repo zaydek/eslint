@@ -28,6 +28,7 @@ import "./topics/comments/rules/todo-format/todo-format.test.mjs";
 import "./topics/react/rules/component-body-layout/component-body-layout.test.mjs";
 import "./topics/react/rules/context-via-factory/context-via-factory.test.mjs";
 import "./topics/react/rules/namespace-imports/namespace-imports.test.mjs";
+import "./topics/react/rules/no-manual-memoization/no-manual-memoization.test.mjs";
 import "./topics/react/rules/ref-names/ref-names.test.mjs";
 import "./topics/react/rules/state-setter-pairs/state-setter-pairs.test.mjs";
 import "./topics/react/rules/use-new-naming/use-new-naming.test.mjs";

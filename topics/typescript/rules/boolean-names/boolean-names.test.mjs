@@ -12,7 +12,9 @@ ruleTester.run("boolean-names", booleanNamesRule, {
   ],
   invalid: [
     { code: "const open = true;", errors: [{ messageId: "prefix" }] },
+    { code: "const dragging = false;", errors: [{ messageId: "prefix" }] },
     { code: "const [mounted, setMounted] = useState(false);", errors: [{ messageId: "prefix" }] },
+    { code: "const [dragging, setDragging] = useState(false);", errors: [{ messageId: "prefix" }] },
     {
       code: "const [mounted, setMounted] = React.useState(false);",
       errors: [{ messageId: "prefix" }],
