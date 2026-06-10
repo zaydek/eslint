@@ -1,9 +1,9 @@
-import { createRuleTester } from '../../../lib/rule-tester.mjs';
-import { enumKindSuffixRule } from './enum-kind-suffix.mjs';
+import { createRuleTester } from "../../../lib/rule-tester.mjs";
+import { enumKindSuffixRule } from "./enum-kind-suffix.mjs";
 
 const ruleTester = createRuleTester();
 
-ruleTester.run('enum-kind-suffix', enumKindSuffixRule, {
+ruleTester.run("enum-kind-suffix", enumKindSuffixRule, {
   valid: [
     'enum BoardActionKind { StickyCreate = "STICKY_CREATE" }',
     'enum MoveResultKind { Success = "SUCCESS" }',
@@ -12,11 +12,8 @@ ruleTester.run('enum-kind-suffix', enumKindSuffixRule, {
   invalid: [
     {
       code: 'enum EditorActionType { Reinitialize = "REINITIALIZE" }',
-      errors: [{ messageId: 'kindSuffix' }],
+      errors: [{ messageId: "kindSuffix" }],
     },
-    {
-      code: 'enum MoveResultType { Success = "SUCCESS" }',
-      errors: [{ messageId: 'kindSuffix' }],
-    },
+    { code: 'enum MoveResultType { Success = "SUCCESS" }', errors: [{ messageId: "kindSuffix" }] },
   ],
 });

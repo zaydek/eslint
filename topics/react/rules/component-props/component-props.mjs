@@ -1,17 +1,16 @@
-import { createRuleMessage } from '../../../lib/rule-doc-message.mjs';
+import { createRuleMessage } from "../../../lib/rule-doc-message.mjs";
+
 const COMPONENT_NAME = /^[A-Z][A-Za-z0-9]*$/;
 
 export const componentPropsRule = {
   meta: {
-    type: 'suggestion',
-    docs: {
-      description: 'Require component props to use a named ComponentNameProps type.',
-    },
+    type: "suggestion",
+    docs: { description: "Require component props to use a named ComponentNameProps type." },
     messages: {
       namedType: createRuleMessage(
-        'Component `{{name}}` does not use a named `{{name}}Props` type for its props parameter.',
-        'Create a named props type and annotate the component parameter with it.',
-        'component-props',
+        "Component `{{name}}` does not use a named `{{name}}Props` type for its props parameter.",
+        "Create a named props type and annotate the component parameter with it.",
+        "component-props",
       ),
     },
     schema: [],
@@ -23,11 +22,11 @@ export const componentPropsRule = {
     }
 
     function isInlineObjectType(typeNode) {
-      return typeNode?.type === 'TSTypeLiteral';
+      return typeNode?.type === "TSTypeLiteral";
     }
 
     function isNamedPropsType(typeNode) {
-      return typeNode?.type === 'TSTypeReference' && typeNode.typeName?.type === 'Identifier';
+      return typeNode?.type === "TSTypeReference" && typeNode.typeName?.type === "Identifier";
     }
 
     return {
@@ -40,11 +39,11 @@ export const componentPropsRule = {
 
         const typeNode = getParamTypeNode(firstParam);
         if (isInlineObjectType(typeNode)) {
-          context.report({ node: firstParam, messageId: 'namedType', data: { name } });
+          context.report({ node: firstParam, messageId: "namedType", data: { name } });
         }
 
-        if (firstParam.type === 'ObjectPattern' && (!typeNode || !isNamedPropsType(typeNode))) {
-          context.report({ node: firstParam, messageId: 'namedType', data: { name } });
+        if (firstParam.type === "ObjectPattern" && (!typeNode || !isNamedPropsType(typeNode))) {
+          context.report({ node: firstParam, messageId: "namedType", data: { name } });
         }
       },
     };

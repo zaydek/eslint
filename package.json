@@ -5,23 +5,33 @@
   "type": "module",
   "exports": {
     ".": "./topics/index.mjs",
+    "./config": "./config.mjs",
     "./topics": "./topics/index.mjs",
     "./lib/stylex-ownership-contract": "./topics/stylex/lib/ownership-contract.mjs",
     "./lib/stylex-ownership": "./topics/stylex/lib/ownership.mjs",
     "./lib/stylex-ownership-infer": "./topics/stylex/lib/ownership-infer.mjs"
   },
   "scripts": {
+    "format": "prettier --write \"**/*.{md,mjs,js,json}\"",
+    "format:check": "prettier --check \"**/*.{md,mjs,js,json}\"",
     "test": "node test.mjs && npm run verify-docs-rule && npm run verify-docs-rule-all",
     "update-rules-index": "node tools/update-rules-index.mjs",
     "verify-docs-rule": "node tools/verify-rule-docs.mjs target",
     "verify-docs-rule-all": "node tools/verify-rule-docs.mjs all"
   },
   "peerDependencies": {
+    "@stylexjs/eslint-plugin": "^0.18.0",
     "eslint": "^9.0.0",
+    "eslint-plugin-react-hooks": "^7.0.0",
+    "globals": "^17.0.0",
     "typescript-eslint": "^8.0.0"
   },
   "devDependencies": {
+    "@stylexjs/eslint-plugin": "0.18.3",
     "eslint": "^9.39.1",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "globals": "^17.6.0",
+    "prettier": "^3.8.3",
     "typescript-eslint": "8.48.0"
   }
 }

@@ -1,15 +1,15 @@
-import fs from 'node:fs';
-import path from 'node:path';
-import process from 'node:process';
+import fs from "node:fs";
+import path from "node:path";
+import process from "node:process";
 
 const ROOT = process.cwd();
-const RULES_DIR = path.join(ROOT, 'RULES');
-const RULES_INDEX_PATH = path.join(ROOT, 'RULES.md');
-const TOPIC_ORDER = ['TypeScript', 'React', 'StyleX', 'Comments'];
+const RULES_DIR = path.join(ROOT, "RULES");
+const RULES_INDEX_PATH = path.join(ROOT, "RULES.md");
+const TOPIC_ORDER = ["TypeScript", "React", "StyleX", "Comments"];
 
 const ruleDocs = fs
   .readdirSync(RULES_DIR)
-  .filter((name) => name.endsWith('.md'))
+  .filter((name) => name.endsWith(".md"))
   .map((name) => readRuleDoc(path.join(RULES_DIR, name)))
   .sort((left, right) => {
     const topicDelta = TOPIC_ORDER.indexOf(left.topic) - TOPIC_ORDER.indexOf(right.topic);
@@ -18,60 +18,50 @@ const ruleDocs = fs
   });
 
 const lines = [
-  '# ESLint Rules',
-  '',
-  '`RULES.md` is the compact index. Detailed agent-facing rule docs live in `RULES/{slug}.md`.',
-  '',
-  'The `agentic/` prefix comes from the consumer plugin name; this package exports flat rule keys.',
-  '',
-  '## Quick Setup',
-  '',
-  'Add the private package and peer dependencies from a downstream Zaydek repo:',
-  '',
-  '```json',
-  '{',
+  "# ESLint Rules",
+  "",
+  "`RULES.md` is the compact index. Detailed agent-facing rule docs live in `RULES/{topic}_{rule}.md`.",
+  "",
+  "The `agentic/` prefix comes from the consumer plugin name; this package exports flat rule keys.",
+  "",
+  "## Quick Setup",
+  "",
+  "Add the private package and peer dependencies from a downstream Zaydek repo:",
+  "",
+  "```json",
+  "{",
   '  "devDependencies": {',
   '    "@zaydek/eslint": "file:../../eslint",',
+  '    "@stylexjs/eslint-plugin": "^0.18.0",',
   '    "eslint": "^9.0.0",',
+  '    "eslint-plugin-react-hooks": "^7.0.0",',
+  '    "globals": "^17.0.0",',
   '    "typescript-eslint": "^8.0.0"',
-  '  }',
-  '}',
-  '```',
-  '',
-  'Wire the flat public rule map in `eslint.config.js`:',
-  '',
-  '```js',
-  "import { rules as agenticRules } from '@zaydek/eslint';",
-  '',
-  'const agenticPlugin = { rules: agenticRules };',
-  'const agenticRuleConfig = Object.fromEntries(',
-  '  Object.keys(agenticRules).map((ruleName) => [`agentic/${ruleName}`, \'warn\']),',
-  ');',
-  '',
-  'export default [',
-  '  {',
-  "    files: ['src/**/*.{ts,tsx}'],",
-  '    plugins: { agentic: agenticPlugin },',
-  '    rules: { ...agenticRuleConfig },',
-  '  },',
-  '];',
-  '```',
-  '',
-  'Then run `npm install` and `npm run lint` in the downstream repo.',
-  '',
-  'Diagnostics are written for agents:',
-  '',
-  '```text',
-  '<Problem>',
-  'Fix: <required action>',
-  'See: ~/GitHub/zaydek/eslint/RULES/{rule}.md',
-  '```',
-  '',
-  'Follow the `See:` path first. Do not enable `dormantRules` downstream; those',
-  'exist only so draft/disabled rules can remain documented and testable here.',
-  '',
-  '## Table Of Contents',
-  '',
+  "  }",
+  "}",
+  "```",
+  "",
+  "Use the shared ESLint v9 flat config in `eslint.config.js`:",
+  "",
+  "```js",
+  "export { default } from '@zaydek/eslint/config';",
+  "```",
+  "",
+  "Then run `npm install` and `npm run lint` in the downstream repo.",
+  "",
+  "Diagnostics are written for agents:",
+  "",
+  "```text",
+  "<Problem>",
+  "Fix: <required action>",
+  "See: ~/GitHub/zaydek/eslint/RULES/{topic}_{rule}.md",
+  "```",
+  "",
+  "Follow the `See:` path first. Do not enable `dormantRules` downstream; those",
+  "exist only so draft/disabled rules can remain documented and testable here.",
+  "",
+  "## Table Of Contents",
+  "",
 ];
 
 for (const topic of TOPIC_ORDER) {
@@ -79,7 +69,7 @@ for (const topic of TOPIC_ORDER) {
   if (docs.length === 0) continue;
   lines.push(`- [${topic}](#${slugify(topic)})`);
   for (const doc of docs) {
-    const suffix = isOffStatus(doc.status) ? ' — disabled' : '';
+    const suffix = isOffStatus(doc.status) ? " — disabled" : "";
     lines.push(`  - [${doc.title}](#${slugify(doc.title)})${suffix}`);
   }
 }
@@ -87,33 +77,33 @@ for (const topic of TOPIC_ORDER) {
 for (const topic of TOPIC_ORDER) {
   const docs = ruleDocs.filter((doc) => doc.topic === topic);
   if (docs.length === 0) continue;
-  lines.push('', `## ${topic}`, '');
+  lines.push("", `## ${topic}`, "");
 
   for (const doc of docs) {
-    const status = isOffStatus(doc.status) ? ' Disabled.' : '';
-    lines.push(`### ${doc.title}`, '');
+    const status = isOffStatus(doc.status) ? " Disabled." : "";
+    lines.push(`### ${doc.title}`, "");
     lines.push(
-      `Rule: \`agentic/${doc.ruleName}\`. Details: [RULES/${doc.ruleName}.md](RULES/${doc.ruleName}.md).${status}`,
-      '',
+      `Rule: \`agentic/${doc.ruleName}\`. Details: [RULES/${doc.docSlug}.md](RULES/${doc.docSlug}.md).${status}`,
+      "",
     );
-    appendExample(lines, 'Valid', doc.valid);
-    appendExample(lines, 'Invalid', doc.invalid);
+    appendExample(lines, "Valid", doc.valid);
+    appendExample(lines, "Invalid", doc.invalid);
   }
 }
 
-fs.writeFileSync(RULES_INDEX_PATH, `${lines.join('\n').trimEnd()}\n`);
+fs.writeFileSync(RULES_INDEX_PATH, `${lines.join("\n").trimEnd()}\n`);
 
 function readRuleDoc(filePath) {
-  const markdown = fs.readFileSync(filePath, 'utf8');
-  const ruleName = path.basename(filePath, '.md');
+  const markdown = fs.readFileSync(filePath, "utf8");
   return {
     filePath,
-    ruleName,
+    docSlug: path.basename(filePath, ".md"),
+    ruleName: getMatch(markdown, /^Rule: `agentic\/([^`]+)`$/m),
     title: getMatch(markdown, /^# (.+)$/m),
     topic: getMatch(markdown, /^Topic: (.+)$/m),
     status: getMatch(markdown, /^Status: (.+)$/m),
-    valid: getFirstExample(markdown, 'Valid'),
-    invalid: getFirstExample(markdown, 'Invalid'),
+    valid: getFirstExample(markdown, "Valid"),
+    invalid: getFirstExample(markdown, "Invalid"),
   };
 }
 
@@ -124,20 +114,20 @@ function getMatch(markdown, pattern) {
 }
 
 function getFirstExample(markdown, label) {
-  const pattern = new RegExp(`^${label}(?:[^:]*)?:\\n\\n\\\`\\\`\\\`([A-Za-z0-9_-]+)?\\n([\\s\\S]*?)\\n\\\`\\\`\\\``, 'm');
+  const pattern = new RegExp(
+    `^${label}(?:[^:]*)?:\\n\\n\\\`\\\`\\\`([A-Za-z0-9_-]+)?\\n([\\s\\S]*?)\\n\\\`\\\`\\\``,
+    "m",
+  );
   const match = markdown.match(pattern);
   if (!match) throw new Error(`Missing ${label} example`);
-  return {
-    language: match[1] ?? '',
-    code: match[2].trim(),
-  };
+  return { language: match[1] ?? "", code: match[2].trim() };
 }
 
 function appendExample(lines, label, example) {
-  lines.push(`${label}:`, '');
+  lines.push(`${label}:`, "");
   lines.push(`\`\`\`${example.language}`);
   lines.push(example.code);
-  lines.push('```', '');
+  lines.push("```", "");
 }
 
 function isOffStatus(status) {
@@ -145,5 +135,8 @@ function isOffStatus(status) {
 }
 
 function slugify(value) {
-  return value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  return value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
 }

@@ -1,17 +1,16 @@
-import { createRuleMessage } from '../../../lib/rule-doc-message.mjs';
+import { createRuleMessage } from "../../../lib/rule-doc-message.mjs";
+
 const COMPONENT_NAME = /^[A-Z][A-Za-z0-9]*$/;
 
 export const exportedComponentPropsRule = {
   meta: {
-    type: 'suggestion',
-    docs: {
-      description: 'Prefer exported ComponentNameProps types for exported components.',
-    },
+    type: "suggestion",
+    docs: { description: "Prefer exported ComponentNameProps types for exported components." },
     messages: {
       exportedProps: createRuleMessage(
-        'Exported component `{{name}}` does not use an exported `{{propsName}}` type.',
-        'Export `{{propsName}}` and use it as the component props annotation.',
-        'exported-component-props',
+        "Exported component `{{name}}` does not use an exported `{{propsName}}` type.",
+        "Export `{{propsName}}` and use it as the component props annotation.",
+        "exported-component-props",
       ),
     },
     schema: [],
@@ -22,13 +21,13 @@ export const exportedComponentPropsRule = {
     const exportedComponents = [];
 
     function isExportedFunction(node) {
-      return node.parent?.type === 'ExportNamedDeclaration';
+      return node.parent?.type === "ExportNamedDeclaration";
     }
 
     return {
       ExportNamedDeclaration(node) {
         const declaration = node.declaration;
-        if (declaration?.type === 'TSTypeAliasDeclaration') {
+        if (declaration?.type === "TSTypeAliasDeclaration") {
           exportedTypes.add(declaration.id.name);
         }
       },
@@ -39,14 +38,14 @@ export const exportedComponentPropsRule = {
         exportedComponents.push(node);
       },
 
-      'Program:exit'() {
+      "Program:exit"() {
         for (const node of exportedComponents) {
           const name = node.id.name;
           const propsName = `${name}Props`;
           const firstParam = node.params[0];
           if (!firstParam) continue;
           if (!exportedTypes.has(propsName)) {
-            context.report({ node, messageId: 'exportedProps', data: { name, propsName } });
+            context.report({ node, messageId: "exportedProps", data: { name, propsName } });
           }
         }
       },

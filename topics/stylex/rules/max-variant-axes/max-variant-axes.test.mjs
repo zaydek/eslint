@@ -1,9 +1,9 @@
-import { createRuleTester } from '../../../lib/rule-tester.mjs';
-import { maxVariantAxesRule } from './max-variant-axes.mjs';
+import { createRuleTester } from "../../../lib/rule-tester.mjs";
+import { maxVariantAxesRule } from "./max-variant-axes.mjs";
 
 const ruleTester = createRuleTester();
 
-ruleTester.run('max-variant-axes', maxVariantAxesRule, {
+ruleTester.run("max-variant-axes", maxVariantAxesRule, {
   valid: [
     `
       // Root{Is{Compact|Comfortable}, With{Pink|Blue}}
@@ -19,7 +19,7 @@ ruleTester.run('max-variant-axes', maxVariantAxesRule, {
       });
     `,
     // No ownership comment: stylex-ownership-comment owns that failure.
-    'const styles = stylex.create({ Root: {} });',
+    "const styles = stylex.create({ Root: {} });",
     {
       code: `
         // Root{Is{Compact|Comfortable}, With{Pink|Blue}, Has{Icon|Avatar}}
@@ -52,7 +52,7 @@ ruleTester.run('max-variant-axes', maxVariantAxesRule, {
           RootHasAvatar: {},
         });
       `,
-      errors: [{ messageId: 'tooManyAxes' }],
+      errors: [{ messageId: "tooManyAxes" }],
     },
   ],
 });

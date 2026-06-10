@@ -1,14 +1,10 @@
-import { getStylexCreateObject, getStylexCreateKeys } from './ownership.mjs';
+import { getStylexCreateObject, getStylexCreateKeys } from "./ownership.mjs";
 
 export function inferStylexOwnership(sourceCode, createCallNode) {
   const objectNode = getStylexCreateObject(createCallNode);
   const styleBindingName = getStyleBindingName(createCallNode);
   if (!objectNode || !styleBindingName) {
-    return {
-      entries: [],
-      entriesByKey: new Map(),
-      unresolved: new Set(),
-    };
+    return { entries: [], entriesByKey: new Map(), unresolved: new Set() };
   }
 
   const styleKeys = new Set(getStylexCreateKeys(objectNode));
@@ -58,18 +54,14 @@ export function inferStylexOwnership(sourceCode, createCallNode) {
     entriesByKey.set(entry.key, entry);
   }
 
-  return {
-    entries: keyEntries,
-    entriesByKey,
-    unresolved,
-  };
+  return { entries: keyEntries, entriesByKey, unresolved };
 }
 
 function getStyleBindingName(createCallNode) {
   const variableDeclarator = createCallNode.parent;
   if (
-    variableDeclarator?.type === 'VariableDeclarator' &&
-    variableDeclarator.id.type === 'Identifier' &&
+    variableDeclarator?.type === "VariableDeclarator" &&
+    variableDeclarator.id.type === "Identifier" &&
     variableDeclarator.init === createCallNode
   ) {
     return variableDeclarator.id.name;
@@ -82,7 +74,7 @@ function getStyleMetadata(objectNode) {
   const metadata = new Map();
 
   for (const property of objectNode.properties) {
-    if (property.type !== 'Property') continue;
+    if (property.type !== "Property") continue;
 
     const key = getPropertyKeyName(property);
     if (!key) continue;
@@ -101,7 +93,7 @@ function collectStyledElements(ast, styleBindingName, styleKeys, styleMetadata) 
   let nextGroupId = 0;
 
   traverseAst(ast, (node) => {
-    if (node.type !== 'JSXSpreadAttribute') return;
+    if (node.type !== "JSXSpreadAttribute") return;
 
     const callNode = node.argument;
     if (!isStylexPropsCall(callNode)) return;
@@ -116,7 +108,7 @@ function collectStyledElements(ast, styleBindingName, styleKeys, styleMetadata) 
     if (references.styleReferences.length === 0 && references.unresolvedKeys.length === 0) return;
 
     const elementNode = node.parent?.parent;
-    if (elementNode?.type !== 'JSXElement') return;
+    if (elementNode?.type !== "JSXElement") return;
 
     const existingRecord = styledElements.find((record) => record.elementNode === elementNode);
     if (existingRecord) {
@@ -147,35 +139,32 @@ function extractStyleReferences(nodes, styleBindingName, styleKeys, styleMetadat
   function collectReferences(node) {
     if (!node) return;
 
-    if (node.type === 'ArrayExpression') {
+    if (node.type === "ArrayExpression") {
       for (const element of node.elements) collectReferences(element);
       return;
     }
 
-    if (node.type === 'ConditionalExpression') {
+    if (node.type === "ConditionalExpression") {
       collectReferences(node.consequent);
       collectReferences(node.alternate);
       return;
     }
 
-    if (node.type === 'LogicalExpression') {
+    if (node.type === "LogicalExpression") {
       collectReferences(node.left);
       collectReferences(node.right);
       return;
     }
 
-    if (node.type === 'ChainExpression') {
+    if (node.type === "ChainExpression") {
       collectReferences(node.expression);
       return;
     }
 
-    if (node.type === 'CallExpression') {
+    if (node.type === "CallExpression") {
       const key = getStyleMemberKey(node.callee, styleBindingName);
       if (key && styleKeys.has(key)) {
-        styleReferences.push({
-          key,
-          token: getStyleToken(key, styleMetadata),
-        });
+        styleReferences.push({ key, token: getStyleToken(key, styleMetadata) });
         return;
       }
       collectReferences(node.callee);
@@ -185,44 +174,38 @@ function extractStyleReferences(nodes, styleBindingName, styleKeys, styleMetadat
 
     const key = getStyleMemberKey(node, styleBindingName);
     if (key && styleKeys.has(key)) {
-      styleReferences.push({
-        key,
-        token: getStyleToken(key, styleMetadata),
-      });
+      styleReferences.push({ key, token: getStyleToken(key, styleMetadata) });
       return;
     }
 
     if (isComputedStyleMember(node, styleBindingName)) {
-      unresolvedKeys.push('?unresolved');
+      unresolvedKeys.push("?unresolved");
     }
   }
 
   for (const node of nodes) collectReferences(node);
 
-  return {
-    styleReferences: dedupeReferences(styleReferences),
-    unresolvedKeys,
-  };
+  return { styleReferences: dedupeReferences(styleReferences), unresolvedKeys };
 }
 
 function isStylexPropsCall(node) {
   return (
-    node?.type === 'CallExpression' &&
-    node.callee.type === 'MemberExpression' &&
-    node.callee.object.type === 'Identifier' &&
-    node.callee.object.name === 'stylex' &&
-    node.callee.property.type === 'Identifier' &&
-    (node.callee.property.name === 'props' || node.callee.property.name === 'attrs')
+    node?.type === "CallExpression" &&
+    node.callee.type === "MemberExpression" &&
+    node.callee.object.type === "Identifier" &&
+    node.callee.object.name === "stylex" &&
+    node.callee.property.type === "Identifier" &&
+    (node.callee.property.name === "props" || node.callee.property.name === "attrs")
   );
 }
 
 function getStyleMemberKey(node, styleBindingName) {
   if (
-    node?.type === 'MemberExpression' &&
+    node?.type === "MemberExpression" &&
     !node.computed &&
-    node.object.type === 'Identifier' &&
+    node.object.type === "Identifier" &&
     node.object.name === styleBindingName &&
-    node.property.type === 'Identifier'
+    node.property.type === "Identifier"
   ) {
     return node.property.name;
   }
@@ -232,9 +215,9 @@ function getStyleMemberKey(node, styleBindingName) {
 
 function isComputedStyleMember(node, styleBindingName) {
   return (
-    node?.type === 'MemberExpression' &&
+    node?.type === "MemberExpression" &&
     node.computed &&
-    node.object.type === 'Identifier' &&
+    node.object.type === "Identifier" &&
     node.object.name === styleBindingName
   );
 }
@@ -242,8 +225,8 @@ function isComputedStyleMember(node, styleBindingName) {
 function getStyleToken(key, styleMetadata) {
   const metadata = styleMetadata.get(key);
   const parameterSuffix =
-    metadata?.parameters.length > 0 ? `(${metadata.parameters.join(', ')})` : '';
-  const stateSuffix = metadata?.states.length > 0 ? `(${metadata.states.join(',')})` : '';
+    metadata?.parameters.length > 0 ? `(${metadata.parameters.join(", ")})` : "";
+  const stateSuffix = metadata?.states.length > 0 ? `(${metadata.states.join(",")})` : "";
   return `${key}${parameterSuffix}${stateSuffix}`;
 }
 
@@ -255,7 +238,7 @@ function getNearestStyledAncestor(elementNode, recordsByElement) {
   let current = elementNode.parent;
 
   while (current) {
-    if (current.type === 'JSXElement' && recordsByElement.has(current)) {
+    if (current.type === "JSXElement" && recordsByElement.has(current)) {
       return recordsByElement.get(current);
     }
     current = current.parent;
@@ -278,22 +261,22 @@ function dedupeReferences(styleReferences) {
 }
 
 function getPropertyKeyName(property) {
-  if (property.key.type === 'Identifier') return property.key.name;
-  if (property.key.type === 'Literal' && typeof property.key.value === 'string') {
+  if (property.key.type === "Identifier") return property.key.name;
+  if (property.key.type === "Literal" && typeof property.key.value === "string") {
     return property.key.value;
   }
   return null;
 }
 
 function getFunctionParameterNames(node) {
-  if (node.type !== 'ArrowFunctionExpression' && node.type !== 'FunctionExpression') return [];
+  if (node.type !== "ArrowFunctionExpression" && node.type !== "FunctionExpression") return [];
 
   return node.params.map((param) => {
-    if (param.type === 'Identifier') return param.name;
-    if (param.type === 'AssignmentPattern' && param.left.type === 'Identifier') {
+    if (param.type === "Identifier") return param.name;
+    if (param.type === "AssignmentPattern" && param.left.type === "Identifier") {
       return param.left.name;
     }
-    return '?';
+    return "?";
   });
 }
 
@@ -301,11 +284,11 @@ function getStateSelectors(node) {
   const selectors = [];
 
   traverseAst(node, (candidate) => {
-    if (candidate.type !== 'Property') return;
+    if (candidate.type !== "Property") return;
 
     const keyName = getPropertyKeyName(candidate);
     if (!keyName) return;
-    if (!keyName.startsWith(':') && !keyName.startsWith('@')) return;
+    if (!keyName.startsWith(":") && !keyName.startsWith("@")) return;
 
     selectors.push(keyName);
   });
@@ -317,14 +300,14 @@ function traverseAst(node, visitor) {
   const seen = new WeakSet();
 
   function visitNode(current) {
-    if (!current || typeof current !== 'object') return;
+    if (!current || typeof current !== "object") return;
     if (seen.has(current)) return;
     seen.add(current);
 
     visitor(current);
 
     for (const [key, value] of Object.entries(current)) {
-      if (key === 'parent') continue;
+      if (key === "parent") continue;
       if (Array.isArray(value)) {
         for (const child of value) visitNode(child);
         continue;

@@ -1,9 +1,9 @@
-import { createRuleTester } from '../../../lib/rule-tester.mjs';
-import { resultShapeRule } from './result-shape.mjs';
+import { createRuleTester } from "../../../lib/rule-tester.mjs";
+import { resultShapeRule } from "./result-shape.mjs";
 
 const ruleTester = createRuleTester();
 
-ruleTester.run('result-shape', resultShapeRule, {
+ruleTester.run("result-shape", resultShapeRule, {
   valid: [
     `
       export type MoveResult =
@@ -11,10 +11,10 @@ ruleTester.run('result-shape', resultShapeRule, {
         | { kind: MoveResultKind.Error; error: MoveErrorKind };
     `,
     // Reference members resolve elsewhere; out of scope without type info.
-    'export type MoveResult = MoveResultSuccess | MoveResultError;',
+    "export type MoveResult = MoveResultSuccess | MoveResultError;",
     // Non-exported and non-Result types are out of scope.
-    'type moveResult = { id: string };',
-    'export type MoveArgs = { id: string };',
+    "type moveResult = { id: string };",
+    "export type MoveArgs = { id: string };",
   ],
   invalid: [
     {
@@ -23,7 +23,7 @@ ruleTester.run('result-shape', resultShapeRule, {
           | { kind: MoveResultKind.Success; id: string }
           | { error: string };
       `,
-      errors: [{ messageId: 'memberNeedsKind' }, { messageId: 'errorKindName' }],
+      errors: [{ messageId: "memberNeedsKind" }, { messageId: "errorKindName" }],
     },
     {
       code: `
@@ -31,7 +31,7 @@ ruleTester.run('result-shape', resultShapeRule, {
           | { kind: MoveResultKind.Success; id: string }
           | { kind: MoveResultKind.Error; error: MoveError };
       `,
-      errors: [{ messageId: 'errorKindName' }],
+      errors: [{ messageId: "errorKindName" }],
     },
     {
       code: `
@@ -39,11 +39,11 @@ ruleTester.run('result-shape', resultShapeRule, {
           | { kind: MoveResultKind.Success; id: string }
           | { kind: MoveResultKind.Error; error: string };
       `,
-      errors: [{ messageId: 'errorKindName' }],
+      errors: [{ messageId: "errorKindName" }],
     },
     {
-      code: 'export type MoveResult = { id: string };',
-      errors: [{ messageId: 'memberNeedsKind' }],
+      code: "export type MoveResult = { id: string };",
+      errors: [{ messageId: "memberNeedsKind" }],
     },
   ],
 });

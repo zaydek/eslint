@@ -1,6 +1,7 @@
-import { createRuleMessage } from '../../../lib/rule-doc-message.mjs';
+import { createRuleMessage } from "../../../lib/rule-doc-message.mjs";
+
 function isExportedDeclaration(node) {
-  return node.parent?.type === 'ExportNamedDeclaration';
+  return node.parent?.type === "ExportNamedDeclaration";
 }
 
 function isComponentName(name) {
@@ -10,34 +11,35 @@ function isComponentName(name) {
 function isTypePositionIdentifier(node) {
   const parent = node.parent;
   if (!parent) return false;
-  if (parent.type === 'TSTypeReference' && parent.typeName === node) return true;
-  if (parent.type === 'TSInterfaceHeritage' && parent.expression === node) return true;
-  if (parent.type === 'TSTypeQuery') return false;
+  if (parent.type === "TSTypeReference" && parent.typeName === node) return true;
+  if (parent.type === "TSInterfaceHeritage" && parent.expression === node) return true;
+  if (parent.type === "TSTypeQuery") return false;
   return false;
 }
 
 function shouldIgnoreTypeName(name) {
   return (
-    name === 'JSX' ||
-    name === 'React' ||
-    name === 'HTMLElement' ||
-    name === 'HTMLInputElement' ||
-    name === 'HTMLTextAreaElement' ||
-    name === 'SVGElement'
+    name === "JSX" ||
+    name === "React" ||
+    name === "HTMLElement" ||
+    name === "HTMLInputElement" ||
+    name === "HTMLTextAreaElement" ||
+    name === "SVGElement"
   );
 }
 
 export const associatedExportsRule = {
   meta: {
-    type: 'suggestion',
+    type: "suggestion",
     docs: {
-      description: 'Require exported members to export associated local types used in their public surface.',
+      description:
+        "Require exported members to export associated local types used in their public surface.",
     },
     messages: {
       exportAssociated: createRuleMessage(
-        'Exported member `{{member}}` exposes local type `{{typeName}}`.',
-        'Export the associated type or stop exposing it through the exported member signature.',
-        'associated-exports',
+        "Exported member `{{member}}` exposes local type `{{typeName}}`.",
+        "Export the associated type or stop exposing it through the exported member signature.",
+        "associated-exports",
       ),
     },
     schema: [],
@@ -53,23 +55,24 @@ export const associatedExportsRule = {
       const sourceCode = context.sourceCode ?? context.getSourceCode();
 
       function visit(currentNode) {
-        if (!currentNode || typeof currentNode.type !== 'string') return;
-        if (currentNode.type === 'TSTypeAnnotation' || currentNode.type === 'TSTypeReference') {
-          for (const key of sourceCode.visitorKeys?.[currentNode.type] ?? Object.keys(currentNode)) {
+        if (!currentNode || typeof currentNode.type !== "string") return;
+        if (currentNode.type === "TSTypeAnnotation" || currentNode.type === "TSTypeReference") {
+          for (const key of sourceCode.visitorKeys?.[currentNode.type] ??
+            Object.keys(currentNode)) {
             const value = currentNode[key];
             if (Array.isArray(value)) value.forEach(visit);
-            else if (value && typeof value.type === 'string') visit(value);
+            else if (value && typeof value.type === "string") visit(value);
           }
           return;
         }
-        if (currentNode.type === 'Identifier' && isTypePositionIdentifier(currentNode)) {
+        if (currentNode.type === "Identifier" && isTypePositionIdentifier(currentNode)) {
           exposedTypes.add(currentNode.name);
         }
         for (const key of sourceCode.visitorKeys?.[currentNode.type] ?? Object.keys(currentNode)) {
-          if (key === 'body') continue;
+          if (key === "body") continue;
           const value = currentNode[key];
           if (Array.isArray(value)) value.forEach(visit);
-          else if (value && typeof value.type === 'string') visit(value);
+          else if (value && typeof value.type === "string") visit(value);
         }
       }
 
@@ -80,7 +83,8 @@ export const associatedExportsRule = {
     function collectFunctionSurfaceTypes(node) {
       const exposedTypes = new Set();
       for (const param of node.params ?? []) {
-        for (const typeName of collectTypeReferences(param.typeAnnotation)) exposedTypes.add(typeName);
+        for (const typeName of collectTypeReferences(param.typeAnnotation))
+          exposedTypes.add(typeName);
       }
       for (const typeName of collectTypeReferences(node.returnType)) exposedTypes.add(typeName);
       return exposedTypes;
@@ -112,27 +116,33 @@ export const associatedExportsRule = {
       FunctionDeclaration(node) {
         if (!isExportedDeclaration(node)) return;
         if (node.id?.name && isComponentName(node.id.name)) return;
-        addExportedMember(node, node.id?.name ?? '<anonymous>', collectFunctionSurfaceTypes(node));
+        addExportedMember(node, node.id?.name ?? "<anonymous>", collectFunctionSurfaceTypes(node));
       },
 
       VariableDeclaration(node) {
         if (!isExportedDeclaration(node)) return;
         for (const declaration of node.declarations) {
-          if (declaration.id.type !== 'Identifier') continue;
+          if (declaration.id.type !== "Identifier") continue;
           const init = declaration.init;
-          if (init?.type !== 'ArrowFunctionExpression' && init?.type !== 'FunctionExpression') continue;
+          if (init?.type !== "ArrowFunctionExpression" && init?.type !== "FunctionExpression")
+            continue;
           addExportedMember(node, declaration.id.name, collectFunctionSurfaceTypes(init));
         }
       },
 
-      'Program:exit'() {
+      "Program:exit"() {
         for (const member of exportedMembers) {
           for (const typeName of member.exposedTypes) {
             if (typeName === member.name) continue;
-            if (!localTypes.has(typeName) || exportedTypes.has(typeName) || shouldIgnoreTypeName(typeName)) continue;
+            if (
+              !localTypes.has(typeName) ||
+              exportedTypes.has(typeName) ||
+              shouldIgnoreTypeName(typeName)
+            )
+              continue;
             context.report({
               node: member.node,
-              messageId: 'exportAssociated',
+              messageId: "exportAssociated",
               data: { member: member.name, typeName },
             });
           }

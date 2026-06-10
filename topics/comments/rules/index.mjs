@@ -1,7 +1,7 @@
-import { commentCapitalizationRule } from './comment-capitalization/comment-capitalization.mjs';
-import { todoFormatRule } from './todo-format/todo-format.mjs';
+import { commentCapitalizationRule } from "./comment-capitalization/comment-capitalization.mjs";
+import { todoFormatRule } from "./todo-format/todo-format.mjs";
 
 export const commentsRules = {
-  'comment-capitalization': commentCapitalizationRule,
-  'todo-format': todoFormatRule,
+  "comment-capitalization": commentCapitalizationRule,
+  "todo-format": todoFormatRule,
 };

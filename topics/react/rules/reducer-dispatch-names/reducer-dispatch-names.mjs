@@ -1,15 +1,14 @@
-import { createRuleMessage } from '../../../lib/rule-doc-message.mjs';
+import { createRuleMessage } from "../../../lib/rule-doc-message.mjs";
+
 export const reducerDispatchNamesRule = {
   meta: {
-    type: 'suggestion',
-    docs: {
-      description: 'Require useReducer dispatch variables to be named dispatchThing.',
-    },
+    type: "suggestion",
+    docs: { description: "Require useReducer dispatch variables to be named dispatchThing." },
     messages: {
       dispatchName: createRuleMessage(
-        'Reducer dispatch is named `{{actual}}` instead of `{{expected}}`.',
-        'Rename the dispatch binding to `{{expected}}`.',
-        'reducer-dispatch-names',
+        "Reducer dispatch is named `{{actual}}` instead of `{{expected}}`.",
+        "Rename the dispatch binding to `{{expected}}`.",
+        "reducer-dispatch-names",
       ),
     },
     schema: [],
@@ -23,17 +22,17 @@ export const reducerDispatchNamesRule = {
     return {
       VariableDeclarator(node) {
         if (!isUseReducerCall(node.init)) return;
-        if (node.id.type !== 'ArrayPattern') return;
+        if (node.id.type !== "ArrayPattern") return;
 
         const stateNode = node.id.elements[0];
         const dispatchNode = node.id.elements[1];
-        if (stateNode?.type !== 'Identifier' || dispatchNode?.type !== 'Identifier') return;
+        if (stateNode?.type !== "Identifier" || dispatchNode?.type !== "Identifier") return;
 
         const expected = getExpectedDispatchName(stateNode.name);
         if (dispatchNode.name !== expected) {
           context.report({
             node: dispatchNode,
-            messageId: 'dispatchName',
+            messageId: "dispatchName",
             data: { actual: dispatchNode.name, expected },
           });
         }
@@ -43,15 +42,15 @@ export const reducerDispatchNamesRule = {
 };
 
 function isUseReducerCall(node) {
-  if (node?.type !== 'CallExpression') return false;
+  if (node?.type !== "CallExpression") return false;
   const callee = node.callee;
-  if (callee.type === 'Identifier') return callee.name === 'useReducer';
+  if (callee.type === "Identifier") return callee.name === "useReducer";
   return (
-    callee.type === 'MemberExpression' &&
+    callee.type === "MemberExpression" &&
     !callee.computed &&
-    callee.object.type === 'Identifier' &&
-    callee.object.name === 'React' &&
-    callee.property.type === 'Identifier' &&
-    callee.property.name === 'useReducer'
+    callee.object.type === "Identifier" &&
+    callee.object.name === "React" &&
+    callee.property.type === "Identifier" &&
+    callee.property.name === "useReducer"
   );
 }

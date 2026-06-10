@@ -4,28 +4,28 @@ const LOWER_IDENT_PATTERN = /^[a-z][A-Za-z0-9]*$/;
 const MARKER_PATTERN = /^(Is|Has|With)/;
 
 export const OWNERSHIP_CONTRACT_MESSAGE_IDS = new Set([
-  'bareOptionalElement',
-  'inlineProse',
-  'invalidAxis',
-  'invalidAxisValue',
-  'invalidDynamicArgs',
-  'invalidKey',
-  'invalidLine',
-  'invalidModifierBlock',
-  'markerOptional',
-  'missingOptionalSeparator',
-  'missingRootSeparator',
-  'oddIndent',
-  'optionalFirstOrder',
-  'requiredBoolean',
-  'singleValueUnion',
-  'trailingOptional',
+  "bareOptionalElement",
+  "inlineProse",
+  "invalidAxis",
+  "invalidAxisValue",
+  "invalidDynamicArgs",
+  "invalidKey",
+  "invalidLine",
+  "invalidModifierBlock",
+  "markerOptional",
+  "missingOptionalSeparator",
+  "missingRootSeparator",
+  "oddIndent",
+  "optionalFirstOrder",
+  "requiredBoolean",
+  "singleValueUnion",
+  "trailingOptional",
 ]);
 
 export function parseOwnershipContract(textOrLines) {
   const lines = Array.isArray(textOrLines)
     ? textOrLines
-    : String(textOrLines).replace(/\r\n?/g, '\n').split('\n');
+    : String(textOrLines).replace(/\r\n?/g, "\n").split("\n");
   const contractLines = stripContractIndent(trimEmptyEdgeLines(lines));
   const stack = [];
   const entries = [];
@@ -38,7 +38,7 @@ export function parseOwnershipContract(textOrLines) {
 
   for (let lineIndex = 0; lineIndex < contractLines.length; lineIndex += 1) {
     const rawLine = contractLines[lineIndex];
-    if (rawLine.trim() === '') {
+    if (rawLine.trim() === "") {
       if (previousMeaningfulDepth !== null) {
         hasSeparatorSinceMeaningfulLine = true;
       }
@@ -49,19 +49,19 @@ export function parseOwnershipContract(textOrLines) {
     const looksLikeEntry = isEntryCandidate(content);
     if (!looksLikeEntry && !hasStartedContract) continue;
 
-    const leading = rawLine.match(/^[ \t]*/)?.[0] ?? '';
-    const indent = [...leading].filter((character) => character === ' ').length;
+    const leading = rawLine.match(/^[ \t]*/)?.[0] ?? "";
+    const indent = [...leading].filter((character) => character === " ").length;
     const depth = Math.floor(indent / 2);
     const parent = stack.slice(0, depth).at(-1) ?? null;
 
     hasStartedContract = true;
 
-    if (leading.includes('\t') || indent % 2 !== 0) {
-      errors.push(createError('oddIndent', lineIndex, content));
+    if (leading.includes("\t") || indent % 2 !== 0) {
+      errors.push(createError("oddIndent", lineIndex, content));
     }
 
     if (!looksLikeEntry) {
-      errors.push(createError('invalidLine', lineIndex, content));
+      errors.push(createError("invalidLine", lineIndex, content));
       continue;
     }
 
@@ -75,7 +75,7 @@ export function parseOwnershipContract(textOrLines) {
       depth <= 1 &&
       !hasSeparatorSinceMeaningfulLine
     ) {
-      errors.push(createError('missingRootSeparator', lineIndex, content));
+      errors.push(createError("missingRootSeparator", lineIndex, content));
     }
 
     while (stack.length > depth) stack.pop();
@@ -90,7 +90,7 @@ export function parseOwnershipContract(textOrLines) {
       token: content,
       isOptional: false,
       isExpansion: false,
-      isDynamic: parsed.node.kind === 'dynamic',
+      isDynamic: parsed.node.kind === "dynamic",
       dynamicArgs: parsed.node.dynamicArgs,
       requiredAxes: parsed.node.requiredAxes,
       optionalAxes: parsed.node.optionalAxes,
@@ -104,12 +104,12 @@ export function parseOwnershipContract(textOrLines) {
         const key = `${parsed.node.key}${axis.marker}${value}`;
         entries.push({
           key,
-          baseKey: axis.kind === 'boolean' ? key : `${parsed.node.key}${axis.marker}`,
+          baseKey: axis.kind === "boolean" ? key : `${parsed.node.key}${axis.marker}`,
           groupId,
           depth,
           parent,
           token: content,
-          isOptional: axis.blockKind === 'optional',
+          isOptional: axis.blockKind === "optional",
           isExpansion: true,
           isDynamic: false,
           axis,
@@ -134,21 +134,21 @@ export function expandOwnershipContract(textOrLines) {
 
 export function splitTopLevel(text, separator) {
   const parts = [];
-  let current = '';
+  let current = "";
   let parenDepth = 0;
   let braceDepth = 0;
   let bracketDepth = 0;
   let angleDepth = 0;
 
   for (const character of text) {
-    if (character === '(') parenDepth += 1;
-    if (character === ')') parenDepth -= 1;
-    if (character === '{') braceDepth += 1;
-    if (character === '}') braceDepth -= 1;
-    if (character === '[') bracketDepth += 1;
-    if (character === ']') bracketDepth -= 1;
-    if (character === '<') angleDepth += 1;
-    if (character === '>') angleDepth -= 1;
+    if (character === "(") parenDepth += 1;
+    if (character === ")") parenDepth -= 1;
+    if (character === "{") braceDepth += 1;
+    if (character === "}") braceDepth -= 1;
+    if (character === "[") bracketDepth += 1;
+    if (character === "]") bracketDepth -= 1;
+    if (character === "<") angleDepth += 1;
+    if (character === ">") angleDepth -= 1;
 
     if (
       character === separator &&
@@ -158,14 +158,14 @@ export function splitTopLevel(text, separator) {
       angleDepth === 0
     ) {
       parts.push(current);
-      current = '';
+      current = "";
       continue;
     }
 
     current += character;
   }
 
-  if (current.trim() !== '') parts.push(current);
+  if (current.trim() !== "") parts.push(current);
   return parts;
 }
 
@@ -173,28 +173,22 @@ function parseNode(content, lineIndex) {
   const errors = [];
   const key = content.match(KEY_PATTERN)?.[0] ?? null;
   if (!key) {
-    return { node: null, errors: [createError('invalidKey', lineIndex, content)] };
+    return { node: null, errors: [createError("invalidKey", lineIndex, content)] };
   }
 
   const suffix = content.slice(key.length);
-  if (suffix.trim() === '') {
-    return {
-      node: createNode('element', key, [], [], []),
-      errors,
-    };
+  if (suffix.trim() === "") {
+    return { node: createNode("element", key, [], [], []), errors };
   }
 
-  if (suffix === '?') {
-    return {
-      node: null,
-      errors: [createError('bareOptionalElement', lineIndex, content)],
-    };
+  if (suffix === "?") {
+    return { node: null, errors: [createError("bareOptionalElement", lineIndex, content)] };
   }
 
-  if (suffix.startsWith('(')) {
+  if (suffix.startsWith("(")) {
     const dynamicArgs = parseDynamicArgs(suffix, lineIndex, content);
     return {
-      node: dynamicArgs.args ? createNode('dynamic', key, [], [], dynamicArgs.args) : null,
+      node: dynamicArgs.args ? createNode("dynamic", key, [], [], dynamicArgs.args) : null,
       errors: dynamicArgs.errors,
     };
   }
@@ -204,64 +198,43 @@ function parseNode(content, lineIndex) {
     return { node: null, errors: modifierBlocks.errors };
   }
 
-  const requiredBlock = modifierBlocks.blocks.find((block) => block.blockKind === 'required');
-  const optionalBlock = modifierBlocks.blocks.find((block) => block.blockKind === 'optional');
+  const requiredBlock = modifierBlocks.blocks.find((block) => block.blockKind === "required");
+  const optionalBlock = modifierBlocks.blocks.find((block) => block.blockKind === "optional");
 
   return {
-    node: createNode(
-      'element',
-      key,
-      requiredBlock?.axes ?? [],
-      optionalBlock?.axes ?? [],
-      [],
-    ),
+    node: createNode("element", key, requiredBlock?.axes ?? [], optionalBlock?.axes ?? [], []),
     errors: modifierBlocks.errors,
   };
 }
 
 function createNode(kind, key, requiredAxes, optionalAxes, dynamicArgs) {
-  return {
-    kind,
-    key,
-    requiredAxes,
-    optionalAxes,
-    dynamicArgs,
-  };
+  return { kind, key, requiredAxes, optionalAxes, dynamicArgs };
 }
 
 function parseDynamicArgs(suffix, lineIndex, content) {
-  if (!suffix.endsWith(')')) {
-    return {
-      args: null,
-      errors: [createError('invalidDynamicArgs', lineIndex, content)],
-    };
+  if (!suffix.endsWith(")")) {
+    return { args: null, errors: [createError("invalidDynamicArgs", lineIndex, content)] };
   }
 
   const inner = suffix.slice(1, -1).trim();
-  if (inner === '') {
-    return {
-      args: null,
-      errors: [createError('invalidDynamicArgs', lineIndex, content)],
-    };
+  if (inner === "") {
+    return { args: null, errors: [createError("invalidDynamicArgs", lineIndex, content)] };
   }
 
   const args = [];
   const errors = [];
 
-  for (const rawArg of splitTopLevel(inner, ',')) {
+  for (const rawArg of splitTopLevel(inner, ",")) {
     const arg = rawArg.trim();
     const match = arg.match(/^([a-z][A-Za-z0-9]*)<(.+)>$/);
-    if (!match || !LOWER_IDENT_PATTERN.test(match[1]) || match[2].trim() === '') {
-      errors.push(createError('invalidDynamicArgs', lineIndex, content));
+    if (!match || !LOWER_IDENT_PATTERN.test(match[1]) || match[2].trim() === "") {
+      errors.push(createError("invalidDynamicArgs", lineIndex, content));
       continue;
     }
     args.push({ name: match[1], type: match[2].trim() });
   }
 
-  return {
-    args: errors.length > 0 ? null : args,
-    errors,
-  };
+  return { args: errors.length > 0 ? null : args, errors };
 }
 
 function parseModifierBlocks(suffix, lineIndex, content) {
@@ -270,63 +243,65 @@ function parseModifierBlocks(suffix, lineIndex, content) {
   const blocks = [];
   let hasRequiredBlock = false;
 
-  if (rest.startsWith('{')) {
+  if (rest.startsWith("{")) {
     const block = readBraceBlock(rest);
     if (!block) {
-      return { blocks: null, errors: [createError('invalidModifierBlock', lineIndex, content)] };
+      return { blocks: null, errors: [createError("invalidModifierBlock", lineIndex, content)] };
     }
-    blocks.push(parseAxisBlock('required', block.inner, lineIndex, content));
+    blocks.push(parseAxisBlock("required", block.inner, lineIndex, content));
     hasRequiredBlock = true;
     rest = block.rest;
   }
 
-  if (hasRequiredBlock && rest.trimStart().startsWith('?{')) {
-    errors.push(createError('missingOptionalSeparator', lineIndex, content));
+  if (hasRequiredBlock && rest.trimStart().startsWith("?{")) {
+    errors.push(createError("missingOptionalSeparator", lineIndex, content));
     rest = rest.trimStart();
-  } else if (hasRequiredBlock && rest.trimStart().startsWith(',')) {
+  } else if (hasRequiredBlock && rest.trimStart().startsWith(",")) {
     rest = rest.trimStart().slice(1).trimStart();
   }
 
-  if (rest.startsWith('?{')) {
+  if (rest.startsWith("?{")) {
     const block = readBraceBlock(rest.slice(1));
     if (!block) {
-      return { blocks: null, errors: [createError('invalidModifierBlock', lineIndex, content)] };
+      return { blocks: null, errors: [createError("invalidModifierBlock", lineIndex, content)] };
     }
-    blocks.push(parseAxisBlock('optional', block.inner, lineIndex, content));
+    blocks.push(parseAxisBlock("optional", block.inner, lineIndex, content));
     rest = block.rest;
-  } else if (rest.startsWith('?')) {
-    errors.push(createError('bareOptionalElement', lineIndex, content));
+  } else if (rest.startsWith("?")) {
+    errors.push(createError("bareOptionalElement", lineIndex, content));
     rest = rest.slice(1);
   }
 
   const remaining = rest.trimStart();
-  if (remaining.startsWith('{') || remaining.startsWith(',{') || remaining.startsWith(', {')) {
-    errors.push(createError('optionalFirstOrder', lineIndex, content));
-    const block = readBraceBlock(remaining.startsWith(',') ? remaining.slice(1).trimStart() : remaining);
+  if (remaining.startsWith("{") || remaining.startsWith(",{") || remaining.startsWith(", {")) {
+    errors.push(createError("optionalFirstOrder", lineIndex, content));
+    const block = readBraceBlock(
+      remaining.startsWith(",") ? remaining.slice(1).trimStart() : remaining,
+    );
     if (block) rest = block.rest;
   }
 
-  if (rest.trim() !== '') {
-    const messageId = rest.trim().startsWith('(') ? 'inlineProse' : 'invalidModifierBlock';
+  if (rest.trim() !== "") {
+    const messageId = rest.trim().startsWith("(") ? "inlineProse" : "invalidModifierBlock";
     errors.push(createError(messageId, lineIndex, content));
   }
 
   if (blocks.length === 0) {
-    return { blocks: null, errors: errors.length > 0 ? errors : [createError('invalidLine', lineIndex, content)] };
+    return {
+      blocks: null,
+      errors: errors.length > 0 ? errors : [createError("invalidLine", lineIndex, content)],
+    };
   }
 
   errors.push(...blocks.flatMap((block) => block.errors));
-  return {
-    blocks: blocks.map(({ blockKind, axes }) => ({ blockKind, axes })),
-    errors,
-  };
+  return { blocks: blocks.map(({ blockKind, axes }) => ({ blockKind, axes })), errors };
 }
 
 function parseAxisBlock(blockKind, inner, lineIndex, content) {
   const axes = [];
   const errors = [];
 
-  for (const rawAxis of splitTopLevel(inner, ',')) {
+  for (const rawAxis of splitTopLevel(inner, ",")) {
     const axisText = rawAxis.trim();
     const axis = parseAxis(blockKind, axisText, lineIndex, content);
     errors.push(...axis.errors);
@@ -339,84 +314,59 @@ function parseAxisBlock(blockKind, inner, lineIndex, content) {
 function parseAxis(blockKind, axisText, lineIndex, content) {
   const markerMatch = axisText.match(MARKER_PATTERN);
   if (!markerMatch) {
-    return {
-      axis: null,
-      errors: [createError('invalidAxis', lineIndex, content)],
-    };
+    return { axis: null, errors: [createError("invalidAxis", lineIndex, content)] };
   }
 
   const marker = markerMatch[1];
   const tail = axisText.slice(marker.length);
 
-  if (tail.startsWith('?{')) {
-    return {
-      axis: null,
-      errors: [createError('markerOptional', lineIndex, content)],
-    };
+  if (tail.startsWith("?{")) {
+    return { axis: null, errors: [createError("markerOptional", lineIndex, content)] };
   }
 
-  if (tail.startsWith('{')) {
-    if (!tail.endsWith('}')) {
-      const messageId = tail.endsWith('}?') ? 'trailingOptional' : 'invalidAxis';
+  if (tail.startsWith("{")) {
+    if (!tail.endsWith("}")) {
+      const messageId = tail.endsWith("}?") ? "trailingOptional" : "invalidAxis";
       return { axis: null, errors: [createError(messageId, lineIndex, content)] };
     }
 
     const inner = tail.slice(1, -1);
-    const values = splitTopLevel(inner, '|').map((value) => value.trim()).filter(Boolean);
+    const values = splitTopLevel(inner, "|")
+      .map((value) => value.trim())
+      .filter(Boolean);
     if (values.length < 2) {
-      return {
-        axis: null,
-        errors: [createError('singleValueUnion', lineIndex, content)],
-      };
+      return { axis: null, errors: [createError("singleValueUnion", lineIndex, content)] };
     }
 
     const invalidValue = values.find((value) => !PASCAL_IDENT_PATTERN.test(value));
     if (invalidValue) {
-      return {
-        axis: null,
-        errors: [createError('invalidAxisValue', lineIndex, content)],
-      };
+      return { axis: null, errors: [createError("invalidAxisValue", lineIndex, content)] };
     }
 
-    return {
-      axis: { marker, values, kind: 'union', blockKind },
-      errors: [],
-    };
+    return { axis: { marker, values, kind: "union", blockKind }, errors: [] };
   }
 
   if (!PASCAL_IDENT_PATTERN.test(tail)) {
-    return {
-      axis: null,
-      errors: [createError('invalidAxisValue', lineIndex, content)],
-    };
+    return { axis: null, errors: [createError("invalidAxisValue", lineIndex, content)] };
   }
 
-  if (blockKind === 'required') {
-    return {
-      axis: null,
-      errors: [createError('requiredBoolean', lineIndex, content)],
-    };
+  if (blockKind === "required") {
+    return { axis: null, errors: [createError("requiredBoolean", lineIndex, content)] };
   }
 
-  return {
-    axis: { marker, values: [tail], kind: 'boolean', blockKind },
-    errors: [],
-  };
+  return { axis: { marker, values: [tail], kind: "boolean", blockKind }, errors: [] };
 }
 
 function readBraceBlock(text) {
-  if (!text.startsWith('{')) return null;
+  if (!text.startsWith("{")) return null;
 
   let depth = 0;
   for (let index = 0; index < text.length; index += 1) {
     const character = text[index];
-    if (character === '{') depth += 1;
-    if (character === '}') depth -= 1;
+    if (character === "{") depth += 1;
+    if (character === "}") depth -= 1;
     if (depth === 0) {
-      return {
-        inner: text.slice(1, index),
-        rest: text.slice(index + 1),
-      };
+      return { inner: text.slice(1, index), rest: text.slice(index + 1) };
     }
   }
 
@@ -427,8 +377,8 @@ function isEntryCandidate(content) {
   const key = content.match(KEY_PATTERN)?.[0] ?? null;
   if (!key) return false;
   const suffix = content.slice(key.length);
-  if (suffix === '') return true;
-  if (suffix.startsWith('{') || suffix.startsWith('?') || suffix.startsWith('(')) return true;
+  if (suffix === "") return true;
+  if (suffix.startsWith("{") || suffix.startsWith("?") || suffix.startsWith("(")) return true;
   return false;
 }
 
@@ -443,8 +393,8 @@ function stripContractIndent(lines) {
   if (commonIndent === 0) return trimmed;
 
   return trimmed.map((line) => {
-    if (line.trim() === '') return line;
-    return line.startsWith(' '.repeat(commonIndent)) ? line.slice(commonIndent) : line;
+    if (line.trim() === "") return line;
+    return line.startsWith(" ".repeat(commonIndent)) ? line.slice(commonIndent) : line;
   });
 }
 
@@ -452,8 +402,8 @@ function trimEmptyEdgeLines(lines) {
   let start = 0;
   let end = lines.length;
 
-  while (start < end && lines[start].trim() === '') start += 1;
-  while (end > start && lines[end - 1].trim() === '') end -= 1;
+  while (start < end && lines[start].trim() === "") start += 1;
+  while (end > start && lines[end - 1].trim() === "") end -= 1;
 
   return lines.slice(start, end);
 }

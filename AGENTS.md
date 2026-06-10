@@ -30,10 +30,12 @@ an inline policy comment.
 ├── CLAUDE.md -> AGENTS.md                 # Symlink so Claude Code reads this on first load
 ├── package.json                           # Private package manifest for @zaydek/eslint
 ├── package-lock.json                      # Locked local test dependencies
+├── config.mjs                             # Shared ESLint v9 flat config for downstream repos
+├── prettier.config.mjs                    # Shared package formatting config
 ├── README.md -> RULES.md                  # Human-doc shortcut for editors and conventional entrypoints
 ├── RULES.md                               # Compact rule TOC with concise valid/invalid examples
 ├── RULES/
-│   └── {:rule}.md                         # Detailed agent-facing rule docs
+│   └── {:topic}_{:rule}.md                # Detailed agent-facing rule docs
 ├── eslint.layout                          # Checkable shape for this repo
 ├── test.mjs                               # Rule fixture runner
 ├── tools/
@@ -63,20 +65,23 @@ an inline policy comment.
   that rule. Every bug fix should add a fixture that would have failed before.
 - `RULES.md` is the compact human/agent index. It links every rule and shows a
   concise valid/invalid use case.
-- `RULES/{rule}.md` owns detailed rule intent, examples, exceptions, and
+- `RULES/{topic}_{rule}.md` owns detailed rule intent, examples, exceptions, and
   agent-facing guidance. Keep these files in sync with rule tests.
 - `topics/{topic}/rules/index.mjs` exports the topic-local rule map.
 - `topics/index.mjs` exports the topic-grouped map, the flat public rule map
   consumed by downstream `eslint.config.js` files, and `dormantRules` for
   implemented draft rules whose docs/examples remain testable while the rules
   stay off for consumers.
+- `config.mjs` owns the default ESLint v9 flat config layers for local Zaydek
+  TypeScript/React/StyleX apps. Prefer importing this config downstream instead
+  of copying plugin setup.
 - `topics/lib/rule-tester.mjs` owns shared RuleTester setup for fixtures.
-- `tools/verify-rule-docs.mjs` extracts `RULES.md` and `RULES/{rule}.md` code
+- `tools/verify-rule-docs.mjs` extracts `RULES.md` and `RULES/{topic}_{rule}.md` code
   blocks. `npm run verify-docs-rule` proves each example against its target
   rule; `npm run verify-docs-rule-all` also checks cross-rule consistency
   against the public rule set.
 - `tools/update-rules-index.mjs` regenerates compact `RULES.md` examples from
-  the first valid/invalid examples in `RULES/{rule}.md`.
+  the first valid/invalid examples in `RULES/{topic}_{rule}.md`.
 - `topics/stylex/OWNERSHIP.md` is the formal StyleX ownership contract spec.
 - `topics/stylex/lib/ownership-contract.mjs` owns the pure StyleX ownership
   parser/expander described by `topics/stylex/OWNERSHIP.md`.
@@ -85,7 +90,7 @@ an inline policy comment.
   for downstream tools through the package `./lib/stylex-*` export aliases.
 - `package.json` owns package exports and declares `eslint` /
   `typescript-eslint` as peer dependencies.
-- `RULES.md` and `RULES/{rule}.md` are the human-readable rule contract. Keep
+- `RULES.md` and `RULES/{topic}_{rule}.md` are the human-readable rule contract. Keep
   them in sync with every rule.
 
 `README.md` is a symlink to `RULES.md` for human-level documentation shortcuts.
@@ -104,7 +109,10 @@ Fast path for a local Zaydek repo:
 {
   "devDependencies": {
     "@zaydek/eslint": "file:../../eslint",
+    "@stylexjs/eslint-plugin": "^0.18.0",
     "eslint": "^9.0.0",
+    "eslint-plugin-react-hooks": "^7.0.0",
+    "globals": "^17.0.0",
     "typescript-eslint": "^8.0.0"
   }
 }
@@ -120,30 +128,25 @@ npm install
 3. Add or update `eslint.config.js`:
 
 ```js
-import { rules as agenticRules } from '@zaydek/eslint';
+export { default } from "@zaydek/eslint/config";
+```
 
-const agenticPlugin = { rules: agenticRules };
-const agenticRuleConfig = Object.fromEntries(
-  Object.keys(agenticRules).map((ruleName) => [`agentic/${ruleName}`, 'warn']),
-);
+Use `createZaydekEslintConfig` only when a project needs different file globs,
+ignores, or filename source roots:
 
-export default [
-  {
-    files: ['src/**/*.{ts,tsx}'],
-    plugins: { agentic: agenticPlugin },
-    rules: { ...agenticRuleConfig },
-  },
-];
+```js
+import { createZaydekEslintConfig } from "@zaydek/eslint/config";
+
+export default createZaydekEslintConfig({
+  files: ["app/src/**/*.{ts,tsx}"],
+  filenameSourceRoots: ["app/src"],
+});
 ```
 
 4. Add a lint script if the downstream repo does not already have one:
 
 ```json
-{
-  "scripts": {
-    "lint": "eslint ."
-  }
-}
+{ "scripts": { "lint": "eslint ." } }
 ```
 
 5. Verify from the downstream repo:
@@ -157,7 +160,7 @@ Every diagnostic emitted by this package is intentionally agent-oriented:
 ```text
 <Problem>
 Fix: <required action>
-See: ~/GitHub/zaydek/eslint/RULES/{rule}.md
+See: ~/GitHub/zaydek/eslint/RULES/{topic}_{rule}.md
 ```
 
 Agents should follow the `See:` path first. The linked rule doc is the contract;
@@ -171,7 +174,7 @@ Tooling that needs the StyleX ownership inference engine should import the
 public helper exports instead of deep relative paths:
 
 ```js
-import { inferStylexOwnership } from '@zaydek/eslint/lib/stylex-ownership-infer';
+import { inferStylexOwnership } from "@zaydek/eslint/lib/stylex-ownership-infer";
 ```
 
 ## Rule doctrine
@@ -182,7 +185,7 @@ Good local rules are deterministic and narrow:
 - Prefer warning-level rollout until the repo has been migrated.
 - Encode real false positives as valid fixtures.
 - Keep messages agent-oriented: one problem line, one `Fix:` line, and one
-  `See: ~/GitHub/zaydek/eslint/RULES/{rule}.md` line.
+  `See: ~/GitHub/zaydek/eslint/RULES/{topic}_{rule}.md` line.
 - Do not enforce taste that cannot be stated as a stable syntax contract.
 - Do not add autofix unless the transform is obviously safe.
 
@@ -196,9 +199,7 @@ topics/typescript/rules/boolean-names/
 ```
 
 ```js
-export const typescriptRules = {
-  'boolean-names': booleanNamesRule,
-};
+export const typescriptRules = { "boolean-names": booleanNamesRule };
 ```
 
 ## Adding or changing a rule
@@ -210,7 +211,7 @@ export const typescriptRules = {
    `eslint.config.js` files can enable it from the package export map. If it is
    a dormant draft rule, keep it out of the topic map and expose it through
    `dormantRules` instead.
-5. Update `RULES/{rule}.md` with intent, boundaries, and examples.
+5. Update `RULES/{topic}_{rule}.md` with intent, boundaries, and examples.
 6. Run `npm run update-rules-index` to regenerate compact `RULES.md`.
 7. Update downstream `CONVENTIONS.md` only when the broader doctrine changed.
 8. Run `npm test`.
@@ -265,7 +266,7 @@ node ~/GitHub/zaydek/skills/skills/eslint-check/scripts/eslint-check.mjs code
 ## What Not To Do
 
 - Do not leave rule behavior undocumented; maintain both the compact `RULES.md`
-  index and the detailed `RULES/{rule}.md` page.
+  index and the detailed `RULES/{topic}_{rule}.md` page.
 - Do not move rules out of their topic folders to make imports shorter.
 - Do not silently narrow a rule after a false positive; add a valid fixture and
   document the exception.

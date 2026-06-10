@@ -1,49 +1,50 @@
-import { createRuleMessage } from '../../../lib/rule-doc-message.mjs';
-const DEFAULT_MARKERS = ['TODO', 'BUG', 'FIXME', 'IMPROVEMENT', 'OPTIMIZATION'];
+import { createRuleMessage } from "../../../lib/rule-doc-message.mjs";
+
+const DEFAULT_MARKERS = ["TODO", "BUG", "FIXME", "IMPROVEMENT", "OPTIMIZATION"];
 
 // Permissive by default: `@zaydek` and `@claude-code/opus-4.8/xhigh` both
 // pass. Tighten via the attributionPattern option when the harness/model/
 // effort grammar stabilizes.
-const DEFAULT_ATTRIBUTION_PATTERN = '^@[\\w.-]+(?:/[\\w.-]+)*$';
+const DEFAULT_ATTRIBUTION_PATTERN = "^@[\\w.-]+(?:/[\\w.-]+)*$";
 
 const MARKER_PATTERN = /^(\s*)([A-Za-z]+)(?:\(([^)]*)\))?(:)?/;
 const MISSPELLING_PATTERN = /\b(TOOD|TDOO|TODOO|OTOD)\b/gi;
 
 export const todoFormatRule = {
   meta: {
-    type: 'suggestion',
+    type: "suggestion",
     docs: {
       description:
-        'Require canonical uppercase comment markers and well-formed `(@attribution)` scopes.',
+        "Require canonical uppercase comment markers and well-formed `(@attribution)` scopes.",
     },
     messages: {
       misspelled: createRuleMessage(
-        '`{{token}}` looks like a misspelled TODO marker.',
-        'Write `TODO` or one of the configured uppercase markers.',
-        'todo-format',
+        "`{{token}}` looks like a misspelled TODO marker.",
+        "Write `TODO` or one of the configured uppercase markers.",
+        "todo-format",
       ),
       casing: createRuleMessage(
-        'Marker `{{token}}` is not the canonical uppercase marker `{{expected}}`.',
-        'Rename the marker to `{{expected}}` so marker scans stay greppable.',
-        'todo-format',
+        "Marker `{{token}}` is not the canonical uppercase marker `{{expected}}`.",
+        "Rename the marker to `{{expected}}` so marker scans stay greppable.",
+        "todo-format",
       ),
       scopeMustAttribute: createRuleMessage(
-        'Marker scope for `{{token}}` is not an attribution.',
-        'Write `{{token}}(@who)` or remove the scope.',
-        'todo-format',
+        "Marker scope for `{{token}}` is not an attribution.",
+        "Write `{{token}}(@who)` or remove the scope.",
+        "todo-format",
       ),
       attribution: createRuleMessage(
-        'Attribution `{{scope}}` does not match `{{pattern}}`.',
-        'Use an agent/human attribution such as `@claude-code/opus-4.8/xhigh`.',
-        'todo-format',
+        "Attribution `{{scope}}` does not match `{{pattern}}`.",
+        "Use an agent/human attribution such as `@claude-code/opus-4.8/xhigh`.",
+        "todo-format",
       ),
     },
     schema: [
       {
-        type: 'object',
+        type: "object",
         properties: {
-          markers: { type: 'array', items: { type: 'string' }, minItems: 1 },
-          attributionPattern: { type: 'string' },
+          markers: { type: "array", items: { type: "string" }, minItems: 1 },
+          attributionPattern: { type: "string" },
         },
         additionalProperties: false,
       },
@@ -60,25 +61,39 @@ export const todoFormatRule = {
     return {
       Program() {
         for (const comment of sourceCode.getAllComments()) {
-          checkComment(context, sourceCode, comment, markers, attributionRegExp, attributionPattern);
+          checkComment(
+            context,
+            sourceCode,
+            comment,
+            markers,
+            attributionRegExp,
+            attributionPattern,
+          );
         }
       },
     };
   },
 };
 
-function checkComment(context, sourceCode, comment, markers, attributionRegExp, attributionPattern) {
+function checkComment(
+  context,
+  sourceCode,
+  comment,
+  markers,
+  attributionRegExp,
+  attributionPattern,
+) {
   const textOffset = comment.range[0] + 2;
 
   for (const match of comment.value.matchAll(MISSPELLING_PATTERN)) {
-    report(context, sourceCode, textOffset + match.index, match[0].length, 'misspelled', {
+    report(context, sourceCode, textOffset + match.index, match[0].length, "misspelled", {
       token: match[0],
     });
   }
 
   // A marker is declared by a `(scope)` or a trailing colon at the start of
   // the comment; bare mentions and prose stay out of scope.
-  const firstLine = comment.value.split('\n').find((line) => line.trim() !== '') ?? '';
+  const firstLine = comment.value.split("\n").find((line) => line.trim() !== "") ?? "";
   const markerMatch = firstLine.match(MARKER_PATTERN);
   if (!markerMatch) return;
 
@@ -91,18 +106,23 @@ function checkComment(context, sourceCode, comment, markers, attributionRegExp, 
   const expected = token.toUpperCase();
   if (!markers.has(expected)) return;
   if (token !== expected) {
-    report(context, sourceCode, tokenIndex, token.length, 'casing', { token, expected });
+    report(context, sourceCode, tokenIndex, token.length, "casing", { token, expected });
   }
 
   if (scope === undefined) return;
-  if (!scope.startsWith('@')) {
-    report(context, sourceCode, tokenIndex + token.length + 1, Math.max(scope.length, 1), 'scopeMustAttribute', {
-      token: expected,
-    });
+  if (!scope.startsWith("@")) {
+    report(
+      context,
+      sourceCode,
+      tokenIndex + token.length + 1,
+      Math.max(scope.length, 1),
+      "scopeMustAttribute",
+      { token: expected },
+    );
     return;
   }
   if (!attributionRegExp.test(scope)) {
-    report(context, sourceCode, tokenIndex + token.length + 1, scope.length, 'attribution', {
+    report(context, sourceCode, tokenIndex + token.length + 1, scope.length, "attribution", {
       scope,
       pattern: attributionPattern,
     });

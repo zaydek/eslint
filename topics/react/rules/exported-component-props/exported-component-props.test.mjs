@@ -1,9 +1,9 @@
-import { createRuleTester } from '../../../lib/rule-tester.mjs';
-import { exportedComponentPropsRule } from './exported-component-props.mjs';
+import { createRuleTester } from "../../../lib/rule-tester.mjs";
+import { exportedComponentPropsRule } from "./exported-component-props.mjs";
 
 const ruleTester = createRuleTester();
 
-ruleTester.run('exported-component-props', exportedComponentPropsRule, {
+ruleTester.run("exported-component-props", exportedComponentPropsRule, {
   valid: [
     `
 export type ButtonProps = { label: string };
@@ -26,7 +26,7 @@ export function Button(props: ButtonProps): JSX.Element {
   return <button>{props.label}</button>;
 }
 `,
-      errors: [{ messageId: 'exportedProps' }],
+      errors: [{ messageId: "exportedProps" }],
     },
   ],
 });

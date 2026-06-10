@@ -1,32 +1,29 @@
-import { createRuleMessage } from '../../../lib/rule-doc-message.mjs';
+import { createRuleMessage } from "../../../lib/rule-doc-message.mjs";
 import {
   getOwnershipComment,
   getStylexCreateObject,
   parseOwnershipComment,
-} from '../../lib/ownership.mjs';
+} from "../../lib/ownership.mjs";
 
 const DEFAULT_MAX_AXES = 2;
 
 export const maxVariantAxesRule = {
   meta: {
-    type: 'suggestion',
+    type: "suggestion",
     docs: {
-      description:
-        'Limit how many orthogonal variant families one styled element may accrue.',
+      description: "Limit how many orthogonal variant families one styled element may accrue.",
     },
     messages: {
       tooManyAxes: createRuleMessage(
-        '`{{owner}}` carries {{count}} variant families, which exceeds the configured max of {{max}}.',
-        'Collapse an axis, split the element, or raise the rule option only when the larger matrix is intentional.',
-        'max-variant-axes',
+        "`{{owner}}` carries {{count}} variant families, which exceeds the configured max of {{max}}.",
+        "Collapse an axis, split the element, or raise the rule option only when the larger matrix is intentional.",
+        "max-variant-axes",
       ),
     },
     schema: [
       {
-        type: 'object',
-        properties: {
-          maxAxes: { type: 'integer', minimum: 1 },
-        },
+        type: "object",
+        properties: { maxAxes: { type: "integer", minimum: 1 } },
         additionalProperties: false,
       },
     ],
@@ -60,7 +57,7 @@ export const maxVariantAxesRule = {
           if (families.size <= maxAxes) continue;
           context.report({
             loc: comment.loc,
-            messageId: 'tooManyAxes',
+            messageId: "tooManyAxes",
             data: {
               owner: ownersByLine.get(line) ?? [...families][0],
               count: String(families.size),
@@ -75,7 +72,7 @@ export const maxVariantAxesRule = {
 
 function getOwningStatement(node) {
   let current = node;
-  while (current.parent && current.parent.type !== 'Program') {
+  while (current.parent && current.parent.type !== "Program") {
     current = current.parent;
   }
   return current;

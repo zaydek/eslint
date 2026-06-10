@@ -1,21 +1,19 @@
-import { createRuleMessage } from '../../../lib/rule-doc-message.mjs';
+import { createRuleMessage } from "../../../lib/rule-doc-message.mjs";
 import {
   getOwnershipComment,
   getStylexCreateObject,
   parseOwnershipComment,
-} from '../../lib/ownership.mjs';
+} from "../../lib/ownership.mjs";
 
 export const stylexKeyNamesRule = {
   meta: {
-    type: 'suggestion',
-    docs: {
-      description: 'Require nested StyleX ownership keys to inherit parent prefixes.',
-    },
+    type: "suggestion",
+    docs: { description: "Require nested StyleX ownership keys to inherit parent prefixes." },
     messages: {
       prefix: createRuleMessage(
-        'StyleX key `{{key}}` does not inherit ownership prefix `{{prefix}}`.',
-        'Rename the key so child styles are prefixed by their owning structural key.',
-        'stylex-key-names',
+        "StyleX key `{{key}}` does not inherit ownership prefix `{{prefix}}`.",
+        "Rename the key so child styles are prefixed by their owning structural key.",
+        "stylex-key-names",
       ),
     },
     schema: [],
@@ -36,16 +34,14 @@ export const stylexKeyNamesRule = {
         if (shouldRequireParentPrefix(entry) && !entry.key.startsWith(entry.parent.key)) {
           context.report({
             node: objectNode,
-            messageId: 'prefix',
+            messageId: "prefix",
             data: { key: entry.key, prefix: entry.parent.key },
           });
         }
       }
     }
 
-    return {
-      CallExpression: checkStylexCreate,
-    };
+    return { CallExpression: checkStylexCreate };
   },
 };
 
@@ -57,7 +53,7 @@ function shouldRequireParentPrefix(entry) {
 
 function getOwningStatement(node) {
   let current = node;
-  while (current.parent && current.parent.type !== 'Program') {
+  while (current.parent && current.parent.type !== "Program") {
     current = current.parent;
   }
   return current;

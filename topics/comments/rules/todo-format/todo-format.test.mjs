@@ -1,63 +1,54 @@
-import { createRuleTester } from '../../../lib/rule-tester.mjs';
-import { todoFormatRule } from './todo-format.mjs';
+import { createRuleTester } from "../../../lib/rule-tester.mjs";
+import { todoFormatRule } from "./todo-format.mjs";
 
 const ruleTester = createRuleTester();
 
-ruleTester.run('todo-format', todoFormatRule, {
+ruleTester.run("todo-format", todoFormatRule, {
   valid: [
-    '// TODO: Disable tabbing while the modal is open\nconst value = 1;',
-    '// BUG: Cursor jumps a row when the lane is empty\nconst value = 1;',
-    '/* FIXME: Extract this into its own component */\nconst value = 1;',
+    "// TODO: Disable tabbing while the modal is open\nconst value = 1;",
+    "// BUG: Cursor jumps a row when the lane is empty\nconst value = 1;",
+    "/* FIXME: Extract this into its own component */\nconst value = 1;",
     // Attributed markers: humans and agents.
-    '// TODO(@zaydek): Ship the modal\nconst value = 1;',
-    '// TODO(@claude-code/opus-4.8/xhigh): Tighten the axis cap\nconst value = 1;',
-    '// TODO(@codex/gpt-5.3-codex/high)\nconst value = 1;',
+    "// TODO(@zaydek): Ship the modal\nconst value = 1;",
+    "// TODO(@claude-code/opus-4.8/xhigh): Tighten the axis cap\nconst value = 1;",
+    "// TODO(@codex/gpt-5.3-codex/high)\nconst value = 1;",
     // Bare markers are fine; only declared markers are held to casing.
-    'const min = 8; // TODO\nconst value = 1;',
+    "const min = 8; // TODO\nconst value = 1;",
     // Prose that merely starts with or contains a marker word is out of scope.
-    '// Bug fix for the modal layering issue\nconst value = 1;',
-    '// Clearing the remaining todos happens in the activity feed\nconst value = 1;',
+    "// Bug fix for the modal layering issue\nconst value = 1;",
+    "// Clearing the remaining todos happens in the activity feed\nconst value = 1;",
     // Markers outside the configured set are untouched.
-    '// NOTE: Out-of-set markers are not enforced\nconst value = 1;',
+    "// NOTE: Out-of-set markers are not enforced\nconst value = 1;",
     // The marker set is data.
-    {
-      code: '// NOTE: In-set when configured\nconst value = 1;',
-      options: [{ markers: ['NOTE'] }],
-    },
+    { code: "// NOTE: In-set when configured\nconst value = 1;", options: [{ markers: ["NOTE"] }] },
   ],
   invalid: [
     {
-      code: '// TOOD: This seems overcomplicated\nconst value = 1;',
-      errors: [{ messageId: 'misspelled' }],
+      code: "// TOOD: This seems overcomplicated\nconst value = 1;",
+      errors: [{ messageId: "misspelled" }],
+    },
+    { code: "// todo: lowercase marker\nconst value = 1;", errors: [{ messageId: "casing" }] },
+    { code: "// Fixme: mixed-case marker\nconst value = 1;", errors: [{ messageId: "casing" }] },
+    {
+      code: "// bug(modal): lowercase marker with a non-attribution scope\nconst value = 1;",
+      errors: [{ messageId: "casing" }, { messageId: "scopeMustAttribute" }],
     },
     {
-      code: '// todo: lowercase marker\nconst value = 1;',
-      errors: [{ messageId: 'casing' }],
+      code: "// TODO(modal): Scopes are attributions only\nconst value = 1;",
+      errors: [{ messageId: "scopeMustAttribute" }],
     },
     {
-      code: '// Fixme: mixed-case marker\nconst value = 1;',
-      errors: [{ messageId: 'casing' }],
+      code: "// TODO(@claude code): Spaces break attribution\nconst value = 1;",
+      errors: [{ messageId: "attribution" }],
     },
     {
-      code: '// bug(modal): lowercase marker with a non-attribution scope\nconst value = 1;',
-      errors: [{ messageId: 'casing' }, { messageId: 'scopeMustAttribute' }],
+      code: "// TODO(@): Empty attribution\nconst value = 1;",
+      errors: [{ messageId: "attribution" }],
     },
     {
-      code: '// TODO(modal): Scopes are attributions only\nconst value = 1;',
-      errors: [{ messageId: 'scopeMustAttribute' }],
-    },
-    {
-      code: '// TODO(@claude code): Spaces break attribution\nconst value = 1;',
-      errors: [{ messageId: 'attribution' }],
-    },
-    {
-      code: '// TODO(@): Empty attribution\nconst value = 1;',
-      errors: [{ messageId: 'attribution' }],
-    },
-    {
-      code: '// note: lowercase configured marker\nconst value = 1;',
-      options: [{ markers: ['NOTE'] }],
-      errors: [{ messageId: 'casing' }],
+      code: "// note: lowercase configured marker\nconst value = 1;",
+      options: [{ markers: ["NOTE"] }],
+      errors: [{ messageId: "casing" }],
     },
   ],
 });

@@ -1,32 +1,31 @@
-import { createRuleMessage } from '../../../lib/rule-doc-message.mjs';
+import { createRuleMessage } from "../../../lib/rule-doc-message.mjs";
+
 function getPropertyName(node) {
-  if (node.key?.type === 'Identifier') return node.key.name;
-  if (node.key?.type === 'Literal') return String(node.key.value);
-  return 'property';
+  if (node.key?.type === "Identifier") return node.key.name;
+  if (node.key?.type === "Literal") return String(node.key.value);
+  return "property";
 }
 
 function getArrayElementType(typeNode) {
-  if (typeNode?.type === 'TSArrayType') return typeNode.elementType;
-  if (typeNode?.type !== 'TSTypeReference') return null;
-  if (typeNode.typeName?.type !== 'Identifier' || typeNode.typeName.name !== 'Array') return null;
+  if (typeNode?.type === "TSArrayType") return typeNode.elementType;
+  if (typeNode?.type !== "TSTypeReference") return null;
+  if (typeNode.typeName?.type !== "Identifier" || typeNode.typeName.name !== "Array") return null;
   return typeNode.typeArguments?.params?.[0] ?? null;
 }
 
 function isInlineObjectType(typeNode) {
-  return typeNode?.type === 'TSTypeLiteral';
+  return typeNode?.type === "TSTypeLiteral";
 }
 
 export const namedNestedTypesRule = {
   meta: {
-    type: 'suggestion',
-    docs: {
-      description: 'Require nested object member shapes to use named composed types.',
-    },
+    type: "suggestion",
+    docs: { description: "Require nested object member shapes to use named composed types." },
     messages: {
       namedNested: createRuleMessage(
-        'Property `{{name}}` uses an inline nested object type.',
-        'Extract the nested shape into a named type and reference that type.',
-        'named-nested-types',
+        "Property `{{name}}` uses an inline nested object type.",
+        "Extract the nested shape into a named type and reference that type.",
+        "named-nested-types",
       ),
     },
     schema: [],
@@ -39,13 +38,11 @@ export const namedNestedTypesRule = {
       if (!isInlineObjectType(typeNode) && !isInlineObjectType(arrayElementType)) return;
       context.report({
         node: typeNode,
-        messageId: 'namedNested',
+        messageId: "namedNested",
         data: { name: getPropertyName(node) },
       });
     }
 
-    return {
-      TSPropertySignature: checkProperty,
-    };
+    return { TSPropertySignature: checkProperty };
   },
 };

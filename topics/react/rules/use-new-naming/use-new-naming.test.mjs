@@ -1,9 +1,9 @@
-import { createRuleTester } from '../../../lib/rule-tester.mjs';
-import { useNewNamingRule } from './use-new-naming.mjs';
+import { createRuleTester } from "../../../lib/rule-tester.mjs";
+import { useNewNamingRule } from "./use-new-naming.mjs";
 
 const ruleTester = createRuleTester();
 
-ruleTester.run('use-new-naming', useNewNamingRule, {
+ruleTester.run("use-new-naming", useNewNamingRule, {
   valid: [
     `
       function useNewBoard(initialBoard) {
@@ -34,7 +34,7 @@ ruleTester.run('use-new-naming', useNewNamingRule, {
           return { state, dispatchBoard };
         }
       `,
-      errors: [{ messageId: 'useNewPrefix' }],
+      errors: [{ messageId: "useNewPrefix" }],
     },
     {
       code: `
@@ -43,7 +43,7 @@ ruleTester.run('use-new-naming', useNewNamingRule, {
           return { modal, setModal };
         };
       `,
-      errors: [{ messageId: 'useNewPrefix' }],
+      errors: [{ messageId: "useNewPrefix" }],
     },
   ],
 });

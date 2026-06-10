@@ -1,26 +1,27 @@
-import { createRuleMessage } from '../../../lib/rule-doc-message.mjs';
+import { createRuleMessage } from "../../../lib/rule-doc-message.mjs";
+
 export const contextViaFactoryRule = {
   meta: {
-    type: 'suggestion',
+    type: "suggestion",
     docs: {
       description:
-        'Require contexts to be created through `newGenericContext` with an aligned debug name.',
+        "Require contexts to be created through `newGenericContext` with an aligned debug name.",
     },
     messages: {
       useFactory: createRuleMessage(
-        'Context is created without `newGenericContext`.',
-        'Create contexts with `newGenericContext` so consumers get the standard throwing hook behavior.',
-        'context-via-factory',
+        "Context is created without `newGenericContext`.",
+        "Create contexts with `newGenericContext` so consumers get the standard throwing hook behavior.",
+        "context-via-factory",
       ),
       contextSuffix: createRuleMessage(
-        'Context binding `{{name}}` does not end with `Context`.',
-        'Rename the binding to `{Thing}Context`.',
-        'context-via-factory',
+        "Context binding `{{name}}` does not end with `Context`.",
+        "Rename the binding to `{Thing}Context`.",
+        "context-via-factory",
       ),
       debugName: createRuleMessage(
-        '`newGenericContext` debug identifier `{{actual}}` does not match binding `{{expected}}`.',
-        'Change the debug string to `{{expected}}`.',
-        'context-via-factory',
+        "`newGenericContext` debug identifier `{{actual}}` does not match binding `{{expected}}`.",
+        "Change the debug string to `{{expected}}`.",
+        "context-via-factory",
       ),
     },
     schema: [],
@@ -33,12 +34,12 @@ export const contextViaFactoryRule = {
     return {
       CallExpression(node) {
         if (isCreateContextCall(node) && !isFactoryModule) {
-          context.report({ node, messageId: 'useFactory' });
+          context.report({ node, messageId: "useFactory" });
           return;
         }
 
-        if (node.callee.type !== 'Identifier' || node.callee.name !== 'newGenericContext') return;
-        if (node.parent?.type !== 'VariableDeclarator' || node.parent.id.type !== 'Identifier') {
+        if (node.callee.type !== "Identifier" || node.callee.name !== "newGenericContext") return;
+        if (node.parent?.type !== "VariableDeclarator" || node.parent.id.type !== "Identifier") {
           return;
         }
 
@@ -46,20 +47,20 @@ export const contextViaFactoryRule = {
         if (!/Context$/.test(bindingName)) {
           context.report({
             node: node.parent.id,
-            messageId: 'contextSuffix',
+            messageId: "contextSuffix",
             data: { name: bindingName },
           });
         }
 
         const debugArgument = node.arguments[0];
         if (
-          debugArgument?.type === 'Literal' &&
-          typeof debugArgument.value === 'string' &&
+          debugArgument?.type === "Literal" &&
+          typeof debugArgument.value === "string" &&
           debugArgument.value !== bindingName
         ) {
           context.report({
             node: debugArgument,
-            messageId: 'debugName',
+            messageId: "debugName",
             data: { expected: bindingName, actual: debugArgument.value },
           });
         }
@@ -70,14 +71,14 @@ export const contextViaFactoryRule = {
 
 function isCreateContextCall(node) {
   if (
-    node.callee.type === 'MemberExpression' &&
+    node.callee.type === "MemberExpression" &&
     !node.callee.computed &&
-    node.callee.object.type === 'Identifier' &&
-    node.callee.object.name === 'React' &&
-    node.callee.property.type === 'Identifier' &&
-    node.callee.property.name === 'createContext'
+    node.callee.object.type === "Identifier" &&
+    node.callee.object.name === "React" &&
+    node.callee.property.type === "Identifier" &&
+    node.callee.property.name === "createContext"
   ) {
     return true;
   }
-  return node.callee.type === 'Identifier' && node.callee.name === 'createContext';
+  return node.callee.type === "Identifier" && node.callee.name === "createContext";
 }

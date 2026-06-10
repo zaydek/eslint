@@ -1,6 +1,6 @@
 # ESLint Rules
 
-`RULES.md` is the compact index. Detailed agent-facing rule docs live in `RULES/{slug}.md`.
+`RULES.md` is the compact index. Detailed agent-facing rule docs live in `RULES/{topic}_{rule}.md`.
 
 The `agentic/` prefix comes from the consumer plugin name; this package exports flat rule keys.
 
@@ -12,29 +12,19 @@ Add the private package and peer dependencies from a downstream Zaydek repo:
 {
   "devDependencies": {
     "@zaydek/eslint": "file:../../eslint",
+    "@stylexjs/eslint-plugin": "^0.18.0",
     "eslint": "^9.0.0",
+    "eslint-plugin-react-hooks": "^7.0.0",
+    "globals": "^17.0.0",
     "typescript-eslint": "^8.0.0"
   }
 }
 ```
 
-Wire the flat public rule map in `eslint.config.js`:
+Use the shared ESLint v9 flat config in `eslint.config.js`:
 
 ```js
-import { rules as agenticRules } from '@zaydek/eslint';
-
-const agenticPlugin = { rules: agenticRules };
-const agenticRuleConfig = Object.fromEntries(
-  Object.keys(agenticRules).map((ruleName) => [`agentic/${ruleName}`, 'warn']),
-);
-
-export default [
-  {
-    files: ['src/**/*.{ts,tsx}'],
-    plugins: { agentic: agenticPlugin },
-    rules: { ...agenticRuleConfig },
-  },
-];
+export { default } from "@zaydek/eslint/config";
 ```
 
 Then run `npm install` and `npm run lint` in the downstream repo.
@@ -44,7 +34,7 @@ Diagnostics are written for agents:
 ```text
 <Problem>
 Fix: <required action>
-See: ~/GitHub/zaydek/eslint/RULES/{rule}.md
+See: ~/GitHub/zaydek/eslint/RULES/{topic}_{rule}.md
 ```
 
 Follow the `See:` path first. Do not enable `dormantRules` downstream; those
@@ -63,20 +53,23 @@ exist only so draft/disabled rules can remain documented and testable here.
   - [Error Message Context](#error-message-context) — disabled
   - [Exhaustive Switch](#exhaustive-switch)
   - [Function Declarations](#function-declarations)
-  - [Function Names](#function-names) — disabled
   - [Handler Map Alignment](#handler-map-alignment)
+  - [Kebab-Case Source Filenames](#kebab-case-source-filenames)
   - [Map Record Names](#map-record-names)
   - [Named Complex Return Types](#named-complex-return-types)
   - [Named Nested Types](#named-nested-types)
   - [No Concision Names](#no-concision-names)
   - [No Namespaces](#no-namespaces)
+  - [Prefer Type Aliases](#prefer-type-aliases)
   - [Result Shape](#result-shape)
 - [React](#react)
+  - [Component Body Layout](#component-body-layout)
   - [Component Props](#component-props)
   - [Context Via Factory](#context-via-factory)
   - [Exported Component Props](#exported-component-props)
   - [Namespace Imports](#namespace-imports)
   - [Reducer Dispatch Names](#reducer-dispatch-names)
+  - [Ref Names](#ref-names)
   - [State Setter Pairs](#state-setter-pairs)
   - [Use New Naming](#use-new-naming)
 - [StyleX](#stylex)
@@ -87,6 +80,7 @@ exist only so draft/disabled rules can remain documented and testable here.
   - [StyleX Object Spacing](#stylex-object-spacing)
   - [StyleX Ownership Comment](#stylex-ownership-comment)
   - [StyleX Placement](#stylex-placement)
+  - [StyleX Props First](#stylex-props-first)
   - [StyleX Tokens Only](#stylex-tokens-only)
 - [Comments](#comments)
   - [Comment Capitalization](#comment-capitalization)
@@ -96,7 +90,7 @@ exist only so draft/disabled rules can remain documented and testable here.
 
 ### Articulated Object Contracts
 
-Rule: `agentic/articulated-object-contracts`. Details: [RULES/articulated-object-contracts.md](RULES/articulated-object-contracts.md).
+Rule: `agentic/articulated-object-contracts`. Details: [RULES/typescript_articulated-object-contracts.md](RULES/typescript_articulated-object-contracts.md).
 
 Valid:
 
@@ -107,20 +101,35 @@ export type EditableTitleProps = {
   /** Called when the component requests entering or leaving edit mode. */
   onEditingChange: (isEditing: boolean) => void;
 };
+
+export type AxisTreeNode = TreeNodeBase & {
+  /** Tree node category. */
+  nodeKind: "axis";
+  /** Manifest node kind represented by this axis. */
+  kind: "version";
+  /** Direct version count. */
+  count: number;
+  /** Idea nodes grouped under this axis. */
+  nodes: IdeaNode[];
+};
 ```
 
 Invalid:
 
 ```ts
-export type EditableTitleProps = {
-  value: string;
-  onEditingChange: (isEditing: boolean) => void;
+export type EditableTitleProps = { value: string; onEditingChange: (isEditing: boolean) => void };
+
+export type AxisTreeNode = TreeNodeBase & {
+  nodeKind: "axis";
+  kind: "version";
+  count: number;
+  nodes: IdeaNode[];
 };
 ```
 
 ### Associated Exports
 
-Rule: `agentic/associated-exports`. Details: [RULES/associated-exports.md](RULES/associated-exports.md).
+Rule: `agentic/associated-exports`. Details: [RULES/typescript_associated-exports.md](RULES/typescript_associated-exports.md).
 
 Valid:
 
@@ -155,7 +164,7 @@ export function getFoo(args: FooArgs): FooArgs {
 
 ### Boolean Names
 
-Rule: `agentic/boolean-names`. Details: [RULES/boolean-names.md](RULES/boolean-names.md).
+Rule: `agentic/boolean-names`. Details: [RULES/typescript_boolean-names.md](RULES/typescript_boolean-names.md).
 
 Valid:
 
@@ -173,13 +182,15 @@ const [mounted, setMounted] = useState(false);
 
 ### Discriminant Kind
 
-Rule: `agentic/discriminant-kind`. Details: [RULES/discriminant-kind.md](RULES/discriminant-kind.md).
+Rule: `agentic/discriminant-kind`. Details: [RULES/typescript_discriminant-kind.md](RULES/typescript_discriminant-kind.md).
 
 Valid:
 
 ```ts
 export type IconAssetSvg = {
-  kind: 'svg';
+  /** Variant discriminator for SVG icon assets. */
+  kind: "svg";
+  /** URL used to load the SVG asset. */
   url: string;
 };
 ```
@@ -188,20 +199,22 @@ Invalid:
 
 ```ts
 export type IconAssetSvg = {
-  type: 'svg';
+  /** Variant discriminator for SVG icon assets. */
+  type: "svg";
+  /** URL used to load the SVG asset. */
   url: string;
 };
 ```
 
 ### Enum Kind Suffix
 
-Rule: `agentic/enum-kind-suffix`. Details: [RULES/enum-kind-suffix.md](RULES/enum-kind-suffix.md).
+Rule: `agentic/enum-kind-suffix`. Details: [RULES/typescript_enum-kind-suffix.md](RULES/typescript_enum-kind-suffix.md).
 
 Valid:
 
 ```ts
 enum BoardActionKind {
-  StickyCreate = 'STICKY_CREATE',
+  StickyCreate = "STICKY_CREATE",
 }
 ```
 
@@ -209,19 +222,19 @@ Invalid:
 
 ```ts
 enum EditorActionType {
-  Reinitialize = 'REINITIALIZE',
+  Reinitialize = "REINITIALIZE",
 }
 ```
 
 ### Enum Member Values
 
-Rule: `agentic/enum-member-values`. Details: [RULES/enum-member-values.md](RULES/enum-member-values.md).
+Rule: `agentic/enum-member-values`. Details: [RULES/typescript_enum-member-values.md](RULES/typescript_enum-member-values.md).
 
 Valid:
 
 ```ts
 enum StickyColor {
-  Lavender = 'LAVENDER',
+  Lavender = "LAVENDER",
 }
 ```
 
@@ -235,13 +248,13 @@ enum StickyColor {
 
 ### Enum Value Casing
 
-Rule: `agentic/enum-value-casing`. Details: [RULES/enum-value-casing.md](RULES/enum-value-casing.md).
+Rule: `agentic/enum-value-casing`. Details: [RULES/typescript_enum-value-casing.md](RULES/typescript_enum-value-casing.md).
 
 Valid:
 
 ```ts
 enum ModalKind {
-  ChatSidebar = 'CHAT_SIDEBAR',
+  ChatSidebar = "CHAT_SIDEBAR",
 }
 ```
 
@@ -249,13 +262,13 @@ Invalid:
 
 ```ts
 enum ModalKind {
-  ChatSidebar = 'ChatSidebar',
+  ChatSidebar = "ChatSidebar",
 }
 ```
 
 ### Error Message Context
 
-Rule: `agentic/error-message-context`. Details: [RULES/error-message-context.md](RULES/error-message-context.md). Disabled.
+Rule: `agentic/error-message-context`. Details: [RULES/typescript_error-message-context.md](RULES/typescript_error-message-context.md). Disabled.
 
 Valid:
 
@@ -266,12 +279,12 @@ throw new Error(`error=${JSON.stringify(result.error)}`);
 Invalid:
 
 ```ts
-throw new Error('An unexpected error occurred');
+throw new Error("An unexpected error occurred");
 ```
 
 ### Exhaustive Switch
 
-Rule: `agentic/exhaustive-switch`. Details: [RULES/exhaustive-switch.md](RULES/exhaustive-switch.md).
+Rule: `agentic/exhaustive-switch`. Details: [RULES/typescript_exhaustive-switch.md](RULES/typescript_exhaustive-switch.md).
 
 Valid:
 
@@ -297,53 +310,29 @@ switch (result.kind) {
 
 ### Function Declarations
 
-Rule: `agentic/function-declarations`. Details: [RULES/function-declarations.md](RULES/function-declarations.md).
+Rule: `agentic/function-declarations`. Details: [RULES/typescript_function-declarations.md](RULES/typescript_function-declarations.md).
 
 Valid:
 
 ```ts
 function getThing(): string {
-  return 'x';
+  return "x";
 }
 
-const getLabel = (): string => 'x';
+const getLabel = (): string => "x";
 ```
 
 Invalid:
 
 ```ts
 const getThing = (): string => {
-  return 'x';
+  return "x";
 };
-```
-
-### Function Names
-
-Rule: `agentic/function-names`. Details: [RULES/function-names.md](RULES/function-names.md). Disabled.
-
-Valid:
-
-```ts
-function getThing(): string {
-  return 'x';
-}
-
-function applyVariant(): void {}
-
-function recurse(): void {}
-```
-
-Invalid:
-
-```ts
-function thing(): string {
-  return 'x';
-}
 ```
 
 ### Handler Map Alignment
 
-Rule: `agentic/handler-map-alignment`. Details: [RULES/handler-map-alignment.md](RULES/handler-map-alignment.md).
+Rule: `agentic/handler-map-alignment`. Details: [RULES/typescript_handler-map-alignment.md](RULES/typescript_handler-map-alignment.md).
 
 Valid:
 
@@ -362,17 +351,32 @@ const MapActionKindToHandler: Record<BoardActionKind, (state: Board, action: any
 };
 ```
 
-### Map Record Names
+### Kebab-Case Source Filenames
 
-Rule: `agentic/map-record-names`. Details: [RULES/map-record-names.md](RULES/map-record-names.md).
+Rule: `agentic/kebab-case-source-filenames`. Details: [RULES/typescript_kebab-case-source-filenames.md](RULES/typescript_kebab-case-source-filenames.md).
 
 Valid:
 
 ```ts
-const MapStatusToLabel: Record<'idle' | 'busy', string> = {
-  idle: 'Idle',
-  busy: 'Working…',
-};
+// Filename: src/app-data.ts
+export {};
+```
+
+Invalid:
+
+```ts
+// Filename: src/appData.ts
+export {};
+```
+
+### Map Record Names
+
+Rule: `agentic/map-record-names`. Details: [RULES/typescript_map-record-names.md](RULES/typescript_map-record-names.md).
+
+Valid:
+
+```ts
+const MapStatusToLabel: Record<"idle" | "busy", string> = { idle: "Idle", busy: "Working…" };
 ```
 
 Invalid:
@@ -383,7 +387,7 @@ const handlers: Record<ItemKind, () => void> = {};
 
 ### Named Complex Return Types
 
-Rule: `agentic/named-complex-return-types`. Details: [RULES/named-complex-return-types.md](RULES/named-complex-return-types.md).
+Rule: `agentic/named-complex-return-types`. Details: [RULES/typescript_named-complex-return-types.md](RULES/typescript_named-complex-return-types.md).
 
 Valid:
 
@@ -394,7 +398,7 @@ export type FooReturn = {
 };
 
 export function getFoo(): FooReturn {
-  return { foo: 'x' };
+  return { foo: "x" };
 }
 ```
 
@@ -402,13 +406,13 @@ Invalid:
 
 ```ts
 export function getFoo(): { foo: string } {
-  return { foo: 'x' };
+  return { foo: "x" };
 }
 ```
 
 ### Named Nested Types
 
-Rule: `agentic/named-nested-types`. Details: [RULES/named-nested-types.md](RULES/named-nested-types.md).
+Rule: `agentic/named-nested-types`. Details: [RULES/typescript_named-nested-types.md](RULES/typescript_named-nested-types.md).
 
 Valid:
 
@@ -430,6 +434,7 @@ Invalid:
 export type FooReturn = {
   /** Item returned by the loader. */
   item: {
+    /** Stable external identifier for the item. */
     id: string;
   };
 };
@@ -437,25 +442,25 @@ export type FooReturn = {
 
 ### No Concision Names
 
-Rule: `agentic/no-concision-names`. Details: [RULES/no-concision-names.md](RULES/no-concision-names.md).
+Rule: `agentic/no-concision-names`. Details: [RULES/typescript_no-concision-names.md](RULES/typescript_no-concision-names.md).
 
 Valid:
 
 ```ts
-const configurationPath = './settings.json';
-const documentBody = '';
+const configurationPath = "./settings.json";
+const documentBody = "";
 ```
 
 Invalid:
 
 ```ts
-const configPath = './settings.json';
-const docBody = '';
+const configPath = "./settings.json";
+const docBody = "";
 ```
 
 ### No Namespaces
 
-Rule: `agentic/no-namespaces`. Details: [RULES/no-namespaces.md](RULES/no-namespaces.md).
+Rule: `agentic/no-namespaces`. Details: [RULES/typescript_no-namespaces.md](RULES/typescript_no-namespaces.md).
 
 Valid:
 
@@ -473,32 +478,149 @@ namespace HTML5Hacks {
 }
 ```
 
+### Prefer Type Aliases
+
+Rule: `agentic/prefer-type-aliases`. Details: [RULES/typescript_prefer-type-aliases.md](RULES/typescript_prefer-type-aliases.md).
+
+Valid:
+
+```ts
+export type ShortcutsModalProps = {
+  /** Called when the modal requests closing. */
+  onClose: () => void;
+};
+```
+
+Invalid:
+
+```ts
+export interface ShortcutsModalProps {
+  /** Called when the modal requests closing. */
+  onClose: () => void;
+}
+```
+
 ### Result Shape
 
-Rule: `agentic/result-shape`. Details: [RULES/result-shape.md](RULES/result-shape.md).
+Rule: `agentic/result-shape`. Details: [RULES/typescript_result-shape.md](RULES/typescript_result-shape.md).
 
 Valid:
 
 ```ts
 export type MoveResult =
-  | { kind: MoveResultKind.Success; id: string }
-  | { kind: MoveResultKind.Error; error: MoveErrorKind };
+  | {
+      /** Result variant. */
+      kind: MoveResultKind.Success;
+      /** Moved element identifier. */
+      id: string;
+    }
+  | {
+      /** Result variant. */
+      kind: MoveResultKind.Error;
+      /** Closed move error reason. */
+      error: MoveErrorKind;
+    };
 ```
 
 Invalid:
 
 ```ts
 export type MoveResult =
-  | { kind: MoveResultKind.Success; id: string }
-  | { kind: MoveResultKind.Error; error: string };
+  | {
+      /** Result variant. */
+      kind: MoveResultKind.Success;
+      /** Moved element identifier. */
+      id: string;
+    }
+  | {
+      /** Result variant. */
+      kind: MoveResultKind.Error;
+      /** Open-ended error message. */
+      error: string;
+    };
 ```
-
 
 ## React
 
+### Component Body Layout
+
+Rule: `agentic/component-body-layout`. Details: [RULES/react_component-body-layout.md](RULES/react_component-body-layout.md).
+
+Valid:
+
+```tsx
+export type EditModalProps = {
+  /** Initial title shown in the text field. */
+  initialName: string;
+  /** Called when the modal commits the edited title. */
+  onSave: (name: string) => void;
+};
+
+export function EditModal(props: EditModalProps): JSX.Element {
+  const params = useParams();
+
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  const hasMountedRef = useRef(false);
+
+  const [name, setName] = useState(props.initialName);
+  const [error, setError] = useState("");
+
+  const trimmedName = name.trim();
+  const canSave = trimmedName.length > 0;
+  const routeId = params.id ?? "";
+
+  useEffect(() => {
+    if (hasMountedRef.current) return;
+    hasMountedRef.current = true;
+    inputRef.current?.focus();
+  }, [routeId]);
+
+  function handleSave(): void {
+    if (!canSave) {
+      setError("Name is required");
+      return;
+    }
+
+    props.onSave(trimmedName);
+  }
+
+  const handlers = { onSave: handleSave };
+
+  return (
+    <button disabled={!canSave} onClick={handlers.onSave}>
+      {error || "Save"}
+    </button>
+  );
+}
+```
+
+Invalid:
+
+```tsx
+export type EditModalProps = {
+  /** Initial title shown in the text field. */
+  initialName: string;
+  /** Called when the modal commits the edited title. */
+  onSave: (name: string) => void;
+};
+
+export function EditModal(props: EditModalProps): JSX.Element {
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  const [name, setName] = useState(props.initialName);
+
+  const trimmedName = name.trim();
+
+  return (
+    <button onClick={() => props.onSave(trimmedName)} ref={inputRef}>
+      {name}
+    </button>
+  );
+}
+```
+
 ### Component Props
 
-Rule: `agentic/component-props`. Details: [RULES/component-props.md](RULES/component-props.md).
+Rule: `agentic/component-props`. Details: [RULES/react_component-props.md](RULES/react_component-props.md).
 
 Valid:
 
@@ -512,9 +634,7 @@ function RenameDialog(props: RenameDialogProps): JSX.Element {
   return <div>{props.title}</div>;
 }
 
-function RenameDialogWithDefault({
-  title = 'Rename',
-}: RenameDialogProps): JSX.Element {
+function RenameDialogWithDefault({ title = "Rename" }: RenameDialogProps): JSX.Element {
   return <div>{title}</div>;
 }
 ```
@@ -529,12 +649,12 @@ function RenameDialog(props: { title: string }): JSX.Element {
 
 ### Context Via Factory
 
-Rule: `agentic/context-via-factory`. Details: [RULES/context-via-factory.md](RULES/context-via-factory.md).
+Rule: `agentic/context-via-factory`. Details: [RULES/react_context-via-factory.md](RULES/react_context-via-factory.md).
 
 Valid:
 
 ```ts
-export const BoardContext = newGenericContext<BoardContextValue>('BoardContext');
+export const BoardContext = newGenericContext<BoardContextValue>("BoardContext");
 ```
 
 Invalid:
@@ -545,7 +665,7 @@ const BoardContext = React.createContext(null);
 
 ### Exported Component Props
 
-Rule: `agentic/exported-component-props`. Details: [RULES/exported-component-props.md](RULES/exported-component-props.md).
+Rule: `agentic/exported-component-props`. Details: [RULES/react_exported-component-props.md](RULES/react_exported-component-props.md).
 
 Valid:
 
@@ -575,24 +695,23 @@ export function Button(props: ButtonProps): JSX.Element {
 
 ### Namespace Imports
 
-Rule: `agentic/namespace-imports`. Details: [RULES/namespace-imports.md](RULES/namespace-imports.md).
+Rule: `agentic/namespace-imports`. Details: [RULES/react_namespace-imports.md](RULES/react_namespace-imports.md).
 
 Valid:
 
 ```ts
-import * as React from 'react';
-import * as stylex from '@stylexjs/stylex';
+import * as stylex from "@stylexjs/stylex";
 ```
 
 Invalid:
 
 ```ts
-import { useState } from 'react';
+import stylex from "@stylexjs/stylex";
 ```
 
 ### Reducer Dispatch Names
 
-Rule: `agentic/reducer-dispatch-names`. Details: [RULES/reducer-dispatch-names.md](RULES/reducer-dispatch-names.md).
+Rule: `agentic/reducer-dispatch-names`. Details: [RULES/react_reducer-dispatch-names.md](RULES/react_reducer-dispatch-names.md).
 
 Valid:
 
@@ -606,9 +725,25 @@ Invalid:
 const [board, setBoard] = useReducer(reducer, initialValue);
 ```
 
+### Ref Names
+
+Rule: `agentic/ref-names`. Details: [RULES/react_ref-names.md](RULES/react_ref-names.md).
+
+Valid:
+
+```ts
+const doneRef = React.useRef(false);
+```
+
+Invalid:
+
+```ts
+const done = React.useRef(false);
+```
+
 ### State Setter Pairs
 
-Rule: `agentic/state-setter-pairs`. Details: [RULES/state-setter-pairs.md](RULES/state-setter-pairs.md).
+Rule: `agentic/state-setter-pairs`. Details: [RULES/react_state-setter-pairs.md](RULES/react_state-setter-pairs.md).
 
 Valid:
 
@@ -624,7 +759,7 @@ const [isOpen, setOpen] = React.useState(false);
 
 ### Use New Naming
 
-Rule: `agentic/use-new-naming`. Details: [RULES/use-new-naming.md](RULES/use-new-naming.md).
+Rule: `agentic/use-new-naming`. Details: [RULES/react_use-new-naming.md](RULES/react_use-new-naming.md).
 
 Valid:
 
@@ -644,17 +779,19 @@ function useBoard(initialBoard: Board): BoardContextValue {
 }
 ```
 
-
 ## StyleX
 
 ### Enum Style Variants
 
-Rule: `agentic/enum-style-variants`. Details: [RULES/enum-style-variants.md](RULES/enum-style-variants.md).
+Rule: `agentic/enum-style-variants`. Details: [RULES/stylex_enum-style-variants.md](RULES/stylex_enum-style-variants.md).
 
 Valid:
 
 ```ts
-enum StickyColor { Lavender = 'LAVENDER', Sky = 'SKY' }
+enum StickyColor {
+  Lavender = "LAVENDER",
+  Sky = "SKY",
+}
 
 const MapStickyColorToStyle: Record<StickyColor, stylex.StyleXStyles> = {
   [StickyColor.Lavender]: styles.RootWithLavender,
@@ -673,7 +810,7 @@ const MapStickyColorToStyle: Record<StickyColor, stylex.StyleXStyles> = {
 
 ### Max Variant Axes
 
-Rule: `agentic/max-variant-axes`. Details: [RULES/max-variant-axes.md](RULES/max-variant-axes.md).
+Rule: `agentic/max-variant-axes`. Details: [RULES/stylex_max-variant-axes.md](RULES/stylex_max-variant-axes.md).
 
 Valid:
 
@@ -709,7 +846,7 @@ const styles = stylex.create({
 
 ### No SX Prop
 
-Rule: `agentic/no-sx-prop`. Details: [RULES/no-sx-prop.md](RULES/no-sx-prop.md).
+Rule: `agentic/no-sx-prop`. Details: [RULES/stylex_no-sx-prop.md](RULES/stylex_no-sx-prop.md).
 
 Valid:
 
@@ -725,7 +862,7 @@ const node = <div sx={styles.Root} />;
 
 ### StyleX Key Names
 
-Rule: `agentic/stylex-key-names`. Details: [RULES/stylex-key-names.md](RULES/stylex-key-names.md).
+Rule: `agentic/stylex-key-names`. Details: [RULES/stylex_stylex-key-names.md](RULES/stylex_stylex-key-names.md).
 
 Valid:
 
@@ -754,16 +891,12 @@ Invalid:
 //   CardFooter
 //     AvatarStack
 //
-const styles = stylex.create({
-  Card: {},
-  CardFooter: {},
-  AvatarStack: {},
-});
+const styles = stylex.create({ Card: {}, CardFooter: {}, AvatarStack: {} });
 ```
 
 ### StyleX Object Spacing
 
-Rule: `agentic/stylex-object-spacing`. Details: [RULES/stylex-object-spacing.md](RULES/stylex-object-spacing.md).
+Rule: `agentic/stylex-object-spacing`. Details: [RULES/stylex_stylex-object-spacing.md](RULES/stylex_stylex-object-spacing.md).
 
 Valid:
 
@@ -771,10 +904,7 @@ Valid:
 // Card
 //   CardTitle
 //
-const styles = stylex.create({
-  Card: {},
-  CardTitle: {},
-});
+const styles = stylex.create({ Card: {}, CardTitle: {} });
 ```
 
 Invalid:
@@ -792,7 +922,7 @@ const styles = stylex.create({
 
 ### StyleX Ownership Comment
 
-Rule: `agentic/stylex-ownership-comment`. Details: [RULES/stylex-ownership-comment.md](RULES/stylex-ownership-comment.md).
+Rule: `agentic/stylex-ownership-comment`. Details: [RULES/stylex_stylex-ownership-comment.md](RULES/stylex_stylex-ownership-comment.md).
 
 Valid:
 
@@ -821,15 +951,12 @@ Invalid:
 ```ts
 // Card
 //
-const styles = stylex.create({
-  Card: {},
-  CardTitle: {},
-});
+const styles = stylex.create({ Card: {}, CardTitle: {} });
 ```
 
 ### StyleX Placement
 
-Rule: `agentic/stylex-placement`. Details: [RULES/stylex-placement.md](RULES/stylex-placement.md).
+Rule: `agentic/stylex-placement`. Details: [RULES/stylex_stylex-placement.md](RULES/stylex_stylex-placement.md).
 
 Valid:
 
@@ -840,9 +967,7 @@ function Component(): JSX.Element {
 
 // Root
 //
-const styles = stylex.create({
-  Root: {},
-});
+const styles = stylex.create({ Root: {} });
 ```
 
 Invalid:
@@ -850,27 +975,39 @@ Invalid:
 ```tsx
 // Root
 //
-const styles = stylex.create({
-  Root: {},
-});
+const styles = stylex.create({ Root: {} });
 
 function Component(): JSX.Element {
   return <div {...stylex.props(styles.Root)} />;
 }
+```
+
+### StyleX Props First
+
+Rule: `agentic/stylex-props-first`. Details: [RULES/stylex_stylex-props-first.md](RULES/stylex_stylex-props-first.md).
+
+Valid:
+
+```tsx
+const node = <div {...stylex.props(styles.Root)} id="root" />;
+```
+
+Invalid:
+
+```tsx
+const node = <div id="root" {...stylex.props(styles.Root)} />;
 ```
 
 ### StyleX Tokens Only
 
-Rule: `agentic/stylex-tokens-only`. Details: [RULES/stylex-tokens-only.md](RULES/stylex-tokens-only.md).
+Rule: `agentic/stylex-tokens-only`. Details: [RULES/stylex_stylex-tokens-only.md](RULES/stylex_stylex-tokens-only.md).
 
 Valid:
 
 ```ts
 // Root
 //
-const styles = stylex.create({
-  Root: { backgroundColor: tokens.colorLavender },
-});
+const styles = stylex.create({ Root: { backgroundColor: tokens.colorLavender } });
 ```
 
 Invalid:
@@ -878,17 +1015,14 @@ Invalid:
 ```ts
 // Root
 //
-const styles = stylex.create({
-  Root: { backgroundColor: '#c5b4ee' },
-});
+const styles = stylex.create({ Root: { backgroundColor: "#c5b4ee" } });
 ```
-
 
 ## Comments
 
 ### Comment Capitalization
 
-Rule: `agentic/comment-capitalization`. Details: [RULES/comment-capitalization.md](RULES/comment-capitalization.md).
+Rule: `agentic/comment-capitalization`. Details: [RULES/comments_comment-capitalization.md](RULES/comments_comment-capitalization.md).
 
 Valid:
 
@@ -909,7 +1043,7 @@ const value = 1;
 
 ### TODO Format
 
-Rule: `agentic/todo-format`. Details: [RULES/todo-format.md](RULES/todo-format.md).
+Rule: `agentic/todo-format`. Details: [RULES/comments_todo-format.md](RULES/comments_todo-format.md).
 
 Valid:
 

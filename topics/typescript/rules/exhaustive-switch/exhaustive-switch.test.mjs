@@ -1,9 +1,9 @@
-import { createRuleTester } from '../../../lib/rule-tester.mjs';
-import { exhaustiveSwitchRule } from './exhaustive-switch.mjs';
+import { createRuleTester } from "../../../lib/rule-tester.mjs";
+import { exhaustiveSwitchRule } from "./exhaustive-switch.mjs";
 
 const ruleTester = createRuleTester();
 
-ruleTester.run('exhaustive-switch', exhaustiveSwitchRule, {
+ruleTester.run("exhaustive-switch", exhaustiveSwitchRule, {
   valid: [
     `
       switch (result.kind) {
@@ -44,7 +44,7 @@ ruleTester.run('exhaustive-switch', exhaustiveSwitchRule, {
             return null;
         }
       `,
-      errors: [{ messageId: 'missingDefault' }],
+      errors: [{ messageId: "missingDefault" }],
     },
     {
       code: `
@@ -55,7 +55,7 @@ ruleTester.run('exhaustive-switch', exhaustiveSwitchRule, {
             return null;
         }
       `,
-      errors: [{ messageId: 'defaultMustExhaust' }],
+      errors: [{ messageId: "defaultMustExhaust" }],
     },
   ],
 });

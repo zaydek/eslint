@@ -1,15 +1,16 @@
-import { createRuleMessage } from '../../../lib/rule-doc-message.mjs';
+import { createRuleMessage } from "../../../lib/rule-doc-message.mjs";
+
 export const stateSetterPairsRule = {
   meta: {
-    type: 'suggestion',
+    type: "suggestion",
     docs: {
-      description: 'Require `useState` destructuring to use exact `[thing, setThing]` pairs.',
+      description: "Require `useState` destructuring to use exact `[thing, setThing]` pairs.",
     },
     messages: {
       setterName: createRuleMessage(
-        '`useState` setter for `{{name}}` is named `{{actual}}` instead of `{{expected}}`.',
-        'Rename the setter binding to `{{expected}}`.',
-        'state-setter-pairs',
+        "`useState` setter for `{{name}}` is named `{{actual}}` instead of `{{expected}}`.",
+        "Rename the setter binding to `{{expected}}`.",
+        "state-setter-pairs",
       ),
     },
     schema: [],
@@ -18,10 +19,10 @@ export const stateSetterPairsRule = {
   create(context) {
     return {
       VariableDeclarator(node) {
-        if (node.id.type !== 'ArrayPattern' || !isUseStateCall(node.init)) return;
+        if (node.id.type !== "ArrayPattern" || !isUseStateCall(node.init)) return;
 
         const [stateElement, setterElement] = node.id.elements;
-        if (stateElement?.type !== 'Identifier' || setterElement?.type !== 'Identifier') return;
+        if (stateElement?.type !== "Identifier" || setterElement?.type !== "Identifier") return;
 
         const name = stateElement.name;
         const expected = `set${name[0].toUpperCase()}${name.slice(1)}`;
@@ -29,7 +30,7 @@ export const stateSetterPairsRule = {
 
         context.report({
           node: setterElement,
-          messageId: 'setterName',
+          messageId: "setterName",
           data: { name, expected, actual: setterElement.name },
         });
       },
@@ -38,15 +39,15 @@ export const stateSetterPairsRule = {
 };
 
 function isUseStateCall(node) {
-  if (node?.type !== 'CallExpression') return false;
+  if (node?.type !== "CallExpression") return false;
   const callee = node.callee;
-  if (callee.type === 'Identifier') return callee.name === 'useState';
+  if (callee.type === "Identifier") return callee.name === "useState";
   return (
-    callee.type === 'MemberExpression' &&
+    callee.type === "MemberExpression" &&
     !callee.computed &&
-    callee.object.type === 'Identifier' &&
-    callee.object.name === 'React' &&
-    callee.property.type === 'Identifier' &&
-    callee.property.name === 'useState'
+    callee.object.type === "Identifier" &&
+    callee.object.name === "React" &&
+    callee.property.type === "Identifier" &&
+    callee.property.name === "useState"
   );
 }

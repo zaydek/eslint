@@ -13,11 +13,11 @@ parser, tests, and ESLint rules.
 
 Three kinds of thing, three notations:
 
-| Thing | Notation | Example |
-| --- | --- | --- |
-| **Structure** — a styled element | indentation + PascalCase path key | `FooterAvatarStack` |
-| **Modifier** — a variant axis on an element | brace suffix | `Root?{IsSelected}` |
-| **Dynamic style** — a `stylex` function | typed parens | `Dot(color<string>)` |
+| Thing                                       | Notation                          | Example              |
+| ------------------------------------------- | --------------------------------- | -------------------- |
+| **Structure** — a styled element            | indentation + PascalCase path key | `FooterAvatarStack`  |
+| **Modifier** — a variant axis on an element | brace suffix                      | `Root?{IsSelected}`  |
+| **Dynamic style** — a `stylex` function     | typed parens                      | `Dot(color<string>)` |
 
 Keys are **materialized paths**. `Root` is the component scope. Root's direct
 structural children take bare region names; every deeper descendant carries its
@@ -38,16 +38,16 @@ rooting its own subtree.
 
 ## 2. Symbols
 
-| Symbol | Meaning |
-| --- | --- |
-| 2-space indent | one level of element nesting |
-| `PascalCase` | a structural element (materialized path key) |
-| `{ … }` (on a key) | required modifier axes |
-| `?{ … }` (on a key) | optional modifier axes |
-| `,` | separates sibling axes within `{ … }` |
-| `Is` `Has` `With` | the modifier-axis lexicon |
+| Symbol                             | Meaning                                                                 |
+| ---------------------------------- | ----------------------------------------------------------------------- |
+| 2-space indent                     | one level of element nesting                                            |
+| `PascalCase`                       | a structural element (materialized path key)                            |
+| `{ … }` (on a key)                 | required modifier axes                                                  |
+| `?{ … }` (on a key)                | optional modifier axes                                                  |
+| `,`                                | separates sibling axes within `{ … }`                                   |
+| `Is` `Has` `With`                  | the modifier-axis lexicon                                               |
 | `{ A \| B \| C }` (after a marker) | a union of 2+ values; required inside `{...}`, optional inside `?{...}` |
-| `( arg<type>, … )` | a dynamic `stylex` function with typed args |
+| `( arg<type>, … )`                 | a dynamic `stylex` function with typed args                             |
 
 ---
 
@@ -160,23 +160,23 @@ Semantic constraints:
    as ordinary PascalCase text.
 10. Contract indentation must match the styled render tree.
 11. Pseudo-classes and data selectors are invalid in the contract and remain
-   inside the `stylex.create` style objects.
+    inside the `stylex.create` style objects.
 
 ---
 
 ## 4. Axis forms
 
-The inner brace `{ … }` is a *union container* — it only appears when there is a
+The inner brace `{ … }` is a _union container_ — it only appears when there is a
 union to hold. A single value is therefore a plain boolean flag, and it belongs
 inside an optional modifier block.
 
-| Form | Meaning | Expands to keys |
-| --- | --- | --- |
-| `Key?{IsFlag}` | optional boolean | `Key`, `KeyIsFlag` |
-| `Key{Is{A\|B\|C}}` | required pick-one | `Key`, `KeyIsA`, `KeyIsB`, `KeyIsC` |
-| `Key?{Is{A\|B\|C}}` | optional pick-one (zero-or-one) | same keys, all optional |
+| Form                    | Meaning                          | Expands to keys                     |
+| ----------------------- | -------------------------------- | ----------------------------------- |
+| `Key?{IsFlag}`          | optional boolean                 | `Key`, `KeyIsFlag`                  |
+| `Key{Is{A\|B\|C}}`      | required pick-one                | `Key`, `KeyIsA`, `KeyIsB`, `KeyIsC` |
+| `Key?{Is{A\|B\|C}}`     | optional pick-one (zero-or-one)  | same keys, all optional             |
 | `Key{Is{B\|C}}, ?{IsA}` | required axis plus optional axis | `Key`, `KeyIsA`, `KeyIsB`, `KeyIsC` |
-| `Key(arg<type>)` | dynamic function | `Key` |
+| `Key(arg<type>)`        | dynamic function                 | `Key`                               |
 
 Use `Is` for state and mode axes, `Has` for presence axes, and `With` for
 composition/theme axes such as color. All three markers follow the same syntax.
@@ -231,7 +231,9 @@ element, indent that child under its structural parent, for example
 //         FooterMetaCommentsIcon
 //         FooterMetaCommentsCount
 //
-const styles = stylex.create({ /* keys below */ });
+const styles = stylex.create({
+  /* keys below */
+});
 ```
 
 This worked example exercises the full DSL surface; it intentionally exceeds
@@ -242,9 +244,7 @@ Dynamic entries materialize as function-valued StyleX keys:
 
 ```ts
 const styles = stylex.create({
-  HeaderPriorityDot: (color: string) => ({
-    backgroundColor: color,
-  }),
+  HeaderPriorityDot: (color: string) => ({ backgroundColor: color }),
 });
 ```
 
@@ -350,4 +350,4 @@ Depth lives in the component tree, not in key names.
 
 Pseudo-classes and data-attribute selectors (`:hover`, `:focus-visible`,
 `:disabled`, `:is([data-open])`, `[data-phase]`) stay inside the `stylex.create`
-style objects. The contract records structure and variant *axes*, not CSS state.
+style objects. The contract records structure and variant _axes_, not CSS state.

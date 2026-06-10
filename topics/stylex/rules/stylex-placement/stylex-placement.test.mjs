@@ -1,9 +1,9 @@
-import { createRuleTester } from '../../../lib/rule-tester.mjs';
-import { stylexPlacementRule } from './stylex-placement.mjs';
+import { createRuleTester } from "../../../lib/rule-tester.mjs";
+import { stylexPlacementRule } from "./stylex-placement.mjs";
 
 const ruleTester = createRuleTester();
 
-ruleTester.run('stylex-placement', stylexPlacementRule, {
+ruleTester.run("stylex-placement", stylexPlacementRule, {
   valid: [
     `
 function Component(): JSX.Element {
@@ -20,7 +20,7 @@ function Component(): JSX.Element {
   return <div />;
 }
 `,
-      errors: [{ messageId: 'placement' }],
+      errors: [{ messageId: "placement" }],
     },
   ],
 });

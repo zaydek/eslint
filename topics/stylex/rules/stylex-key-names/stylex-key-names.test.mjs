@@ -1,9 +1,9 @@
-import { createRuleTester } from '../../../lib/rule-tester.mjs';
-import { stylexKeyNamesRule } from './stylex-key-names.mjs';
+import { createRuleTester } from "../../../lib/rule-tester.mjs";
+import { stylexKeyNamesRule } from "./stylex-key-names.mjs";
 
 const ruleTester = createRuleTester();
 
-ruleTester.run('stylex-key-names', stylexKeyNamesRule, {
+ruleTester.run("stylex-key-names", stylexKeyNamesRule, {
   valid: [
     `
       // Root{Is{Compact|Comfortable}}, ?{IsSelected}
@@ -52,7 +52,7 @@ ruleTester.run('stylex-key-names', stylexKeyNamesRule, {
           AvatarStack: {},
         });
       `,
-      errors: [{ messageId: 'prefix' }],
+      errors: [{ messageId: "prefix" }],
     },
   ],
 });

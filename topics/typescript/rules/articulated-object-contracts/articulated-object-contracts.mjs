@@ -1,31 +1,24 @@
-import { createRuleMessage } from '../../../lib/rule-doc-message.mjs';
-const CONTRACT_TYPE_NAME = /(?:Props|Args|Return)(?:[A-Z0-9]|$)|(?:Options|Configuration)$/;
+import { createRuleMessage } from "../../../lib/rule-doc-message.mjs";
 
 function getTypeMemberName(node) {
-  if (node.key?.type === 'Identifier') return node.key.name;
-  if (node.key?.type === 'Literal') return String(node.key.value);
-  return 'member';
-}
-
-function isContractTypeName(name) {
-  return CONTRACT_TYPE_NAME.test(name);
+  if (node.key?.type === "Identifier") return node.key.name;
+  if (node.key?.type === "Literal") return String(node.key.value);
+  return "member";
 }
 
 function isJSDocBlockComment(comment) {
-  return comment?.type === 'Block' && comment.value.trimStart().startsWith('*');
+  return comment?.type === "Block" && comment.value.trimStart().startsWith("*");
 }
 
 export const articulatedObjectContractsRule = {
   meta: {
-    type: 'suggestion',
-    docs: {
-      description: 'Require object contract members to carry explanatory comments.',
-    },
+    type: "suggestion",
+    docs: { description: "Require object contract members to carry explanatory comments." },
     messages: {
       missingComment: createRuleMessage(
-        'Object contract member `{{name}}` has no leading JSDoc comment.',
-        'Add a concise JSDoc comment explaining the member contract.',
-        'articulated-object-contracts',
+        "Object contract member `{{name}}` has no leading JSDoc comment.",
+        "Add a concise JSDoc comment explaining the member contract.",
+        "articulated-object-contracts",
       ),
     },
     schema: [],
@@ -42,30 +35,44 @@ export const articulatedObjectContractsRule = {
     }
 
     function checkMember(node) {
-      if (node.type !== 'TSPropertySignature' && node.type !== 'TSMethodSignature') return;
+      if (node.type !== "TSPropertySignature" && node.type !== "TSMethodSignature") return;
       if (hasLeadingJSDocComment(node)) return;
       context.report({
         node,
-        messageId: 'missingComment',
+        messageId: "missingComment",
         data: { name: getTypeMemberName(node) },
       });
     }
 
-    function checkMembers(name, members) {
-      if (!isContractTypeName(name)) return;
+    function checkMembers(members) {
       for (const member of members) {
         checkMember(member);
+        checkTypeNode(member.typeAnnotation?.typeAnnotation);
+      }
+    }
+
+    function checkTypeNode(node) {
+      if (!node) return;
+
+      if (node.type === "TSTypeLiteral") {
+        checkMembers(node.members);
+        return;
+      }
+
+      if (node.type === "TSIntersectionType" || node.type === "TSUnionType") {
+        for (const typeNode of node.types) {
+          checkTypeNode(typeNode);
+        }
       }
     }
 
     return {
       TSTypeAliasDeclaration(node) {
-        if (node.typeAnnotation?.type !== 'TSTypeLiteral') return;
-        checkMembers(node.id.name, node.typeAnnotation.members);
+        checkTypeNode(node.typeAnnotation);
       },
 
       TSInterfaceDeclaration(node) {
-        checkMembers(node.id.name, node.body.body);
+        checkMembers(node.body.body);
       },
     };
   },

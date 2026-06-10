@@ -5,12 +5,14 @@ eslint.layout
 
 package.json                            # Private package manifest for @zaydek/eslint
 package-lock.json                       # Locked local test dependencies
+config.mjs                              # Shared ESLint v9 flat config for downstream repos
+prettier.config.mjs                     # Package formatting config
 AGENTS.md                               # Local boot doctrine for repo-owned ESLint work
 CLAUDE.md -> AGENTS.md                  # Symlink so Claude Code reads the same local doctrine
 README.md -> RULES.md                   # Human-doc shortcut for editors and conventional entrypoints
 RULES.md                                # Compact rule TOC with concise valid/invalid examples
 RULES/
-  {:rule}.md                            # Detailed agent-facing rule docs
+  {:topic}_{:rule}.md                   # Detailed agent-facing rule docs
 test.mjs                                # Rule test runner
 tools/
   {:tool}.mjs                           # Repo-local verification and maintenance tools

@@ -1,9 +1,9 @@
-import { createRuleTester } from '../../../lib/rule-tester.mjs';
-import { handlerMapAlignmentRule } from './handler-map-alignment.mjs';
+import { createRuleTester } from "../../../lib/rule-tester.mjs";
+import { handlerMapAlignmentRule } from "./handler-map-alignment.mjs";
 
 const ruleTester = createRuleTester();
 
-ruleTester.run('handler-map-alignment', handlerMapAlignmentRule, {
+ruleTester.run("handler-map-alignment", handlerMapAlignmentRule, {
   valid: [
     `
       const MapActionKindToHandler: BoardActionHandlerMap = {
@@ -25,7 +25,7 @@ ruleTester.run('handler-map-alignment', handlerMapAlignmentRule, {
           [BoardActionKind.StickyCreate]: handleCreateSticky,
         };
       `,
-      errors: [{ messageId: 'aligned' }],
+      errors: [{ messageId: "aligned" }],
     },
     {
       code: `
@@ -33,7 +33,7 @@ ruleTester.run('handler-map-alignment', handlerMapAlignmentRule, {
           [BoardActionKind.StickyCreate]: (state, action) => state,
         };
       `,
-      errors: [{ messageId: 'aligned' }],
+      errors: [{ messageId: "aligned" }],
     },
     {
       code: `
@@ -41,7 +41,7 @@ ruleTester.run('handler-map-alignment', handlerMapAlignmentRule, {
           [BoardActionKind.StickyCreate]: handleStickyCreate,
         };
       `,
-      errors: [{ messageId: 'noAny' }],
+      errors: [{ messageId: "noAny" }],
     },
   ],
 });

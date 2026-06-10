@@ -1,9 +1,9 @@
-import { createRuleTester } from '../../../lib/rule-tester.mjs';
-import { enumStyleVariantsRule } from './enum-style-variants.mjs';
+import { createRuleTester } from "../../../lib/rule-tester.mjs";
+import { enumStyleVariantsRule } from "./enum-style-variants.mjs";
 
 const ruleTester = createRuleTester();
 
-ruleTester.run('enum-style-variants', enumStyleVariantsRule, {
+ruleTester.run("enum-style-variants", enumStyleVariantsRule, {
   valid: [
     `
       enum StickyColor { Lavender = "LAVENDER", Sky = "SKY" }
@@ -40,7 +40,7 @@ ruleTester.run('enum-style-variants', enumStyleVariantsRule, {
           [StickyColor.Lavender]: styles.RootLavenderWith,
         };
       `,
-      errors: [{ messageId: 'variantSuffix' }],
+      errors: [{ messageId: "variantSuffix" }],
     },
     {
       code: `
@@ -49,7 +49,7 @@ ruleTester.run('enum-style-variants', enumStyleVariantsRule, {
           [StickyColor.Sky]: styles.SurfaceWithSky,
         };
       `,
-      errors: [{ messageId: 'mixedFamily' }],
+      errors: [{ messageId: "mixedFamily" }],
     },
     {
       code: `
@@ -61,7 +61,7 @@ ruleTester.run('enum-style-variants', enumStyleVariantsRule, {
           [StickyColor.Sky]: styles.RootWithSky,
         };
       `,
-      errors: [{ messageId: 'unknownStyleKey' }],
+      errors: [{ messageId: "unknownStyleKey" }],
     },
     {
       code: `
@@ -70,7 +70,7 @@ ruleTester.run('enum-style-variants', enumStyleVariantsRule, {
           [StickyColor.Lavender]: styles.RootWithLavender,
         };
       `,
-      errors: [{ messageId: 'missingVariant' }],
+      errors: [{ messageId: "missingVariant" }],
     },
     {
       code: `
@@ -78,7 +78,7 @@ ruleTester.run('enum-style-variants', enumStyleVariantsRule, {
           [StickyColor.Lavender]: getStyle(),
         };
       `,
-      errors: [{ messageId: 'styleValue' }],
+      errors: [{ messageId: "styleValue" }],
     },
   ],
 });

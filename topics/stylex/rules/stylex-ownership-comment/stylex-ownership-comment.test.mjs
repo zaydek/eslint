@@ -1,12 +1,12 @@
-import assert from 'node:assert/strict';
+import assert from "node:assert/strict";
 
-import { OWNERSHIP_CONTRACT_MESSAGE_IDS } from '../../lib/ownership-contract.mjs';
-import { createRuleTester } from '../../../lib/rule-tester.mjs';
-import { stylexOwnershipCommentRule } from './stylex-ownership-comment.mjs';
+import { OWNERSHIP_CONTRACT_MESSAGE_IDS } from "../../lib/ownership-contract.mjs";
+import { createRuleTester } from "../../../lib/rule-tester.mjs";
+import { stylexOwnershipCommentRule } from "./stylex-ownership-comment.mjs";
 
 const ruleTester = createRuleTester();
 
-ruleTester.run('stylex-ownership-comment', stylexOwnershipCommentRule, {
+ruleTester.run("stylex-ownership-comment", stylexOwnershipCommentRule, {
   valid: [
     `
       // Root{Is{Compact|Comfortable}}, ?{IsSelected}
@@ -96,7 +96,7 @@ ruleTester.run('stylex-ownership-comment', stylexOwnershipCommentRule, {
           Card: {},
         });
       `,
-      errors: [{ messageId: 'missingComment' }],
+      errors: [{ messageId: "missingComment" }],
     },
     {
       code: `
@@ -107,7 +107,7 @@ ruleTester.run('stylex-ownership-comment', stylexOwnershipCommentRule, {
           CardTitle: {},
         });
       `,
-      errors: [{ messageId: 'missingKey' }],
+      errors: [{ messageId: "missingKey" }],
     },
     {
       code: `
@@ -118,7 +118,7 @@ ruleTester.run('stylex-ownership-comment', stylexOwnershipCommentRule, {
           Card: {},
         });
       `,
-      errors: [{ messageId: 'unknownKey' }],
+      errors: [{ messageId: "unknownKey" }],
     },
     {
       code: `
@@ -127,7 +127,7 @@ ruleTester.run('stylex-ownership-comment', stylexOwnershipCommentRule, {
           Card: {},
         });
       `,
-      errors: [{ messageId: 'missingSeparator' }],
+      errors: [{ messageId: "missingSeparator" }],
     },
     {
       code: `
@@ -145,7 +145,7 @@ ruleTester.run('stylex-ownership-comment', stylexOwnershipCommentRule, {
           FooterTitle: {},
         });
       `,
-      errors: [{ messageId: 'missingRootSeparator' }],
+      errors: [{ messageId: "missingRootSeparator" }],
     },
     {
       code: `
@@ -168,10 +168,7 @@ ruleTester.run('stylex-ownership-comment', stylexOwnershipCommentRule, {
           );
         }
       `,
-      errors: [
-        { messageId: 'wrongParent' },
-        { messageId: 'wrongParent' },
-      ],
+      errors: [{ messageId: "wrongParent" }, { messageId: "wrongParent" }],
     },
     {
       code: `
@@ -200,10 +197,7 @@ ruleTester.run('stylex-ownership-comment', stylexOwnershipCommentRule, {
           );
         }
       `,
-      errors: [
-        { messageId: 'wrongParent' },
-        { messageId: 'wrongParent' },
-      ],
+      errors: [{ messageId: "wrongParent" }, { messageId: "wrongParent" }],
     },
     {
       code: `
@@ -214,7 +208,7 @@ ruleTester.run('stylex-ownership-comment', stylexOwnershipCommentRule, {
           RootIsSelected: {},
         });
       `,
-      errors: [{ messageId: 'trailingOptional' }, { messageId: 'missingKey' }],
+      errors: [{ messageId: "trailingOptional" }, { messageId: "missingKey" }],
     },
     {
       code: `
@@ -226,7 +220,7 @@ ruleTester.run('stylex-ownership-comment', stylexOwnershipCommentRule, {
           BodyCard: {},
         });
       `,
-      errors: [{ messageId: 'invalidLine' }, { messageId: 'missingKey' }],
+      errors: [{ messageId: "invalidLine" }, { messageId: "missingKey" }],
     },
   ],
 });
@@ -241,10 +235,10 @@ for (const messageId of OWNERSHIP_CONTRACT_MESSAGE_IDS) {
 assert.match(
   stylexOwnershipCommentRule.meta.messages.missingSeparator,
   /empty `\/\/` separator line/,
-  'missingSeparator must describe the trailing blank ownership comment line',
+  "missingSeparator must describe the trailing blank ownership comment line",
 );
 assert.match(
   stylexOwnershipCommentRule.meta.messages.missingOptionalSeparator,
   /`, \?\{\.\.\.\}`/,
-  'missingOptionalSeparator must describe required-plus-optional modifier syntax',
+  "missingOptionalSeparator must describe required-plus-optional modifier syntax",
 );
