@@ -7,6 +7,8 @@ ruleTester.run("ref-names", refNamesRule, {
   valid: [
     "const doneRef = React.useRef(false);",
     "const inputRef = useRef<HTMLInputElement | null>(null);",
+    "const ref = useRef<HTMLDivElement | null>(null);",
+    "const ref = React.useRef(null);",
     "const done = false;",
     "const [valueRef, setValueRef] = React.useState(null);",
   ],

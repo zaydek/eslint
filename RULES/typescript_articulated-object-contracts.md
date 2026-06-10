@@ -27,10 +27,15 @@ object literals.
   member-comment diagnostics, but `agentic/prefer-type-aliases` owns converting
   ordinary interfaces to type aliases.
 - Checks `TSPropertySignature` and `TSMethodSignature` members.
-- A member passes when the nearest leading comment is adjacent JSDoc
-  (`/** ... */`). Adjacent means the JSDoc ends on the line immediately before
-  the member starts; blank lines or intervening `//` comments break the
-  association.
+- A member passes when its nearest leading comment is a JSDoc block
+  (`/** ... */`). A blank line between the JSDoc and the member is allowed; an
+  intervening `//` line comment still breaks the association because it becomes
+  the nearest comment.
+- Only descends into type literals, unions, and intersections. Inline nested
+  object types (`Array<{ ... }>`, `Record<string, { ... }>`, tuples) are not
+  reached here on purpose — `agentic/named-nested-types` forbids inline nested
+  object types outright, so they must be extracted into their own named contract
+  first, where this rule then checks them.
 - Runtime object literals and non-contract type names are out of scope.
 
 Valid:

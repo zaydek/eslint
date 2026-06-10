@@ -30,6 +30,10 @@ ESLint, then reports once for the file when its basename is not valid.
 ```
 
 - Checks only files whose normalized path is inside one configured source root.
+  ESLint passes absolute paths, so a source root is matched as a path segment
+  anywhere in the path (`.../<root>/...`), not just as a leading prefix; pair the
+  rule with a `files` glob scoped to the same roots so only intended files are in
+  range. Only the basename is validated once a file is in range.
 - Checks only configured extensions.
 - Allows lowercase dotted convention segments such as `.test`, `.stylex`, and
   `.d`.

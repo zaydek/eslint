@@ -58,6 +58,16 @@ type LocalData = {
 };
 `,
     "type EmptyProps = {};",
+    `
+type SpacedDocs = {
+  /** Stable identifier. */
+
+  id: string;
+
+  /** Human-readable label. */
+  label: string;
+};
+`,
   ],
   invalid: [
     {

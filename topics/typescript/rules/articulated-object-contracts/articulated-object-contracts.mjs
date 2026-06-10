@@ -28,10 +28,13 @@ export const articulatedObjectContractsRule = {
     const sourceCode = context.sourceCode ?? context.getSourceCode();
 
     function hasLeadingJSDocComment(node) {
+      // `getCommentsBefore` only returns comments between the previous token and
+      // this member, so the last one being a JSDoc block means it documents this
+      // member -- a blank line between the comment and the member does not change
+      // that, and requiring strict line adjacency was a false positive.
       const comments = sourceCode.getCommentsBefore(node);
       const comment = comments.at(-1);
-      if (!isJSDocBlockComment(comment)) return false;
-      return comment.loc.end.line >= node.loc.start.line - 1;
+      return isJSDocBlockComment(comment);
     }
 
     function checkMember(node) {

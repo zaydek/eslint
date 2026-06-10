@@ -19,6 +19,7 @@ export const refNamesRule = {
       VariableDeclarator(node) {
         if (node.id.type !== "Identifier") return;
         if (!isUseRefCall(node.init)) return;
+        if (node.id.name === "ref") return;
         if (node.id.name.endsWith("Ref")) return;
 
         context.report({

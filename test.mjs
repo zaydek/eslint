@@ -1,4 +1,7 @@
 import assert from "node:assert/strict";
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 import { getRuleDocPath } from "./topics/lib/rule-doc-message.mjs";
 import { dormantRules, topicRules } from "./topics/index.mjs";
@@ -48,10 +51,30 @@ import "./topics/typescript/rules/no-namespaces/no-namespaces.test.mjs";
 import "./topics/typescript/rules/prefer-type-aliases/prefer-type-aliases.test.mjs";
 import "./topics/typescript/rules/result-shape/result-shape.test.mjs";
 
+const repoRoot = path.dirname(fileURLToPath(import.meta.url));
+const rulesDocDir = path.join(repoRoot, "RULES");
+
+// Resolve a `See:` doc path to a repo-relative file. The emitted path is the
+// documented `~/GitHub/zaydek/eslint/RULES/{slug}.md` contract; this checks the
+// rule->doc slug mapping resolves to a real file regardless of where the repo is
+// checked out, so a rule missing from MapRuleNameToDocSlug (whose fallback yields
+// a non-existent `RULES/{rule}.md`) fails the suite instead of shipping a dead link.
+function ruleDocFileFor(ruleName) {
+  const docPath = getRuleDocPath(ruleName);
+  const slugFile = docPath.split("/RULES/").at(-1);
+  return path.join(rulesDocDir, slugFile);
+}
+
 const implementedRuleGroups = { ...topicRules, dormant: dormantRules };
 
 for (const [topicName, topicRuleMap] of Object.entries(implementedRuleGroups)) {
   for (const [ruleName, rule] of Object.entries(topicRuleMap)) {
+    const docFile = ruleDocFileFor(ruleName);
+    assert.ok(
+      fs.existsSync(docFile),
+      `${topicName}/${ruleName} must link a rule doc that exists on disk (${path.relative(repoRoot, docFile)})`,
+    );
+
     for (const [messageId, message] of Object.entries(rule.meta.messages)) {
       assert.equal(
         typeof message,

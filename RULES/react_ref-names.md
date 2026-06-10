@@ -24,6 +24,8 @@ clear at the use site.
 - Matches simple variable declarators initialized by `React.useRef(...)` or
   `useRef(...)`.
 - Reports the variable identifier when it does not end with `Ref`.
+- Accepts the exact name `ref` for a component's single ref; the suffix rule
+  exists to disambiguate multiple refs, and `refRef` would be nonsense.
 - Does not inspect state variables, parameters, object properties, or values that
   are passed around after initialization.
 - Does not validate whether the `Ref` suffix is semantically ideal beyond the
@@ -39,6 +41,12 @@ Valid, imported hook:
 
 ```ts
 const inputRef = useRef<HTMLInputElement | null>(null);
+```
+
+Valid, single bare ref:
+
+```ts
+const ref = React.useRef<HTMLDivElement | null>(null);
 ```
 
 Invalid:

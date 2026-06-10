@@ -17,7 +17,10 @@ const GROUP_INDEX = new Map(GROUPS.map((group, index) => [group.id, index]));
 export const componentBodyLayoutRule = {
   meta: {
     type: "suggestion",
-    docs: { description: "Require React component bodies to use a predictable grouped layout." },
+    docs: {
+      description:
+        "Require PascalCase function-declaration component bodies to use a predictable grouped layout.",
+    },
     messages: {
       order: createRuleMessage(
         "Component `{{component}}` places `{{actual}}` after `{{previous}}`.",
@@ -40,14 +43,12 @@ export const componentBodyLayoutRule = {
       if (node.body?.type !== "BlockStatement") return;
 
       let previous = null;
-      let hasSeenCoreGroup = false;
       for (const statement of node.body.body) {
-        const group = getStatementGroup(statement, { hasSeenCoreGroup });
+        const group = getStatementGroup(statement);
         if (group === null) {
           previous = null;
           continue;
         }
-        if (group.id !== "setup") hasSeenCoreGroup = true;
 
         const entry = { statement, group };
         if (previous && GROUP_INDEX.get(entry.group.id) < GROUP_INDEX.get(previous.group.id)) {
@@ -81,7 +82,7 @@ export const componentBodyLayoutRule = {
   },
 };
 
-function getStatementGroup(statement, state) {
+function getStatementGroup(statement) {
   if (statement.type === "ReturnStatement") return getGroup("return");
   if (statement.type === "FunctionDeclaration") return getGroup("handlers");
   if (statement.type === "ExpressionStatement" && isEffectHookCall(statement.expression)) {

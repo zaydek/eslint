@@ -24,7 +24,12 @@ Enforces predicate-style names for boolean-like values.
   `useState(true)`, `useState(false)`, `React.useState(true)`, or
   `React.useState(false)`.
 - Reports any matched boolean variable or state value whose name does not start
-  with `is`, `has`, `can`, `should`, or `are`.
+  with `is`, `has`, `can`, `should`, or `are`. This is a blanket check on the
+  initializer shapes above, not a curated allowlist of names.
+- The accepted prefix set is exactly those five, by design. Other predicate-ish
+  prefixes such as `will`, `did`, and `was` are intentionally not accepted; pick
+  one of the five (for example `willClose` becomes `isClosing`) or document a
+  valid exception.
 - Rename flagged bare names to predicate-prefixed forms, for example `open` to
   `isOpen`, `selected` to `isSelected`, `checked` to `isChecked`, or `dragging`
   to `isDragging`.
